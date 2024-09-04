@@ -2,7 +2,7 @@ const category = require("../controllers/CategoriesController");
 
 var router = require("express").Router();
 
-router.post("/add", category.addMultipleCategory);
+router.post("/add", category.add);
 router.get("/detail", category.detail);
 router.get("/listing", category.listing);
 router.put("/update", category.update);

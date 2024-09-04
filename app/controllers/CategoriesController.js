@@ -24,6 +24,8 @@ module.exports = {
       if (req.body.categoryId) {
         query['categoryId'] = req.body.categoryId
       }
+      query.slug = await helper.slugify(req.body.name)
+      req.body.slug = await helper.slugify(req.body.name)
       let existed = await db.categories.findOne(query);
       if (existed) {
         return res.status(400).json({

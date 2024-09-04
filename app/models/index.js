@@ -12,4 +12,5 @@ db.categories = require('./categories.model.js')(mongoose);
 db.roles = require('./roles.model.js')(mongoose);
 db.blog = require('./blog.model.js')(mongoose);
 db.cms = require('./cms.model.js')(mongoose);
+db.materials = require('./materials.model.js')(mongoose);
 module.exports = db;

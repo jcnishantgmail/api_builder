@@ -57,6 +57,16 @@ module.exports = {
     ORDER_UPDATED: "Category order updated Successfully.",
   },
 
+  MATERIAL: {
+    ALREADY_EXIST: "Material already exist.",
+    CREATED: "Material created successfully.",
+    UPDATED: "Material updated successfully.",
+    STATUS_CHANGED: "Status changed successfully.",
+    DELETED: "Material deleted successfully.",
+    ASSOCAITED_WITH_FEATURE:
+      "Unable to delete Material as assocciated with features."
+  },
+
   COMMON: {
     SUCCESS: "Success",
     INVALID_COUNTRY_CODE: "Invalid country code",
