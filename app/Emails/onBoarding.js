@@ -109,9 +109,17 @@ const add_user_email = (options) => {
                                <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >User Registration.</p> <p style="font-size: 16px;font-weight: 400;color: #384860;">Hello ${fullName},</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">Congratulations! Your account has created on Builder Portal. Please use the following credentials to log in: </p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Email:</strong> ${email}</p>
-                               <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Password:</strong> ${password}</p>
-                             <a href="${FRONT_WEB_URL}/login" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Login Now</a>
-                              <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Password:</strong> ${password}</p>`
+
+                               if (options.loginPortal != "admin") {
+                                message += `<a href="${FRONT_WEB_URL}/login" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Login Now</a>`
+                             
+                            } else {
+                                  message += `<a href="${ADMIN_WEB_URL}/login" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Login Now</a>`
+                            }
+
+                             
+                              message +=`<p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;margin: 0px;">Builder Management Team.</p>
                               </td>
                         </tr>
