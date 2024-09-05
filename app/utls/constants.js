@@ -67,6 +67,16 @@ module.exports = {
       "Unable to delete Material as assocciated with features."
   },
 
+  PROPERTY: {
+    ALREADY_EXIST: "Property already exist.",
+    CREATED: "Property created successfully.",
+    UPDATED: "Property updated successfully.",
+    STATUS_CHANGED: "Status changed successfully.",
+    DELETED: "Property deleted successfully.",
+    ASSOCAITED_WITH_FEATURE:
+      "Unable to delete Property as assocciated with features."
+  },
+
   COMMON: {
     SUCCESS: "Success",
     INVALID_COUNTRY_CODE: "Invalid country code",
