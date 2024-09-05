@@ -257,7 +257,6 @@ router.post('/add-by-admin/lisitng', user.getAdminUsers)
 router.get('/admin/lisitng', user.getAdminUsers)
 router.get('/frontend/lisitng', user.getfrontEndUsers)
 router.post("/VerificationOtp", user.VerificationOtp);
-// router.post('/import-users', user.importUsers)
-// app.use('/api', router);
+router.post("/supplier/create", user.addSupplier)
 
 module.exports = router;

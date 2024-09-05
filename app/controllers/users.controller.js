@@ -9,7 +9,7 @@ const constants = require("../utls/constants");
 const Emails = require("../Emails/onBoarding");
 const helper = require("../utls/helper");
 var mongoose = require("mongoose");
-const multer = require('multer');
+const services = require('../services/index')
 
 
 module.exports = {
@@ -1043,19 +1043,11 @@ module.exports = {
       const id = req.body.id;
       const status = req.body.status;
 
-      const updatedStatus = await Users.updateOne({
+     await Users.updateOne({
         _id: id
       }, {
         status: status
       });
-
-      // if (updatedStatus) {
-      //   let userData = await Users.findById({ _id: req.body.id });
-
-      //   userData.role = role;
-
-      // }
-
       return res.status(200).json({
         success: true,
         message: constants.onBoarding.STATUS_CHANGED,
@@ -2010,153 +2002,95 @@ module.exports = {
         error: err.message
       });
     }
-  }
+  },
 
+  addSupplier: async (req, res) => {
+    var date = new Date();
+    try {
+      const data = req.body;
+      data.email = data.email.toLowerCase()
 
-  // importUsers: async (req, res) => {
-  //   let duplicate = 0;
-  //   let createdCount = 0;
+      if (!req.body.email) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 400,
+            message: constants.onBoarding.PAYLOAD_MISSING
+          },
+        });
+      }
+      let query = {};
+      query.isDeleted = false;
+      query.email = req.body.email.toLowerCase();
+      var user = await Users.findOne(query);
 
-  //   upload(req, res, async (err) => {
-  //     if (err instanceof multer.MulterError) {
-  //       if (err.code === "LIMIT_FILE_SIZE") {
-  //         return res.status(400).json({
-  //           success: false,
-  //           error: {
-  //             code: 400,
-  //             message: "File size must be less than 10 MB",
-  //           },
-  //         });
-  //       }
-  //       return res.status(400).json({
-  //         success: false,
-  //         error: {
-  //           code: 400,
-  //           message: "File upload error",
-  //         },
-  //       });
-  //     } else if (err) {
-  //       return res.status(500).json({
-  //         success: false,
-  //         error: {
-  //           code: 500,
-  //           message: "Unknown server error",
-  //         },
-  //       });
-  //     }
+      if (user) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 400,
+            message: constants.onBoarding.EMAIL_EXIST,
+          },
+        });
+      } else {
+        data["date_registered"] = date;
+        data["createdAt"] = date;
+        data["updatedAt"] = date;
+        data["status"] = "active";
+        data["addedBy"] = req.identity.id;
+        data['addedType'] = "admin"
+        var password = req.body.password;
+        if (req.body.password) {
+          data.password = await bcrypt.hashSync(
+            req.body.password,
+            bcrypt.genSaltSync(10)
+          );
+        } else {
+          password = await helper.generatePassword();
+          data.password = await bcrypt.hashSync(
+            password,
+            bcrypt.genSaltSync(10)
+          );
+        }
 
-  //     const uploadedFile = req.file;
+        data.isVerified = "Y";
+        data.email = data.email.toLowerCase();
 
-  //     if (!uploadedFile) {
-  //       return res.status(400).json({
-  //         success: false,
-  //         error: {
-  //           code: 400,
-  //           message: "No file uploaded",
-  //         },
-  //       });
-  //     }
+        if (req.body.firstName && req.body.lastName) {
+          data["fullName"] = req.body.firstName + " " + req.body.lastName;
+        }
+        data.addedBy = req.identity.id ? req.identity.id : req.identity._id
+        let createdUser = await db.users.create(data)
 
-  //     if (
-  //       uploadedFile.mimetype !==
-  //       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" &&
-  //       uploadedFile.mimetype !== "text/csv"
-  //     ) {
-  //       return res.status(400).json({
-  //         success: false,
-  //         error: {
-  //           code: 400,
-  //           message: "Invalid file type",
-  //         },
-  //       });
-  //     }
+        if(data.material && data.material.length > 0){
+          for await (let itm of data.material){
+            itm.supplier = createdUser._id || createdUser.id
+            itm.addedBy = createdUser._id || createdUser.id
+            itm.standAlone = false
+            services.materialService.addMaterial(itm)
+          }
+        }
 
-  //     const filename = uploadedFile.originalname;
-  //     const filepath = uploadedFile.path;
-
-  //     try {
-  //       let users_arr;
-
-  //       if (filename.endsWith(".csv")) {
-  //         const fileStream = fs.createReadStream(filepath, "utf8");
-  //         users_arr = await parseCSV(fileStream);
-  //       } else if (filename.endsWith(".xlsx") || filename.endsWith(".xls")) {
-  //         const workbook = xlsx.readFile(filepath);
-  //         const sheetName = workbook.SheetNames[0];
-  //         users_arr = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
-  //       } else {
-  //         return res.status(400).json({
-  //           success: false,
-  //           error: {
-  //             code: 400,
-  //             message: "Unsupported file format",
-  //           },
-  //         });
-  //       }
-
-  //       if (users_arr && users_arr.length > 0) {
-  //         for (let user of users_arr) {
-  //           try {
-  //             user.loyal_member_id = user.loyal_member_id
-  //             user.fullName = user.first_name + " " + user.last_name
-  //             user.addedBy = req.identity.id;
-  //             user.updatedBy = req.identity.id;
-  //             user.rewards = user.rewards;
-  //             user.role = "666abbecdf0e68f5e9d28a99"
-  //             let findUser = await Users.findOne({ email: user.email.toLowerCase() })
-  //             if (!findUser) {
-  //               user.email = user.email.toLowerCase()
-  //               let createdUser = await Users.create(user);
-  //             }
-
-  //             createdCount++;
-  //           } catch (err) {
-  //             console.log(err);
-  //             return res.status(400).json({
-  //               success: false,
-  //               error: {
-  //                 code: 400,
-  //                 message: err.message,
-  //               },
-  //             });
-  //           }
-  //         }
-  //       }
-
-  //       res.status(200).json({
-  //         success: true,
-  //         message: `Users imported successfully`,
-  //       });
-  //     } catch (err) {
-  //       console.log(err);
-  //       res.status(500).json({
-  //         success: false,
-  //         error: {
-  //           code: 500,
-  //           message: err.message,
-  //         },
-  //       });
-  //     } finally {
-  //       // Clean up the uploaded file
-  //       fs.unlink(filepath, (err) => {
-  //         if (err) {
-  //           console.error("Error removing uploaded file:", err);
-  //         }
-  //       });
-  //     }
-  //   });
-  // },
+        return res.status(200).json({
+          success: true
+        });
+      }
+    } catch (err) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          code: 400,
+          message: "" + err
+        });
+    }
+  },
+  
 
 
 };
 
 
 
-const upload = multer({
-  dest: 'uploads/', // Destination folder
-  limits: {
-    fileSize: 10485760
-  } // 10 MB limit
-}).single('file');
 
 
