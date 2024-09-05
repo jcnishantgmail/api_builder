@@ -15,106 +15,155 @@ const forgotPasswordEmail = (options) => {
     }
     message = "";
 
-
-    message += `
-  <!DOCTYPE html>
-<html>
-
+    message+= `
+<html lang="en">
 <head>
-    <title> SafeSpots</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <title>Builder-Template</title>
 </head>
- <body style="font-family: 'Poppins', sans-serif; background : #F5F5F5;">
+<body style="font-family: Poppins, sans-serif; background : #f3f3f3;" >
+    
     <table width="100%" cellpadding:"0" cellspacing="0">
         <tbody>
             <tr>
                 <td style="padding: 50px 20px;">
-                    <table width="650px" cellpadding:"0" cellspacing="0" style="margin: 0 auto; background:#FFFEFD; "
-                        class="w-100">
+                    <table width="640px" cellpadding:"0" cellspacing="0" style="margin: 0 auto;background: #DEEFFF;border-radius: 0px 0px;padding: 0px 48px 108px;">
+                        <tbody>
                         <tr>
-                            <td style="height: 50px;">
-
+                            <td style="text-align: left;padding: 40px 0px 40px;">
+                             <img src=""${BACK_WEB_URL}/static/Logo.png"" style="width: 24px;object-fit: contain;margin: 0 auto;height: 23px;vertical-align: text-bottom;"> <span style="font-size: 24px; font-weight: bold;" >Builder Management</span>
                             </td>
-                        </tr>
-                   
+                        </tr>  
                         <tr>
-                            <td style="text-align:center; padding-bottom: 10px; height: 50px;">
-                                 <img src="${BACK_WEB_URL}/static/logo.png"
-                                style="width: 200px;object-fit: contain;margin: 0 auto;" />
-                            </td>
-                        </tr>
-                       
-                        <tr>
-                            <td style="text-align:center; padding:3rem 0px; ">
-                                 <img src="${BACK_WEB_URL}/static/Vector.png"
-                                style="max-width: 300px;width: 100%;margin: 0px auto;" />
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <td style="text-align:center;">
-                                <p style="font-size: 20px;max-width: 400px;margin:0 auto;font-weight: bold;padding: 0 20px;color: #393C3D;line-height: 24px;margin-bottom: 0px;"
-                                    class="fz-20">Hi ${fullName},
-                                </p>
-                            </td>
-                        </tr>
-                     
+                            <td style="background-color: #fff;padding: 40px 32px;">
+                               <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >Password Reset</p> <p style="font-size: 16px;font-weight: 400;color: #384860;">Hello ${fullName},</p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">We have received your request to reset your password. </p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;">Click the button below to reset your password.</p>`
 
-                         <tr>
-                            <td style="padding: 15px 0 25px 0;">
-                                <p
-                                    style="font-size: 16px;max-width: 500px;margin:0 auto;text-align: center;color: #6D6D6D;line-height: 25px;padding: 0 20px;">
-                                    We have received your request to reset your password.
-                                </p>
-                            </td>
+                               if (options.loginPortal != "admin") {
+                                message += `<a href="${FRONT_WEB_URL}/resetpassword?id=${userId}&code=${verificationCode}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Reset Password</a>`
+                             
+                            } else {
+                                  message += `<a href="${ADMIN_WEB_URL}/resetpassword?id=${userId}&code=${verificationCode}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Reset Password</a>`
+                            }
+
+                             message += `<p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;margin: 0px;">Builder Management Team.</p>
+                              </td>
                         </tr>
-                        <tr>`
-
-    if (options.loginPortal != "admin") {
-        message += `<td style="padding: 15px 0 25px 0;">
-         <p
-                                    style="font-size: 16px;max-width: 500px;margin:0 auto;text-align: center;color: #6D6D6D;line-height: 25px;padding: 0 20px;">
-                            Please reset your password by using code : ${verificationCode}
-                            </p>
-                        </td>`
-    } else {
-        message += `
-        <td style="padding: 15px 0 25px 0;">
-         <p
-                                    style="font-size: 16px;max-width: 500px;margin:0 auto;text-align: center;color: #6D6D6D;padding: 0 20px;">
-                           Please reset your password by clicking
-                                    the button below.
-                            <a href="${ADMIN_WEB_URL}/resetpassword?id=${userId}&code=${verificationCode}"
-                                style="background: #E16859
-                        ; display:block;color:#fff;padding:12px 10px; width: 220px; margin: 0 auto 0; box-shadow: none; border: 0; font-size: 14px; text-decoration: none; font-weight: 400; text-align: center;"> Reset Password</a>
-                            </p>
-                        </td>`
-    }
-
-    message +=` <tr>
-                            <td style="height:50px;">
-
-                            </td>
-                        </tr>
-                       
-                     
-            
-                   
-                    </table>
+                   </tbody>
+                </table>
                 </td>
             </tr>
         </tbody>
     </table>
 </body>
 </html>`
+
+
+//     message += `
+//   <!DOCTYPE html>
+// <html>
+
+// <head>
+//     <title> SafeSpots</title>
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//     <link rel="preconnect" href="https://fonts.googleapis.com">
+//     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+//     <link rel="preconnect" href="https://fonts.googleapis.com">
+//     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+//     <link
+//         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+//         rel="stylesheet">
+
+// </head>
+//  <body style="font-family: 'Poppins', sans-serif; background : #F5F5F5;">
+//     <table width="100%" cellpadding:"0" cellspacing="0">
+//         <tbody>
+//             <tr>
+//                 <td style="padding: 50px 20px;">
+//                     <table width="650px" cellpadding:"0" cellspacing="0" style="margin: 0 auto; background:#FFFEFD; "
+//                         class="w-100">
+//                         <tr>
+//                             <td style="height: 50px;">
+
+//                             </td>
+//                         </tr>
+                   
+//                         <tr>
+//                             <td style="text-align:center; padding-bottom: 10px; height: 50px;">
+//                                  <img src="${BACK_WEB_URL}/static/logo.png"
+//                                 style="width: 200px;object-fit: contain;margin: 0 auto;" />
+//                             </td>
+//                         </tr>
+                       
+//                         <tr>
+//                             <td style="text-align:center; padding:3rem 0px; ">
+//                                  <img src="${BACK_WEB_URL}/static/Vector.png"
+//                                 style="max-width: 300px;width: 100%;margin: 0px auto;" />
+//                             </td>
+//                         </tr>
+                        
+//                         <tr>
+//                             <td style="text-align:center;">
+//                                 <p style="font-size: 20px;max-width: 400px;margin:0 auto;font-weight: bold;padding: 0 20px;color: #393C3D;line-height: 24px;margin-bottom: 0px;"
+//                                     class="fz-20">Hi ${fullName},
+//                                 </p>
+//                             </td>
+//                         </tr>
+                     
+
+//                          <tr>
+//                             <td style="padding: 15px 0 25px 0;">
+//                                 <p
+//                                     style="font-size: 16px;max-width: 500px;margin:0 auto;text-align: center;color: #6D6D6D;line-height: 25px;padding: 0 20px;">
+//                                     We have received your request to reset your password.
+//                                 </p>
+//                             </td>
+//                         </tr>
+//                         <tr>`
+
+//     if (options.loginPortal != "admin") {
+//         message += `<td style="padding: 15px 0 25px 0;">
+//          <p
+//                                     style="font-size: 16px;max-width: 500px;margin:0 auto;text-align: center;color: #6D6D6D;line-height: 25px;padding: 0 20px;">
+//                             Please reset your password by using code : ${verificationCode}
+//                             </p>
+//                         </td>`
+//     } else {
+//         message += `
+//         <td style="padding: 15px 0 25px 0;">
+//          <p
+//                                     style="font-size: 16px;max-width: 500px;margin:0 auto;text-align: center;color: #6D6D6D;padding: 0 20px;">
+//                            Please reset your password by clicking
+//                                     the button below.
+//                             <a href="${ADMIN_WEB_URL}/resetpassword?id=${userId}&code=${verificationCode}"
+//                                 style="background: #E16859
+//                         ; display:block;color:#fff;padding:12px 10px; width: 220px; margin: 0 auto 0; box-shadow: none; border: 0; font-size: 14px; text-decoration: none; font-weight: 400; text-align: center;"> Reset Password</a>
+//                             </p>
+//                         </td>`
+//     }
+
+//     message +=` <tr>
+//                             <td style="height:50px;">
+
+//                             </td>
+//                         </tr>
+                       
+                     
+            
+                   
+//                     </table>
+//                 </td>
+//             </tr>
+//         </tbody>
+//     </table>
+// </body>
+// </html>`
 
     SmtpController.sendEmail(email, "Reset Password", message);
 };
@@ -130,107 +179,52 @@ const add_user_email = (options) => {
         fullName = email;
     }
     message = "";
-    message += `
-  <!DOCTYPE html>
-<html>
 
+
+    message +=`  
+<html lang="en">
 <head>
-    <title>SafeSpots</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
-
-    <!-- <style>
-        @media (max-width:767px) {
-            .w-100 {
-                width: 100%;
-            }
-
-            .fz-20 {
-                font-size: 25px !important;
-            }
-        }
-    </style> -->
-
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <title>Builder-Template</title>
 </head>
-
-<body style="font-family: 'Poppins', sans-serif; background : #F5F5F5;">
+<body style="font-family: Poppins, sans-serif; background : #f3f3f3;" >
+    
     <table width="100%" cellpadding:"0" cellspacing="0">
         <tbody>
             <tr>
                 <td style="padding: 50px 20px;">
-                    <table width="650px" cellpadding:"0" cellspacing="0" style="margin: 0 auto; background:#FFFEFD; "
-                        class="w-100">
+                    <table width="640px" cellpadding:"0" cellspacing="0" style="margin: 0 auto;background: #DEEFFF;border-radius: 0px 0px;padding: 0px 48px 108px;">
+                        <tbody>
                         <tr>
-                            <td style="height: 28px;">
-
+                            <td style="text-align: left;padding: 40px 0px 40px;">
+                             <img src="img/Logo.png" style="width: 24px;object-fit: contain;margin: 0 auto;height: 23px;vertical-align: text-bottom;"> <span style="font-size: 24px; font-weight: bold;" >Builder Management</span>
                             </td>
-                        </tr>
-                   
+                        </tr>  
                         <tr>
-                            <td style="text-align:center; padding-bottom: 10px; height: 50px;">
-                                <img src="${BACK_WEB_URL}/static/logo.png"
-                                style="width: 200px;object-fit: contain;margin: 0 auto;" />
-                            </td>
+                            <td style="background-color: #fff;padding: 40px 32px;">
+                               <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >User Registration.</p> <p style="font-size: 16px;font-weight: 400;color: #384860;">Hello ${fullName},</p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">Your account has created on Builder Portal. Below are login credentials </p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Email:</strong> ${email}</p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Password:</strong> ${password}</p>
+                             <a href="${FRONT_WEB_URL}/login" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Login Now</a>
+                              <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;margin: 0px;">Builder Management Team.</p>
+                              </td>
                         </tr>
-                       
-                        <tr>
-                            <td style="text-align:center; padding:3rem 0px; ">
-                                <img src="${BACK_WEB_URL}/static/Vector.png"
-                                style="max-width: 300px;width: 100%;margin: 0px auto;" />
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <td style="text-align:center;">
-                                <p style="font-size: 20px;max-width: 400px;margin:0 auto;font-weight: bold;padding: 0 20px;color: #393C3D;line-height: 24px;margin-bottom: 0px;"
-                                    class="fz-20">Hi User,
-                                </p>
-                            </td>
-                        </tr>
-                     
-
-                        <tr>
-                            <td style="padding: 15px 0 25px 0;">
-                                <p
-                                    style="font-size: 16px;max-width: 500px;margin:0 auto;text-align: center;color: #6D6D6D;line-height: 25px;padding: 0 20px;">
-                                    Thanks for Signing Up at our platform.  This is a notification email to let you know your credentials.<br>please check your login credentials below<br><b>email: ${email}</b></br><b>password: ${password}</b>
-                                    the button below.
-                                </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="${FRONT_WEB_URL}/login"
-                                    style="background: #434343
-                            ; display:block;color:#fff;padding:12px 10px; width: 220px; margin: 0 auto 0; box-shadow: none; border: 0; font-size: 14px; text-decoration: none; font-weight: 400; text-align: center;">Verify your email address</a>
-                            </td>
-                        </tr>
-
-
-
-                        <tr>
-                            <td style="height:60px;">
-
-                            </td>
-                        </tr>
-                       
-                     
-            
-                   
-                    </table>
+                   </tbody>
+                </table>
                 </td>
             </tr>
         </tbody>
     </table>
 </body>
+</html>  `
 
-</html>`
+
 
     SmtpController.sendEmail(email, `Registeration`, message);
 };
