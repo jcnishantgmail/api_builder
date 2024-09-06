@@ -30,7 +30,9 @@ module.exports = {
           },
         });
       }
-      req.body.addedBy = req.identity.id;
+      if(!req.body.addedBy){
+        req.body.addedBy = req.identity.id;
+      }
 
       let created = await db.properties.create(req.body);
       if (created) {
