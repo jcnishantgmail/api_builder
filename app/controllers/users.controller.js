@@ -612,13 +612,7 @@ module.exports = {
             foreignField: "_id",
             as: "skills_detail"
           }
-        },
-        {
-          $unwind: {
-            path: '$skills_detail',
-            preserveNullAndEmptyArrays: true,
-          },
-        },
+        },    
         {
           $project: {
             id: "$_id",
