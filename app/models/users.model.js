@@ -22,6 +22,7 @@ module.exports = (mongoose) => {
       pinCode: String,
       verification_otp: String,
       loginPortal:String,
+      skills:[{ type: Schema.Types.ObjectId, ref: 'skills' }],
       addedType:{ type: String, enum: ["self", "admin"],  default: "self" },
       isVerified: { type: String, default: "N" },
       role: { type: Schema.Types.ObjectId, ref: "roles", },

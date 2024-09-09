@@ -397,7 +397,7 @@ module.exports = {
 
       const user_data = await Users.findOne({
         _id: id
-      }).populate("role", 'id name permissions');
+      }).populate("role", 'id name permissions').populate("skills")
       console.log(user_data)
       const token = jwt.sign({
         id: user_data.id,
@@ -606,6 +606,20 @@ module.exports = {
           },
         },
         {
+          $lookup: {
+            from: "skills",
+            localField: "skills",
+            foreignField: "_id",
+            as: "skills_detail"
+          }
+        },
+        {
+          $unwind: {
+            path: '$skills_detail',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
           $project: {
             id: "$_id",
             email: "$email",
@@ -630,6 +644,7 @@ module.exports = {
             isDeleted: "$isDeleted",
             previous_experience_desc: "$previous_experience_desc",
             experience_level: "$experience_level",
+            skills_detail:"$skills_detail"
 
           },
         },
