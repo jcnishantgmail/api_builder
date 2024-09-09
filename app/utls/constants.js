@@ -135,41 +135,16 @@ module.exports = {
     DELETED: "CMS deleted successfully.",
     CMS_NOT_EXIST: "CMS is not exist"
   },
-  promocode: {
+
+  SKILLS: {
     PAYLOAD_MISSING: "Payload  missing.",
-    ALREADY_EXIST: "Promo code already exist.",
-    CREATED: "Promo code created successfully.",
+    ALREADY_EXIST: "Skill already exist.",
+    CREATED: "Skill created successfully.",
     ID_MISSING: "Id required.",
-    UPDATED: "Promo code updated successfully.",
-    DELETED: "Promo code deleted successfully.",
-    UNABLE_TO_DELETE: "Please delete associated products first."
+    UPDATED: "Skill updated successfully.",
+    DELETED: "Skill deleted successfully.",
+    UNABLE_TO_DELETE: "Please delete associated users first."
 
   },
-  Card: {
-    PAYLOAD_MISSING: "Payload  missing.",
-    ALREADY_EXIST: "Card already exist.",
-    CREATED: "Card created successfully.",
-    ID_MISSING: "Id required.",
-    UPDATED: "Card updated successfully.",
-    DELETED: "Card deleted successfully.",
-    Card_NOT_EXIST: "Card is not exist"
-  },
-  Spots: {
-    PAYLOAD_MISSING: "Payload  missing.",
-    ALREADY_EXIST: "Spots already exist.",
-    CREATED: "Spots created successfully.",
-    ID_MISSING: "Id required.",
-    UPDATED: "Spots updated successfully.",
-    DELETED: "Spots deleted successfully.",
-    SPOTS_NOT_EXIST: "Spots is not exist"
-  },
-  Reviews: {
-    PAYLOAD_MISSING: "Payload  missing.",
-    ALREADY_EXIST: "Reviews already exist.",
-    REVIEW_NOT_EXIST: "Review not exist",
-    CREATED: "Reviews created successfully.",
-    ID_MISSING: "Id required.",
-    UPDATED: "Reviews updated successfully.",
-    DELETED: "Reviews deleted successfully."
-  },
+
 };

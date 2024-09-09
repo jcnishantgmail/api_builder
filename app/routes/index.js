@@ -10,4 +10,5 @@ router.use("/blog", require("./blog.routes"));
 // router.use("/cms", require("./cms.routes"));
 router.use("/material", require("./materials.routes"));
 router.use("/property", require("./properties.routes"));
+router.use("/skill" , require("./skills.routes"))
 module.exports = router;
