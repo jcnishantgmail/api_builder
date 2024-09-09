@@ -245,7 +245,7 @@ module.exports = {
           category: "$category",
           price: "$price",
           quantity: "$quantity",
-          unit: "$cateunitgory",
+          unit: "$unit",
           vat_included: "$vat_included",
           vat: "$vat",
           category_detail: "$category_detail",
