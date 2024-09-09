@@ -397,7 +397,7 @@ module.exports = {
 
       const user_data = await Users.findOne({
         _id: id
-      }).populate("role", 'id name');
+      }).populate("role", 'id name permissions');
       console.log(user_data)
       const token = jwt.sign({
         id: user_data.id,
