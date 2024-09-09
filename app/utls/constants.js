@@ -147,4 +147,14 @@ module.exports = {
 
   },
 
+  JOBS: {
+    ALREADY_EXIST: "Job already exist.",
+    CREATED: "Job created successfully.",
+    UPDATED: "Job updated successfully.",
+    STATUS_CHANGED: "Status changed successfully.",
+    DELETED: "Job deleted successfully.",
+    ASSOCAITED_WITH_FEATURE:
+      "Unable to delete Job as assocciated with features."
+  },
+
 };
