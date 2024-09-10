@@ -6,6 +6,7 @@ router.put("/update",jobs.update)
 router.delete("/delete",jobs.delete)
 router.get("/listing",jobs.listing)
 router.put("/status/change",jobs.changeStatus)
+router.put('/assign/contractor', jobs.assignContractor)
 
 
 

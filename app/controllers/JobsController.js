@@ -322,4 +322,23 @@ module.exports = {
     }
   },
 
+  assignContractor: async (req, res)=>{
+    try{
+      let {id , contractor} = req.body
+      if(!contractor){
+        contractor = null
+      }
+      await db.jobs.updateOne({_id:id},{contractor:contractor})
+
+      return res.status(200).json({
+        success:true
+      })
+    }catch(err){
+      return res.status(500).json({
+        success:false,
+        error:{code:500, message:""+err}
+      })
+    }
+  }
+
 };

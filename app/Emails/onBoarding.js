@@ -295,84 +295,53 @@ const userVerifyLink = async (options) => {
     let email = options.email;
     message = "";
 
-    message += `
-  <!DOCTYPE html>
-  <html>
-  
-  <head>
-      <title>SafeSpots</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-          rel="stylesheet">
-  
-  </head>
-  
-  <body style="font-family: 'Poppins', sans-serif; background : #F5F5F5;">
-    <table width="100%" cellpadding:"0" cellspacing="0">
-        <tbody>
-            <tr>
-                <td style="padding: 50px 20px;">
-                    <table width="650px" cellpadding:"0" cellspacing="0" style="margin: 0 auto; background:#FFFEFD; "
-                        class="w-100">
-                        <tr>
-                            <td style="height: 50px;">
-
-                            </td>
-                        </tr>
-                   
-                        <tr>
-                            <td style="text-align:center; padding-bottom: 10px; height: 50px;">
-                                 <img src="${BACK_WEB_URL}/static/logo.png"
-                                style="width: 200px;object-fit: contain;margin: 0 auto;" />
-                            </td>
-                        </tr>
-                       
-                        <tr>
-                            <td style="text-align:center; padding:3rem 0px; ">
-                                 <img src="${BACK_WEB_URL}/static/Vector.png"
-                                style="max-width: 300px;width: 100%;margin: 0px auto;" />
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <td style="text-align:center;">
-                                <p style="font-size: 20px;max-width: 400px;margin:0 auto;font-weight: bold;padding: 0 20px;color: #393C3D;line-height: 24px;margin-bottom: 0px;"
-                                    class="fz-20">Hi ${options.firstName},
-                                </p>
-                            </td>
-                        </tr>
-                     
-
-                        <tr>
-                            <td style="padding: 15px 0 25px 0;">
-                                <p
-                                    style="font-size: 16px;max-width: 500px;margin:0 auto;text-align: center;color: #6D6D6D;line-height: 25px;padding: 0 20px;">
-                                    Thanks for Signing Up at our platform. This is an notification <br> email and your otp for account verification is ${options.otp}<br>
-                                </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="height:50px;">
-
-                            </td>
-                        </tr>
-                       
-                     
-            
-                   
+    message +=`  
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        <title>Builder-Template</title>
+    </head>
+    <body style="font-family: Poppins, sans-serif; background : #f3f3f3;" >
+        
+        <table width="100%" cellpadding:"0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td style="padding: 50px 20px;">
+                        <table width="640px" cellpadding:"0" cellspacing="0" style="margin: 0 auto;background: #DEEFFF;border-radius: 0px 0px;padding: 0px 48px 108px;">
+                            <tbody>
+                            <tr>
+                                <td style="text-align: left;padding: 40px 0px 40px;">
+                                 <img src="${BACK_WEB_URL}/static/Logo.png" style="width: 24px;object-fit: contain;margin: 0 auto;height: 23px;vertical-align: text-bottom;"> <span style="font-size: 24px; font-weight: bold;" >Builder Management</span>
+                                </td>
+                            </tr>  
+                            <tr>
+                                <td style="background-color: #fff;padding: 40px 32px;">
+                                   <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >User Registration.</p> <p style="font-size: 16px;font-weight: 400;color: #384860;">Hello ${options.firstName},</p>
+                                   <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">Congratulations! Your account has created on Builder Portal. Please verify your email </p>
+                                 
+    
+                                   <a href="${BACK_WEB_URL}/verify/account?id=${options.id}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Verify Email</a>
+                                 
+                            
+                                 
+                                  <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
+                                   <p style="font-size: 16px;font-weight: 400;color: #384860;margin: 0px;">Builder Management Team.</p>
+                                  </td>
+                            </tr>
+                       </tbody>
                     </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</body>
-  
-  </html>`;
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+    </html>  `
+
+
     SmtpController.sendEmail(email, "Email Verification", message);
 };
 

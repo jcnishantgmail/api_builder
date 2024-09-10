@@ -31,15 +31,15 @@ module.exports = {
         });
       }
       let findRole = await db.roles.findOne({
-        name: "User"
+        name: "Cleint"
       })
       if (findRole) {
-        data["role"] = findRole ? findRole._id : "666abbecdf0e68f5e9d28a99";
-      } 
-      const date = new Date();
+        data["role"] = findRole ? findRole._id : "66d6bdf107668a7723efdf9a";
+      }else{
+        data["role"] = "66d6bdf107668a7723efdf9a"
+      }
       data["status"] = "active";
      
-      const password = data.password;
       data.password = await bcrypt.hashSync(
         data.password,
         bcrypt.genSaltSync(10)
@@ -48,16 +48,16 @@ module.exports = {
       data.createdAt = new Date();
       data.updatedAt = new Date();
       data.isDeleted = false;
-      data.fullName = `${data.firstName} ${data.lastName}`
       data.email = data.email.toLowerCase();
-
+     
       if (req.body.firstName && req.body.lastName) {
         data["fullName"] = req.body.firstName + " " + req.body.lastName;
       }
+      data.fullName = data.fullName.toLowerCase()
       var query = {};
       query.isDeleted = false;
       query.email = data.email;
-      const existedUser = await Users.findOne(query);
+      const existedUser = await db.users.findOne(query);
 
       if (existedUser) {
         return res.status(400).json({
@@ -79,24 +79,21 @@ module.exports = {
 
       const createdUSer = await Users.create(data);
       if (createdUSer) {
-        let verificationOtp = await helper.generateOTP(4)
-        let updatedUser = await db.users.updateOne({
+        let verificationOtp =  helper.generateOTP(4)
+        await db.users.updateOne({
           _id: createdUSer.id
         }, {
           verification_otp: verificationOtp
         })
-        // await Emails.verificationOtp({
-        //   email: createdUSer.email,
-        //   firstName: createdUSer.fullName,
-        //   otp: verificationOtp
-        // })
+    
         await Emails.userVerifyLink({ email: createdUSer.email,
-            firstName: createdUSer.fullName,
-            otp: verificationOtp})
+          id:createdUSer._id,
+          firstName: createdUSer.fullName,
+          otp: verificationOtp
+        })
         return res.status(200).json({
           success: true,
-          message: "User register successfully.",
-          data: createdUSer,
+          message: "User register successfully."
         });
       }
 
@@ -108,6 +105,28 @@ module.exports = {
           message: "" + err
         },
       });
+    }
+  },
+
+  /**Verify email */
+
+  verifyEmail: async (req, res)=>{
+    try{
+      let {id} = req.query
+
+      let user = await db.users.findById(id)
+
+      if(user && user.isVerified == 'N'){
+        await db.users.updateOne({_id:id},{isVerified:'Y'})
+        return res.redirect(`${process.env.FRONT_WEB_URL}/login?id=${id}`);
+      }else{
+        return res.redirect(`${process.env.FRONT_WEB_URL}/login`);
+      }
+    }catch(err){
+      return res.status(500).json({
+        success:false,
+        error:{code:400, message:""+err}
+      })
     }
   },
 

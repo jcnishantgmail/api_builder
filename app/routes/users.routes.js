@@ -15,6 +15,8 @@ var router = require("express").Router();
 
 router.post("/register", user.registerUser);
 
+router.get("/verify/account", user.verifyEmail);
+
 router.post("/admin/login", user.adminLogin);
 
 /**

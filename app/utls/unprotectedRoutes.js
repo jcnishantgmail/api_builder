@@ -8,6 +8,7 @@ module.exports = {
     "/user/VerificationOtp",
     "/user/login",
     "/user/register",
+    "/user/verify/account",
     "/user/auto/login",
     "/user/forgot/password",
     "/user/check/email",
