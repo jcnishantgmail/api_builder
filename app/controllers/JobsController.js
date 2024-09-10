@@ -1,7 +1,7 @@
 const db = require("../models");
 const constants = require("../utls/constants");
 var mongoose = require("mongoose");
-
+const jobEmails = require("../Emails/jobEmails")
 module.exports = {
 
   add: async (req, res) => {
@@ -328,8 +328,21 @@ module.exports = {
       if(!contractor){
         contractor = null
       }
+     
+      let job = await db.jobs.findById(id).populate("property")
       await db.jobs.updateOne({_id:id},{contractor:contractor})
-
+      if(contractor){
+        let contratorDetail = await db.users.findById(contractor)
+        jobEmails.jobAssignToContractor({
+          jobTitle:job.title,
+          description:job.description,
+          email:contratorDetail.email,
+          fullName:contratorDetail.fullName,
+          location:job?.property?.address,
+          id:job._id
+        })
+      }
+      
       return res.status(200).json({
         success:true
       })
