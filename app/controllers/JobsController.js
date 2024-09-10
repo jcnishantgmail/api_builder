@@ -19,8 +19,8 @@ module.exports = {
       if(!req.body.client){ req.body.client = req.identity.id}
       let client = await db.users.findById(req.body.client)
       let created = await db.jobs.create(req.body);
-      let property = await db.properties.findById(property)
-      jobEmails.adminEmailForNewJob({id:created._id,clientName:client.fullName,jobTitle:created.title,description:created.description,location:property.address})
+      let propertyDetail = await db.properties.findById(property)
+      jobEmails.adminEmailForNewJob({id:created._id,clientName:client.fullName,jobTitle:created.title,description:created.description,location:propertyDetail.address})
       if (created) {
         return res.status(200).json({
           success: true,
