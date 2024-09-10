@@ -324,7 +324,7 @@ const userVerifyLink = async (options) => {
                                    <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">Congratulations! Your account has created on Builder Portal. Please verify your email </p>
                                  
     
-                                   <a href="${BACK_WEB_URL}/verify/account?id=${options.id}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Verify Email</a>
+                                   <a href="${BACK_WEB_URL}/user/verify/account?id=${options.id}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Verify Email</a>
                                  
                             
                                  
