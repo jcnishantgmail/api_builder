@@ -22,6 +22,7 @@ module.exports = (mongoose) => {
       pinCode: String,
       verification_otp: String,
       loginPortal:String,
+      hourlyRate:{type:Number,defult:0},
       skills:[{ type: Schema.Types.ObjectId, ref: 'skills' }],
       addedType:{ type: String, enum: ["self", "admin"],  default: "self" },
       isVerified: { type: String, default: "N" },
@@ -32,6 +33,7 @@ module.exports = (mongoose) => {
       isDeleted: { type: Boolean, default: false },
       createdAt: Date,
       updatedAt: Date,
+
 
       // social login keys
       // facebookId: {

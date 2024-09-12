@@ -15,6 +15,11 @@ module.exports = (mongoose) => {
       property: { type: Schema.Types.ObjectId, ref: "properties", },
       isDeleted: { type: Boolean, default: false },
       estimate:{type:Number,default:0},
+      material:{type:Array,defult:[]},
+      consumedTime:{type:Number,defult:0}, //Saved in minutes
+      totalAmount:{type:Number,defult:0},
+      contractorAmount:{type:Number},
+      invoiceStatus:{type:String},
       createdAt: Date,
       updatedAt: Date,
     },
