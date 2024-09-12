@@ -354,6 +354,61 @@ module.exports = {
         error:{code:500, message:""+err}
       })
     }
+  },
+
+  startJob: async (req, res)=>{
+    try{
+      let {id}= req.body
+      if(!id){
+        return res.status(400).json({
+          success:false,
+          error:{code:400,message:"Job id required"}
+        })
+      }
+  
+      await db.jobs.updateOne({_id:id},{status:"in-progress"})
+  
+      return res.status(200).json({
+        success:true
+      })
+    }catch(err){
+      return res.status(500).json({
+        success:false,
+        eror:{code:500, message:""+err}
+      })
+    }
+   
+  },
+
+  complateJob: async (req, res)=>{
+    try{
+      let {id}= req.body
+      if(!id){
+        return res.status(400).json({
+          success:false,
+          error:{code:400,message:"Job id required"}
+        })
+      }
+      req.body.status = "completed"
+      let job = await db.jobs.findById(id)
+      let adminEmailPayload= {
+        id:id,
+        jobTitle:job?.title,
+        contractorName:req.identity.fullName
+      }
+      jobEmails.jobCompleteEmailToAdmin(adminEmailPayload)
+      await db.jobs.updateOne({_id:id},req.body)
+  
+      return res.status(200).json({
+        success:true
+      })
+    }catch(err){
+      return res.status(500).json({
+        success:false,
+        eror:{code:500, message:""+err}
+      })
+    }
+   
   }
 
 };
