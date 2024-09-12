@@ -8,7 +8,7 @@ module.exports = (mongoose) => {
       title: String,
       description: String,
       images: Array,
-      status: { type: "String", enum: ["pending", "in-progress" ,"completed"], default: "pending" },
+      status: { type: "String", enum: ["pending", "in-progress" ,"completed", "cancelled"], default: "pending" },
       addedBy: { type: Schema.Types.ObjectId, ref: "users", },
       contractor: { type: Schema.Types.ObjectId, ref: "users", },
       client: { type: Schema.Types.ObjectId, ref: "users", },

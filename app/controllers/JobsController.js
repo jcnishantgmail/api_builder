@@ -125,18 +125,7 @@ module.exports = {
 
   listing: async (req, res) => {
     try {
-      const {
-        search,
-        page,
-        count,
-        sortBy,
-        status,
-        addedBy,
-        client,
-        contractor,
-        property
-        
-      } = req.query;
+      let {  search, page, count, sortBy, status, addedBy, client, contractor, property, startDate, endDate } = req.query;
       var query = {};
 
       if (search) {
@@ -172,6 +161,12 @@ module.exports = {
       if (property) {
         query.property = mongoose.Types.ObjectId.createFromHexString(property)
       }
+      if(startDate && endDate){
+         startDate = new Date(startDate).setUTCHours(0,0,0,0)
+         endDate = new Date(endDate).setUTCHours(23,59,59,0)
+         query.createdAt = {$gte:new Date(startDate),$lte:new Date(endDate)}
+      }
+
       const pipeline = [{
         $match: query,
       },
