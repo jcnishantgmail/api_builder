@@ -16,10 +16,11 @@ module.exports = (mongoose) => {
       isDeleted: { type: Boolean, default: false },
       estimate:{type:Number,default:0},
       material:{type:Array,defult:[]},
-      consumedTime:{type:Number,defult:0}, //Saved in minutes
+      serviceTime:{type:Number,defult:0}, //Saved in minutes
       totalAmount:{type:Number,defult:0},
       contractorAmount:{type:Number},
       invoiceStatus:{type:String},
+      preferedTime:{type:Date},
       createdAt: Date,
       updatedAt: Date,
     },
