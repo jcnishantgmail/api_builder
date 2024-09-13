@@ -254,7 +254,8 @@ module.exports = {
           contractor:"$contractor",
           contractorName:"$contractor_detail.fullName",
           contractorEmail:"$contractor_detail.email",
-          preferedTime:"$preferedTime"
+          preferedTime:"$preferedTime",
+          material:"$material"
         },
       },
       {
