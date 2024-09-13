@@ -394,6 +394,18 @@ module.exports = {
         contractorName:req.identity.fullName
       }
       jobEmails.jobCompleteEmailToAdmin(adminEmailPayload)
+      let serviceTime = 0
+      if(req.body.hours){
+        serviceTime += Number(req.body.hours)*60 //Converting hours into minutes
+      }
+
+      if(req.body.minutes){
+        serviceTime += Number(req.body.minutes)
+      }
+
+      if(serviceTime > 0){
+        req.body.serviceTime = serviceTime
+      }
       await db.jobs.updateOne({_id:id},req.body)
   
       return res.status(200).json({

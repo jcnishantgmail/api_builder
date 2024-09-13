@@ -19,6 +19,8 @@ module.exports = (mongoose) => {
       serviceTime:{type:Number,defult:0}, //Saved in minutes
       totalAmount:{type:Number,defult:0},
       contractorAmount:{type:Number},
+      hours:{type:String},
+      minutes:{type:String},
       invoiceStatus:{type:String},
       preferedTime:{type:Date},
       createdAt: Date,
