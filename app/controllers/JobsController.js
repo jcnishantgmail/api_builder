@@ -253,7 +253,8 @@ module.exports = {
           clientEmail:"$client_detail.email",
           contractor:"$contractor",
           contractorName:"$contractor_detail.fullName",
-          contractorEmail:"$contractor_detail.email"
+          contractorEmail:"$contractor_detail.email",
+          preferedTime:"$preferedTime"
         },
       },
       {
