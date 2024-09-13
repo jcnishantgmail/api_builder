@@ -77,7 +77,7 @@ module.exports = {
         data["email"] = data.email.toLowerCase();
       }
 
-      const createdUSer = await Users.create(data);
+      let createdUSer = await db.users.create(data)
       if (createdUSer) {
         let verificationOtp =  helper.generateOTP(4)
         await db.users.updateOne({
@@ -93,6 +93,7 @@ module.exports = {
         })
         return res.status(200).json({
           success: true,
+          "data":createdUSer._id || createdUSer.id,
           message: "User register successfully."
         });
       }
@@ -381,14 +382,14 @@ module.exports = {
           role: user.role._id
         },
         process.env.JWT_SECRET, {
-          expiresIn: "10h",
+          expiresIn: "100h",
         }
       );
       var admindata;
       admindata = Object.assign({}, user._doc);
       admindata["access_token"] = token;
       delete admindata.password
-      const updatedUser = await db.users.updateOne({
+      await db.users.updateOne({
         _id: admindata.id
       }, {
         lastLogin: new Date()
@@ -398,7 +399,6 @@ module.exports = {
         message: constants.onBoarding.LOGIN_SUCCESS,
         data: admindata,
       });
-      // }
     } catch (err) {
       return res.status(400).json({
         success: false,
