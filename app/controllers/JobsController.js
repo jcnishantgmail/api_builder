@@ -255,7 +255,9 @@ module.exports = {
           contractorName:"$contractor_detail.fullName",
           contractorEmail:"$contractor_detail.email",
           preferedTime:"$preferedTime",
-          material:"$material"
+          material:"$material",
+          hours:"$hours",
+          minutes:"$minutes"
         },
       },
       {

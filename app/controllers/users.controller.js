@@ -551,14 +551,7 @@ module.exports = {
     try {
 
       let {
-        search,
-        sortBy,
-        page,
-        count,
-        status,
-        role,
-        country
-      } = req.query
+        search, sortBy, page, count, status, role, country, skills  } = req.query
       var query = {};
       if (search) {
         query.$or = [{
@@ -577,17 +570,20 @@ module.exports = {
       }
 
       query.isDeleted = false;
-      let findRole = await db.roles.findOne({
-        name: "Admin"
-      })
+    
       if (role) {
         query.roleId = mongoose.Types.ObjectId.createFromHexString(role);
       } 
-      // else {
-      //   query.roleId = {
-      //     $nin: [findRole._id]
-      //   };
-      // }
+
+      if(skills){
+        let skillIds = []
+        let splittedSkills = skills.split(",")
+        for await (let itm of splittedSkills){
+          skillIds.push(mongoose.Types.ObjectId.createFromHexString(itm))
+        }
+        query.skills = {$in:skillIds}
+      }
+    
 
       var sortquery = {};
       if (sortBy) {
@@ -609,6 +605,9 @@ module.exports = {
       }
 
       const pipeline = [
+        {
+          $match: query,
+        },
 
         {
           $lookup: {
@@ -661,9 +660,7 @@ module.exports = {
 
           },
         },
-        {
-          $match: query,
-        },
+        
         {
           $sort: sortquery,
         },
