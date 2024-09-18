@@ -1,8 +1,6 @@
 const db = require("../models");
 const constants = require("../utls/constants");
-var mongoose = require("mongoose");
 const helper = require("../utls/helper")
-const services = require('../services')
 
 
 module.exports = {
@@ -16,7 +14,7 @@ module.exports = {
         });
       }
       data.title = data.title.toLowerCase();
-      console.log(data.title)
+      data.slug = await helper.slugify(req.body.title)
       const existingBlog = await db.blog.findOne({ title: data.title, isDeleted: false });
 
       if (existingBlog) {
