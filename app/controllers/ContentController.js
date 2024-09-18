@@ -46,14 +46,22 @@ module.exports = {
   detail: async (req, res) => {
     try {
       let { id } = req.query;
-      if (!id) {
+      if (!id || !slug) {
         return res.status(404).json({
           success: false,
           code: 400,
           error: { code: 400, message: constants.CMS.ID_MISSING },
         });
       }
-      let cmsDetails = await db.cms.findById(id);
+
+      let query = {isDeleted:false}
+      
+      if(slug){
+        query.slug = slug
+      }else{
+        query._id = id
+      }
+      let cmsDetails = await db.cms.findOne(query);
       return res.status(200).json({
         success: true,
         data: cmsDetails,
