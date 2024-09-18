@@ -157,4 +157,21 @@ module.exports = {
       "Unable to delete Job as assocciated with features."
   },
 
+  Blog:{
+    ALREADY_EXIST:"Blog already exist.",
+    PAYLOAD_MISSING:"Payload missing",
+    CREATED:"Blog created succesfully.",
+    ID_MISSING:"Blog id required.",
+    BLOG_NOT_EXIST:"Blog not found.",
+    UPDATED:"Blog updated successfully.",
+    DELETED:"Blog deleted successfully."
+  },
+
+  CMS:{
+    CMS_NOT_EXIST:"Content not found.",
+    ALREADY_EXIST:"Content already exist.",
+    UPDATED:"Content updated successfully.",
+    CREATED:"Content created successfully."
+  }
+
 };
