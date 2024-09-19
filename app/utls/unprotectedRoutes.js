@@ -25,7 +25,10 @@ module.exports = {
     "/spots/place-detail",
     "/spots/nearby-places",
     "/shapefile/tract",
-    "/spots/reviews"
-
+    "/spots/reviews",
+    "/blog/listing",
+    "/blog/detail",
+    "/cms/listing",
+    "/cms/detail",
   ],
 };
