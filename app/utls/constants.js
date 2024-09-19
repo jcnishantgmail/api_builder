@@ -172,6 +172,12 @@ module.exports = {
     ALREADY_EXIST:"Content already exist.",
     UPDATED:"Content updated successfully.",
     CREATED:"Content created successfully."
+  },
+
+  INVOICES:{
+    PAYLOAD_MISSING:"Payload missing.",
+    CREATED:"Invoice created successfully.",
+    UPDATED:"Invoice updated successfully."
   }
 
 };

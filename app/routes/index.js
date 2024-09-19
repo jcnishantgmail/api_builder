@@ -13,4 +13,5 @@ router.use("/property", require("./properties.routes"));
 router.use("/skill" , require("./skills.routes"))
 router.use("/job" , require("./jobs.routes"))
 router.use("/contractor", require("./contractorDashboard.routes"))
+router.use("/invoice", require("./invoices.routes"))
 module.exports = router;
