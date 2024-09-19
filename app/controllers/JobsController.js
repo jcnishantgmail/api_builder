@@ -254,6 +254,7 @@ module.exports = {
           contractor:"$contractor",
           contractorName:"$contractor_detail.fullName",
           contractorEmail:"$contractor_detail.email",
+          hourlyRate:"$contractor_detail.hourlyRate",
           preferedTime:"$preferedTime",
           material:"$material",
           hours:"$hours",
