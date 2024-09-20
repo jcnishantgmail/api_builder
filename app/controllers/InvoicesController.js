@@ -16,7 +16,7 @@ module.exports = {
         });
       }
       let data = req.body
-      let job = await db.jobs.findById(req.body.jobId)
+      let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId))
       if(!job){
         return res.status(404).json({
             success:false,
@@ -27,7 +27,7 @@ module.exports = {
       data.client = job.client
       data.property = job.property
       req.body.addedBy = req.identity.id;
-      data.invoiceNumber = "Invoice-" +await db.invoices.countDocuments({}) +1  //Gernerating invoice number
+      data.invoiceNumber = "Invoice-" + (await db.invoices.countDocuments({}) + 1);  //Gernerating invoice number
 
       let created = await db.invoices.create(req.body);
       if (created) {
