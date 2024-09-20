@@ -152,7 +152,7 @@ const invite_user_email = (options) => {
   <html>
   
   <head>
-      <title>SafeSpots</title>
+      <title>Builder Management</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -361,7 +361,7 @@ const updatePasswordEmail = (options) => {
   <html>
   
   <head>
-      <title>SafeSpots</title>
+      <title>Builder Management</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -497,7 +497,7 @@ const verificationOtp = (options) => {
 <html>
 
 <head>
-    <title> SafeSpots</title>
+    <title> Builder Management</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
