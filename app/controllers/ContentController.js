@@ -45,8 +45,8 @@ module.exports = {
   },
   detail: async (req, res) => {
     try {
-      let { id } = req.query;
-      if (!id || !slug) {
+      let { id, slug } = req.query;
+      if (!id && !slug) {
         return res.status(404).json({
           success: false,
           code: 400,
