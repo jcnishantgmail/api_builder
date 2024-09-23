@@ -572,7 +572,7 @@ module.exports = {
       query.isDeleted = false;
     
       if (role) {
-        query.roleId = mongoose.Types.ObjectId.createFromHexString(role);
+        query.role = mongoose.Types.ObjectId.createFromHexString(role);
       } 
 
       if(skills){
@@ -603,7 +603,6 @@ module.exports = {
       if (country) {
         query.country = country;
       }
-
       const pipeline = [
         {
           $match: query,
