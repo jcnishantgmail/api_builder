@@ -177,7 +177,8 @@ module.exports = {
   INVOICES:{
     PAYLOAD_MISSING:"Payload missing.",
     CREATED:"Invoice created successfully.",
-    UPDATED:"Invoice updated successfully."
+    UPDATED:"Invoice updated successfully.",
+    SENT_AGAIN:"Invoice resent by email successfully"
   }
 
 };

@@ -200,6 +200,25 @@ const promoCode = async () => {
   return retVal;
 }
 
+const formatCreatedAt = function (createdAt) {
+  const date = new Date(createdAt);
+
+  const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'GMT',
+  };
+
+  const formattedTime = new Intl.DateTimeFormat('en-US', options).format(date);
+
+  return `${formattedTime} GMT`;
+}
+
+
 module.exports = {
   generateFileName,
   generateVerificationCode,
@@ -216,8 +235,7 @@ module.exports = {
   generateNumericOTP,
   phoneNumberFormatter,
   generatePassword,
-  promoCode
-
-
-
+  promoCode,
+  formatCreatedAt
+  
 };

@@ -1,5 +1,7 @@
 const db = require("../models");
 const constants = require("../utls/constants");
+const invoiceEmails = require("../Emails/invoiceEmails")
+const helpers = require('../utls/helper');
 var mongoose = require("mongoose");
 
 module.exports = {
@@ -31,6 +33,12 @@ module.exports = {
 
       let created = await db.invoices.create(req.body);
       if (created) {
+        const user = await db.users.findById(data.client);
+        data.email = user["email"];
+        data.fullName = user["fullName"] ? user["fullName"] : user["firstName"];
+        data.creationTime = helpers.formatCreatedAt(created.createdAt);
+        invoiceEmails.sendInvoiceMail(data);
+        console.log(data);
         return res.status(200).json({
           success: true,
           message: constants.INVOICES.CREATED
@@ -38,7 +46,7 @@ module.exports = {
       } else {
         return res.status(400).json({
           success: false,
-          message: "Some issue exist",
+          message: "Some issue exists",
         });
       }
     } catch (err) {
@@ -311,5 +319,25 @@ module.exports = {
       });
     }
   },
+
+  resendInvoice: async (req ,res) => {
+    try {
+      const { invoiceID } = req.body;
+      const invoice = await db.invoices.findById(invoiceID);
+      const user = await db.users.findById(invoice["client"]);
+      invoice.fullName = user.fullName? user.fullName: user.firstName;
+      invoice.email = user.email;
+      invoice.creationTime = helpers.formatCreatedAt(invoice.createdAt);
+      invoiceEmails.sendInvoiceMail(invoice);
+      res.status(200).json({
+        success: true,
+        message: constants.INVOICES.SENT_AGAIN
+      });
+
+    } catch (err) {
+      res.status(500).json({code: 500,message: "" + err});
+    }
+    
+  }
 
 };
