@@ -23,7 +23,7 @@ module.exports = (mongoose) => {
       hours:{type:String},
       minutes:{type:String},
       urgency: {type:String},
-      special_instructions: {type:String},
+      special_instruction: {type:String},
       invoiceStatus:{type:String},
       preferedTime:{type:Date},
       createdAt: Date,
