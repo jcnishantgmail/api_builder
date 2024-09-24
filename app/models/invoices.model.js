@@ -10,7 +10,7 @@ module.exports = (mongoose) => {
             jobId: { type: Schema.Types.ObjectId, ref: "jobs", },
             client: { type: Schema.Types.ObjectId, ref: "users", },
             addedBy: { type: Schema.Types.ObjectId, ref: "users", },
-            totalAmount: { type: Number, defult: 0 },
+            total: { type: Number, defult: 0 },
             property: { type: Schema.Types.ObjectId, ref: "properties", },
             sentDate: { type: Date },
             paidDate: { type: Date },

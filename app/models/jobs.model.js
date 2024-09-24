@@ -17,7 +17,7 @@ module.exports = (mongoose) => {
       estimate:{type:Number,default:0},
       material:{type:Array,defult:[]},
       serviceTime:{type:Number,defult:0}, //Saved in minutes
-      totalAmount:{type:Number,defult:0},
+      total:{type:Number,defult:0},
       contractorAmount:{type:Number},
       hours:{type:String},
       minutes:{type:String},

@@ -237,8 +237,7 @@ module.exports = {
         $project: {
           id: "$_id",
           job_detail: "$job_detail",
-          sentDate: "$sentDate",
-          totalAmount: "$totalAmount",       
+          sentDate: "$sentDate",     
           client_detail: "$client_detail",
           status: "$status",
           createdAt: "$createdAt",
@@ -250,7 +249,7 @@ module.exports = {
           "paidDate":"$paidDate",
           paymentType:"$paymentType",
           invoiceNumber:"$invoiceNumber",
-          total:"$totalAmount"
+          total:"$total"
         },
       },
       ];
