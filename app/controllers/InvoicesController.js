@@ -249,7 +249,8 @@ module.exports = {
           supplier_detail:"$supplier_detail",
           "paidDate":"$paidDate",
           paymentType:"$paymentType",
-          invoiceNumber:"$invoiceNumber"
+          invoiceNumber:"$invoiceNumber",
+          total:"$totalAmount"
         },
       },
       ];
