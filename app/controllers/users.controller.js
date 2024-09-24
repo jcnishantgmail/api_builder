@@ -64,7 +64,7 @@ module.exports = {
           success: false,
           error: {
             code: 400,
-            message: "Email already exist in the application.",
+            message: "Email already exists in the application.",
           },
         });
       }
@@ -655,8 +655,8 @@ module.exports = {
             isDeleted: "$isDeleted",
             previous_experience_desc: "$previous_experience_desc",
             experience_level: "$experience_level",
-            skills_detail:"$skills_detail"
-
+            skills_detail:"$skills_detail",
+            certificate: "$certificate"
           },
         },
         
@@ -1807,7 +1807,7 @@ module.exports = {
             addedBy: "$addedBy",
             isDeleted: "$isDeleted",
             previous_experience_desc: "$previous_experience_desc",
-
+            certificate: "$certificate"
 
           },
         },
@@ -1955,7 +1955,7 @@ module.exports = {
             isDeleted: "$isDeleted",
             previous_experience_desc: "$previous_experience_desc",
             experience_level: "$experience_level",
-
+            certificate: "$certificate"
           },
         },
         {

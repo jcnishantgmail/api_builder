@@ -33,7 +33,7 @@ module.exports = (mongoose) => {
       isDeleted: { type: Boolean, default: false },
       createdAt: Date,
       updatedAt: Date,
-
+      certificate: {type: String}
 
       // social login keys
       // facebookId: {
