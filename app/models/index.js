@@ -17,4 +17,5 @@ db.properties = require('./properties.model.js')(mongoose);
 db.skills = require("./skills.model.js")(mongoose)
 db.jobs =  require("./jobs.model.js")(mongoose)
 db.invoices = require("./invoices.model.js")(mongoose)
+db.payments = require("./payment.model.js")(mongoose)
 module.exports = db;

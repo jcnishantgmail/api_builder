@@ -37,7 +37,9 @@ module.exports = {
         data.email = user["email"];
         data.fullName = user["fullName"] ? user["fullName"] : user["firstName"];
         data.creationTime = helpers.formatCreatedAt(created.createdAt);
+        data.invoiceId = created["_id"];
         invoiceEmails.sendInvoiceMail(data);
+        await db.invoices.updateOne({_id: created["_id"]},{status: "sent"});  //email sent
         console.log(data);
         return res.status(200).json({
           success: true,
@@ -322,8 +324,8 @@ module.exports = {
 
   resendInvoice: async (req ,res) => {
     try {
-      const { invoiceID } = req.body;
-      const invoice = await db.invoices.findById(invoiceID);
+      const { invoiceId } = req.body;
+      const invoice = await db.invoices.findById(invoiceId);
       const user = await db.users.findById(invoice["client"]);
       invoice.fullName = user.fullName? user.fullName: user.firstName;
       invoice.email = user.email;

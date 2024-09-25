@@ -23,5 +23,6 @@ module.exports = {
     "/blog/detail",
     "/cms/listing",
     "/cms/detail",
+    "/payment/webhook"
   ],
 };

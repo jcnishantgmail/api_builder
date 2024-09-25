@@ -7,6 +7,7 @@ const { BACK_WEB_URL, FRONT_WEB_URL, ADMIN_WEB_URL } = process.env;
 const sendInvoiceMail = (options) => {
     let email = options.email;
     let fullName = options.fullName;
+    let invoiceId = options["_id"]? options["_id"]: options["invoiceId"];
     if (!fullName) {
         fullName = email;
     }
@@ -17,6 +18,7 @@ const sendInvoiceMail = (options) => {
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <title>Invoice Template</title>
+            <script src="https://js.stripe.com/v3/"></script>
         </head>
         <body style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; text-align: center; background-color: #f9f9f9; color: #777; margin: 0; padding: 0;">
             <div style="max-width: 800px; margin: 30px auto; padding: 30px; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); background-color: #fff; font-size: 16px; line-height: 24px; color: #555;">
@@ -54,9 +56,10 @@ const sendInvoiceMail = (options) => {
                         </td>
                     </tr>
                     <tr style="background: #f1f1f1; border-bottom: 2px solid #ddd; font-weight: bold;">
-                        <td style="padding: 10px 0;">Item/Service</td>
+                        <td style="padding: 10px 0;">Material/Service</td>
                         <td style="text-align: right; padding: 10px 0;">Price</td>
                     </tr>`;
+
     for (let material of options.material) {
         message += `<tr style="border-bottom: 1px solid #e0e0e0;">
                         <td style="padding: 10px 0;">${material["name"]} (Quantity: ${material["quantity"]})</td>
@@ -73,9 +76,11 @@ const sendInvoiceMail = (options) => {
                     <td style="text-align: right; padding: 10px 0;">£${options.total}</td>
                 </tr>
                 </table>
+                <a href="${process.env.FRONT_WEB_URL}?invoiceId=${invoiceId}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">Pay Now</a>
             </div>
         </body>
     </html>`;
+
 
     SmtpController.sendEmail(email, `Invoice #${options.invoiceNumber}`, message);
 };
