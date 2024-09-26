@@ -9,6 +9,7 @@ const checkoutSessionHandler = async function (req, res) {
             const jobId = invoice["jobId"].toString();
             let amount = invoice["total"];
             amount = amount * 100;
+            amount = Math.ceil(amount); //just to convert to integer - number of pennies
             const session = await stripe.checkout.sessions.create({
             line_items: [
                 {

@@ -30,7 +30,8 @@ module.exports = {
       data.property = job.property
       req.body.addedBy = req.identity.id;
       data.invoiceNumber = "Invoice-" + (await db.invoices.countDocuments({}) + 1);  //Gernerating invoice number
-
+      if(data.total)
+        data.total = (Math.ceil(data.total * 100) / 100); //Rounding up to 2 decimals pound.pennies
       let created = await db.invoices.create(req.body);
       if (created) {
         const user = await db.users.findById(data.client);
@@ -97,7 +98,8 @@ module.exports = {
     try {
       const id = req.body.id;
       const data = req.body;
-
+      if(data.total)
+        data.total = (Math.ceil(data.total * 100) / 100); //Rounding up to 2 decimals pound.pennies for stripe
 
       await db.invoices.updateOne({_id: id}, data);
 
