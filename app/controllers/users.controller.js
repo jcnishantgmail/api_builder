@@ -31,7 +31,7 @@ module.exports = {
         });
       }
       let findRole = await db.roles.findOne({
-        name: "Cleint"
+        name: "Client"
       })
       if (findRole) {
         data["role"] = findRole ? findRole._id : "66d6bdf107668a7723efdf9a";
