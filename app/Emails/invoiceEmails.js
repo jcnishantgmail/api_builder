@@ -31,7 +31,7 @@ const sendInvoiceMail = (options) => {
                                         <img src="${BACK_WEB_URL}/static/Logo.png" alt="Company Logo" style="width: 150px; max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);" />
                                     </td>
                                     <td style="text-align: right; vertical-align: top; padding-left: 20px;">
-                                        <div style="font-size: 18px; font-weight: bold; color: #333;">Invoice # ${options.invoiceNumber}</div>
+                                        <div style="font-size: 18px; font-weight: bold; color: #333;"># ${options.invoiceNumber}</div>
                                         <div style="color: #777;">Created: ${options.creationTime}</div>
                                     </td>
                                 </tr>
@@ -61,6 +61,7 @@ const sendInvoiceMail = (options) => {
                     </tr>`;
 
     for (let material of options.material) {
+        material["price"] = (Math.ceil(material["price"] * 100) / 100);
         message += `<tr style="border-bottom: 1px solid #e0e0e0;">
                         <td style="padding: 10px 0;">${material["name"]} (Quantity: ${material["quantity"]})</td>
                         <td style="text-align: right; padding: 10px 0;">£${material["price"]}</td>
@@ -69,7 +70,7 @@ const sendInvoiceMail = (options) => {
 
     message += `<tr>
                     <td style="font-weight: bold;">Service Fee</td>
-                    <td style="text-align: right; padding: 10px 0;">£${options.servicefee}</td>
+                    <td style="text-align: right; padding: 10px 0;">£${Math.ceil(options.servicefee * 100)/100}</td>
                 </tr>
                 <tr style="border-top: 2px solid #e0e0e0; font-weight: bold;">
                     <td style="padding: 10px 0;">Total</td>
