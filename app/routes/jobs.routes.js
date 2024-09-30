@@ -8,7 +8,7 @@ router.get("/listing",jobs.listing)
 router.put("/status/change",jobs.changeStatus)
 router.put('/assign/contractor', jobs.assignContractor)
 router.put("/start/job", jobs.startJob)
-router.put("/complete/job", jobs.complateJob)
+router.put("/complete/job", jobs.completeJob)
 
 
 

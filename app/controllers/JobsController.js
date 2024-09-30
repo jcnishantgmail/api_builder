@@ -75,8 +75,9 @@ module.exports = {
           },
         });
       }
-      const detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property')
-
+      let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property').populate('categories');
+      
+      console.log(detail);
       return res.status(200).json({
         success: true,
         data: detail
@@ -279,7 +280,8 @@ module.exports = {
           preferedTime:"$preferedTime",
           material:"$material",
           hours:"$hours",
-          minutes:"$minutes"
+          minutes:"$minutes",
+          materialCategory: "$materialCategory"
         },
       },
       {
@@ -420,7 +422,7 @@ module.exports = {
    
   },
 
-  complateJob: async (req, res)=>{
+  completeJob: async (req, res)=>{
     try{
       let {id}= req.body
       if(!id){

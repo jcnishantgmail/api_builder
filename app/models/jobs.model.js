@@ -17,7 +17,8 @@ module.exports = (mongoose) => {
       isDeleted: { type: Boolean, default: false },
       estimate:{type:Number,default:0},
       material:{type:Array,default:[]},
-      serviceTime:{type:Number,defult:0}, //Saved in minutes
+      category: [{type: Schema.Types.ObjectId, ref: "categories"}],
+      serviceTime:{type:Number,default:0}, //Saved in minutes
       total:{type:Number,defult:0},
       contractorAmount:{type:Number},
       hours:{type:String},
