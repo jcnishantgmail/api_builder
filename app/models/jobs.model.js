@@ -15,6 +15,7 @@ module.exports = (mongoose) => {
       client: { type: Schema.Types.ObjectId, ref: "users", },
       property: { type: Schema.Types.ObjectId, ref: "properties", },
       isDeleted: { type: Boolean, default: false },
+      isInvoiceGenerated: { type: Boolean, default: false },
       estimate:{type:Number,default:0},
       material:{type:Array,default:[]},
       category: [{type: Schema.Types.ObjectId, ref: "categories"}],

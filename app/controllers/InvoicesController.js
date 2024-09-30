@@ -19,12 +19,14 @@ module.exports = {
       }
       let data = req.body
       let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId))
+      
       if(!job){
         return res.status(404).json({
             success:false,
             error:{code:400,message:"Job not found."}
         })
       }
+      
       let invc = await db.invoices.findOne({jobId: req.body.jobId});
       if(invc) {
         return res.status(400).json({code:400, message: "Invoice for this job already exists!"});
@@ -37,6 +39,7 @@ module.exports = {
         data.total = (Math.ceil(data.total * 100) / 100); //Rounding up to 2 decimals pound.pennies
       let created = await db.invoices.create(req.body);
       if (created) {
+        await db.jobs.updateOne({_id:req.body.jobId},{isInvoiceGenerated:true});
         const user = await db.users.findById(data.client);
         data.email = user["email"];
         data.fullName = user["fullName"] ? user["fullName"] : user["firstName"];
@@ -255,6 +258,7 @@ module.exports = {
           sentDate: "$sentDate",     
           client_detail: "$client_detail",
           status: "$status",
+          isInvoiceGenerated:"$isInvoiceGenerated",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
           isDeleted: "$isDeleted",
