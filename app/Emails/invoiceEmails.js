@@ -63,7 +63,7 @@ const sendInvoiceMail = (options) => {
     for (let material of options.material) {
         material["price"] = (Math.ceil(material["price"] * 100) / 100);
         message += `<tr style="border-bottom: 1px solid #e0e0e0;">
-                        <td style="padding: 10px 0;">${material["name"]} (Quantity: ${material["quantity"]})</td>
+                        <td style="padding: 10px 0;">${material["name"]}</td>
                         <td style="text-align: right; padding: 10px 0;">£${material["price"]}</td>
                     </tr>`;
     }
