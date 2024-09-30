@@ -51,6 +51,7 @@ module.exports = {
         });
       }
     } catch (err) {
+      console.log("err",err)
       return res.status(500).json({
         success: false,
         error: {
@@ -63,6 +64,7 @@ module.exports = {
 
   detail: async (req, res) => {
     try {
+
       let {
         id
       } = req.query;
@@ -75,7 +77,7 @@ module.exports = {
           },
         });
       }
-      let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property').populate('categories');
+      let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property').populate('category');
       
       console.log(detail);
       return res.status(200).json({
@@ -83,6 +85,7 @@ module.exports = {
         data: detail
       });
     } catch (err) {
+      console.log(err);
       return res.status(500).json({
         success: false,
         error: {
