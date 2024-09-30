@@ -45,10 +45,10 @@ const forgotPasswordEmail = (options) => {
                                <p style="font-size: 16px;font-weight: 400;color: #384860;">Click the button below to reset your password.</p>`
 
                                if (options.loginPortal != "admin") {
-                                message += `<a href="${FRONT_WEB_URL}/resetpassword?id=${userId}&code=${verificationCode}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Reset Password</a>`
+                                message += `<a href="${FRONT_WEB_URL}/resetpassword?id=${userId}&code=${verificationCode}" style=" background-color: #1E5DBC;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Reset Password</a>`
                              
                             } else {
-                                  message += `<a href="${ADMIN_WEB_URL}/resetpassword?id=${userId}&code=${verificationCode}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Reset Password</a>`
+                                  message += `<a href="${ADMIN_WEB_URL}/resetpassword?id=${userId}&code=${verificationCode}" style=" background-color: #1E5DBC;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Reset Password</a>`
                             }
 
                              message += `<p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
@@ -112,10 +112,10 @@ const add_user_email = (options) => {
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Password:</strong> ${password}</p>`
 
                                if (options.loginPortal != "admin") {
-                                message += `<a href="${FRONT_WEB_URL}/login" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Login Now</a>`
+                                message += `<a href="${FRONT_WEB_URL}/login" style=" background-color: #1E5DBC;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Login Now</a>`
                              
                             } else {
-                                  message += `<a href="${ADMIN_WEB_URL}/login" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Login Now</a>`
+                                  message += `<a href="${ADMIN_WEB_URL}/login" style=" background-color: #1E5DBC;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Login Now</a>`
                             }
 
                              
@@ -256,11 +256,11 @@ const invite_user_email = (options) => {
                               <td>`
     if (type == 'new_talent') {
         message += `    <a href="${STAGING_FRONTEND_URL}/sign-in?id=${options.id}""
-                                style="background: #3F559E
+                                style="background: #1E5DBC
                         ; display:block;color:#fff;padding:12px 10px; width: 220px; margin: 0 auto 0; box-shadow: none; border: 0; font-size: 15px; text-decoration: none; font-weight: 400; text-align: center;">Click here to log in</a>`
     } else {
         message += `    <a href="${STAGING_FRONTEND_URL}/organization""
-                                style="background: #3F559E
+                                style="background: #1E5DBC
                         ; display:block;color:#fff;padding:12px 10px; width: 220px; margin: 0 auto 0; box-shadow: none; border: 0; font-size: 15px; text-decoration: none; font-weight: 400; text-align: center;">Click here to log in</a>`
     }
 
@@ -324,7 +324,7 @@ const userVerifyLink = async (options) => {
                                    <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">Congratulations! Your account has created on Builder Portal. Please verify your email </p>
                                  
     
-                                   <a href="${BACK_WEB_URL}/user/verify/account?id=${options.id}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Verify Email</a>
+                                   <a href="${BACK_WEB_URL}/user/verify/account?id=${options.id}" style=" background-color: #1E5DBC;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Verify Email</a>
                                  
                             
                                  
@@ -453,7 +453,7 @@ const updatePasswordEmail = (options) => {
                           <tr>
                               <td>
                                   <a href="#"
-                                      style="background: #3F559E
+                                      style="background: #1E5DBC
                               ; display:block;color:#fff;padding:12px 10px; width: 220px; margin: 0 auto 0; box-shadow: none; border: 0; font-size: 15px; text-decoration: none; font-weight: 400; text-align: center;">Verify your email address</a>
                               </td>
                           </tr>

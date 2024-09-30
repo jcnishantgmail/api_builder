@@ -44,7 +44,7 @@ const jobAssignToContractor = (options) => {
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Description:</strong>${options.description}</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Location:</strong>${options.location}</p>
                              
-                               <a href="${FRONT_WEB_URL}/job/detail/${options.id}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">View job</a>                             
+                               <a href="${FRONT_WEB_URL}/job/detail/${options.id}" style=" background-color: #1E5DBC ;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">View job</a>                             
 
 
                              <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
@@ -106,7 +106,7 @@ const adminEmailForNewJob= (options) => {
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Description:</strong>${options.description}</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Location:</strong>${options.location}</p>
                              
-                               <a href="${FRONT_WEB_URL}/job/detail?id=${options.id}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">View job</a>                             
+                               <a href="${FRONT_WEB_URL}/job/detail?id=${options.id}" style=" background-color: #1E5DBC ;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">View job</a>                             
 
 
                              <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
@@ -158,7 +158,7 @@ jobCompleteEmailToAdmin = (options) => {
                                <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >Job Assignment Completed By Contractor</p> <p style="font-size: 16px;font-weight: 400;color: #384860;">Dear Admin,</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">We are pleased to inform you that <strong>${options.jobTitle}</strong> job assigned is completed by ${options.contractorName}.</p>
                                 <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >Please generate the invoce for this assignment.</p>
-                               <a href="${ADMIN_WEB_URL}/job/detail?id=${options.id}" style=" background-color: #368AED;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Generate Invoice</a>                             
+                               <a href="${ADMIN_WEB_URL}/job/detail?id=${options.id}" style=" background-color: #1E5DBC;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">Generate Invoice</a>                             
 
 
                              <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>

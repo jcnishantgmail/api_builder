@@ -77,7 +77,7 @@ const sendInvoiceMail = (options) => {
                     <td style="text-align: right; padding: 10px 0;">£${options.total}</td>
                 </tr>
                 </table>
-                <a href="${process.env.FRONT_WEB_URL}?invoiceId=${invoiceId}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">Pay Now</a>
+                <a href="${process.env.FRONT_WEB_URL}?invoiceId=${invoiceId}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #1E5DBC; text-decoration: none; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">Pay Now</a>
             </div>
         </body>
     </html>`;
