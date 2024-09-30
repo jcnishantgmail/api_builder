@@ -25,7 +25,10 @@ module.exports = {
             error:{code:400,message:"Job not found."}
         })
       }
-      
+      let invc = await db.invoices.findOne({jobId: req.body.jobId});
+      if(invc) {
+        return res.status(400).json({code:400, message: "Invoice for this job already exists!"});
+      }
       data.client = job.client
       data.property = job.property
       req.body.addedBy = req.identity.id;
