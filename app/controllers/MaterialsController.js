@@ -182,7 +182,9 @@ module.exports = {
         query.supplier = mongoose.Types.ObjectId.createFromHexString(supplier);
       }
       if (category) {
-        query.category = mongoose.Types.ObjectId.createFromHexString(category)
+        let categoryList = category.split(",");
+        categoryList = categoryList.map((category)=> mongoose.Types.ObjectId.createFromHexString(category));
+        query.category = {$in: categoryList} 
       }
 
       const pipeline = [{
