@@ -274,6 +274,7 @@ module.exports = {
           addedByName: "$addedByDetail.fullName",
           addedByEmail: "$addedByDetail.email",
           client:"$client",
+          isInvoiceGenerated:"$isInvoiceGenerated",
           clientName:"$client_detail.fullName",
           clientEmail:"$client_detail.email",
           contractor:"$contractor",
