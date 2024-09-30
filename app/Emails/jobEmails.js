@@ -101,7 +101,7 @@ const adminEmailForNewJob= (options) => {
                         <tr>
                             <td style="background-color: #fff;padding: 40px 32px;">
                                <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >Job Assignment</p> <p style="font-size: 16px;font-weight: 400;color: #384860;">Dear Admin,</p>
-                               <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">We are pleased to inform you that there is a new job created by/for ${options.clientName}. Below are the details of the assignment:</p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">We are pleased to inform you that there is a new job created by ${options.clientName}. Below are the details of the job:</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Title:</strong>${options.jobTitle}</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Description:</strong>${options.description}</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Location:</strong>${options.location}</p>

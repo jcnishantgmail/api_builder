@@ -19,8 +19,26 @@ module.exports = {
       if(!req.body.client){ req.body.client = req.identity.id}
       let client = await db.users.findById(req.body.client)
       let created = await db.jobs.create(req.body);
-      let propertyDetail = await db.properties.findById(req.body.property)
-      jobEmails.adminEmailForNewJob({id:created._id,clientName:client.fullName,jobTitle:created.title,description:created.description,location:propertyDetail.address})
+      let propertyDetail = await db.properties.findById(req.body.property);
+      let formattedLocation = '';
+      if(propertyDetail.address) {
+        formattedLocation += propertyDetail.address;
+      }
+      if(propertyDetail.address2) {
+        formattedLocation += ', ' + propertyDetail.address2;
+      }
+      if(propertyDetail.state) {
+        formattedLocation += ', ' + propertyDetail.state;
+      }
+      if(propertyDetail.zipCode) {
+        formattedLocation += ' ' + propertyDetail.zipCode;
+      }
+      if(propertyDetail.country) {
+        formattedLocation += ', ' + propertyDetail.country;
+      }
+      formattedLocation += ".";
+      console.log(formattedLocation);
+      jobEmails.adminEmailForNewJob({id:created._id,clientName:client.fullName,jobTitle:created.title,description:created.description,location:formattedLocation})
       if (created) {
         return res.status(200).json({
           success: true,
@@ -335,6 +353,25 @@ module.exports = {
       }
      
       let job = await db.jobs.findById(id).populate("property")
+      let location = [job.property.address, job.property.address2, job.property.state, job.property.zipCode,job.property.country];
+      location = location.join(", ")
+      let formattedLocation = '';
+      if(job.property.address) {
+        formattedLocation += job.property.address;
+      }
+      if(job.property.address2) {
+        formattedLocation += ', ' + job.property.address2;
+      }
+      if(job.property.state) {
+        formattedLocation += ', ' + job.property.state;
+      }
+      if(job.property.zipCode) {
+        formattedLocation += ' ' + job.property.zipCode;
+      }
+      if(job.property.country) {
+        formattedLocation += ', ' + job.property.country;
+      }
+      formattedLocation += ".";
       await db.jobs.updateOne({_id:id},{contractor:contractor})
       if(contractor){
         let contratorDetail = await db.users.findById(contractor)
@@ -343,7 +380,7 @@ module.exports = {
           description:job.description,
           email:contratorDetail.email,
           fullName:contratorDetail.fullName,
-          location:job?.property?.address,
+          location:formattedLocation,
           id:job._id
         })
       }
