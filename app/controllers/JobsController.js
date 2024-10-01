@@ -2,6 +2,7 @@ const db = require("../models");
 const constants = require("../utls/constants");
 var mongoose = require("mongoose");
 const jobEmails = require("../Emails/jobEmails")
+const { combineJobDateLogs}  = require("../utls/helper");
 module.exports = {
 
   add: async (req, res) => {
@@ -426,6 +427,123 @@ module.exports = {
    
   },
 
+  pauseJob: async (req, res) => {
+    try{
+      let {id, datelog}= req.body
+      if(!id){
+        return res.status(400).json({
+          success:false,
+          error:{code:400,message:"Job id required"}
+        })
+      }
+      if(!datelog){
+        return res.status(400).json({
+          success:false,
+          error:{code:400,message:"datelog required"}
+        })
+      }
+      
+      let job = await db.jobs.findById(id);
+      if(job.status !== 'in-progress') {
+        return res.status(400).json({message: "Invalid input job status!", code: 400});
+      }
+      await db.jobs.updateOne({_id:id},{
+        status: "paused",
+        $push: {datelog: req.body.datelog}
+      });
+  
+      return res.status(200).json({
+        success:true
+      })
+    }catch(err){
+      return res.status(500).json({
+        success:false,
+        eror:{code:500, message:""+err}
+      })
+    }
+  },
+
+  continueJob: async (req, res) => {
+    try{
+      let {id, date}= req.body
+      if(!id){
+        return res.status(400).json({
+          success:false,
+          error:{code:400,message:"Job id required"}
+        })
+      }
+      let job = await db.jobs.findById(id);
+      if(job.status !== 'paused') {
+        return res.status(403).json({message: "Invalid job status!", code: 403});
+      }
+      let original_datelog = job.datelog;
+      let maxDate = original_datelog.reduce((max, cur) => new Date(max) > new Date(cur.date)? max:cur.date, original_datelog[0].date);
+      if(maxDate === date) {
+        return res.status(403).json({"message": "Cannot continue job on the same day it was paused!", code: 403});  
+      }
+      await db.jobs.updateOne({_id:id},{status: "in-progress"});
+  
+      return res.status(200).json({
+        success:true,
+        message: "Job continued!"
+      })
+    }catch(err){
+      return res.status(500).json({
+        success:false,
+        eror:{code:500, message:""+err}
+      })
+    }
+  },
+
+  completeJob: async (req, res) => {
+     try{
+      let {id, datelog}= req.body
+      if(!id){
+        return res.status(400).json({
+          success:false,
+          error:{code:400,message:"Job id required"}
+        })
+      }
+      if(!datelog){
+        return res.status(400).json({
+          success:false,
+          error:{code:400,message:"datelog required"}
+        })
+      }
+      
+      let job = await db.jobs.findById(id);
+      if(job.status !== 'in-progress') {
+        return res.status(400).json({message: "Invalid input job status!", code: 400});
+      }
+      await db.jobs.updateOne({_id:id},{
+        status: "completed",
+        $push: {datelog: req.body.datelog}
+      });
+
+      //
+      job = await db.jobs.findById(id);
+      let updationValue = combineJobDateLogs(job)
+      await db.jobs.updateOne({_id: id}, updationValue);
+
+      let adminEmailPayload= {
+        id:id,
+        jobTitle:job?.title,
+        contractorName:req.identity.fullName
+      }
+      jobEmails.jobCompleteEmailToAdmin(adminEmailPayload);
+
+      return res.status(200).json({
+        success:true,
+        message: "Job Completed!"
+      })
+    }catch(err){
+      return res.status(500).json({
+        success:false,
+        eror:{code:500, message:""+err}
+      })
+    }
+  }
+/*
   completeJob: async (req, res)=>{
     try{
       let {id}= req.body
@@ -468,5 +586,5 @@ module.exports = {
     }
    
   }
-
+*/
 };
