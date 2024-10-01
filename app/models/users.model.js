@@ -11,7 +11,7 @@ module.exports = (mongoose) => {
       verificationCode: String,
       dialCode: String,
       mobileNo: String,
-      image: String,
+      image: {type: Array, default: []},
       address: String,
       address2:{type:String},
       company:{type:String},
@@ -33,7 +33,7 @@ module.exports = (mongoose) => {
       isDeleted: { type: Boolean, default: false },
       createdAt: Date,
       updatedAt: Date,
-      certificate: {type: String}
+      certificate: {type: Array, default: []}
 
       // social login keys
       // facebookId: {
