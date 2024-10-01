@@ -527,11 +527,12 @@ module.exports = {
         req.body.email = req.body.email.toLowerCase()
       }
       // console.log(req.body,"++++++++++++++updatedUser")
-      const userId = req.identity;
-      const requestingUser = await db.users.findById(userId).populate('role');
-      if(user.role.name === 'Contractor') {
-        if(userId === id) {
+      const requestingUser = await req.identity.populate('role');
+      console.log(requestingUser);
+      if(requestingUser.role.name === 'Contractor') {
+        if(requestingUser._id.toString() === id) {
           let { hourlyRate } = req.body;
+          console.log(hourlyRate);
           if(hourlyRate) {
             return res.status(400).json({message: "You are not allowed to modify hourly rate", code: 400});
           }
