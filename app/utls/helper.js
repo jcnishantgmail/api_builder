@@ -218,13 +218,15 @@ const formatCreatedAt = function (createdAt) {
   return `${formattedTime} GMT`;
 }
 
-function combineJobDateLogs(job) {
-  const datelogs = job.datelog;
+async function combineJobDateLogs(job) {
+  const datelogs = await db.datelogs.find({job: job._id});
   let totalHours = 0;
   let totalMinutes = 0;
   let finalMaterials = [];
   let finalCompletedImages = [];
   let materialMap = new Map();
+  console.log(typeof datelogs);
+  console.log(datelogs);
   datelogs.forEach(datelog => {
     totalHours += Number(datelog.hours);
     totalMinutes += Number(datelog.minutes);
@@ -263,6 +265,7 @@ function combineJobDateLogs(job) {
   }
 
   return {
+    status: "completed",
     hours: totalHours,
     minutes: totalMinutes,
     material: finalMaterials,

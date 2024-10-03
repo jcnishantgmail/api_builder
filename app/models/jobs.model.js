@@ -33,15 +33,18 @@ module.exports = (mongoose) => {
       serviceTime:{type:Number,default:0}, //Saved in minutes
       total:{type:Number,defult:0},
       contractorAmount:{type:Number},
-      hours:{type:Number},
-      minutes:{type:Number},
+      hours:{type:Number, default: 0},
+      minutes:{type:Number, default: 0},
       urgency: {type:String},
       special_instruction: {type:String},
       invoiceStatus:{type:String},
       preferedTime:{type:Date},
-      datelog: [datewiseLogSchema],
+      datelogLastUpdated: String,
+      datelog: [{
+        type: Schema.Types.ObjectId, ref: "datelog"
+      }],
       createdAt: Date,
-      updatedAt: Date,
+      updatedAt: Date
     },
     { timestamps: true }
   );
