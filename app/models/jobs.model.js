@@ -3,16 +3,6 @@ var Mongoose = require("mongoose"),
 
 module.exports = (mongoose) => {
 
-  const datewiseLogSchema = mongoose.Schema({
-    date: {type: String, required: true, unique: true},
-    hours:{type:Number},
-    minutes:{type:Number},
-    material:{type:Array,default:[]},
-    contractor: { type: Schema.Types.ObjectId, ref: "users",  },
-    serviceTime: {type: Number, default: 0},
-    completed_images: {type: Array, default: []}
-  });
-
   var schema = mongoose.Schema(
     {
 

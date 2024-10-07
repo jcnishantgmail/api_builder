@@ -258,6 +258,14 @@ module.exports = {
         },
       },
       {
+        $lookup: {
+          from: "datelogs",
+          localField: "datelog",
+          foreignField: "_id",
+          as: "datelog_detail"
+        }
+      },
+      {
         $project: {
           id: "$_id",
           title: "$title",
@@ -288,7 +296,8 @@ module.exports = {
           hours:"$hours",
           minutes:"$minutes",
           materialCategory: "$materialCategory",
-          datelogLastUpdated: "$datelogLastUpdated"
+          datelogLastUpdated: "$datelogLastUpdated",
+          datelog: "$datelog_detail"
         },
       },
       {
