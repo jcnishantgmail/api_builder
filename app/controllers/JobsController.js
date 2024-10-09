@@ -79,9 +79,8 @@ module.exports = {
           },
         });
       }
-      let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property').populate('category');
+      let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property').populate('category').populate('datelog');
       
-      console.log(detail);
       return res.status(200).json({
         success: true,
         data: detail
