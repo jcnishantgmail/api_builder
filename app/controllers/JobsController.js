@@ -461,6 +461,18 @@ module.exports = {
       if(job.status !== 'in-progress') {
         return res.status(400).json({message: "Invalid input job status!", code: 400});
       }
+
+      if(inputDatelog.material) {
+        for(let material of inputDatelog.material) {
+          const inventoryMaterial = await db.materials.findById(material._id);
+          if(material.quantity > inventoryMaterial.quantity) {
+            return res.status(400).json({message: "Not enough materials", code: 400});
+          }
+        }
+        for(let material of inputDatelog.material) {
+          await db.materials.updateOne({_id: material._id}, {$dec: {quantity: Number(material.quantity)}});
+        }
+      }
       
       const datelogObj = await db.datelogs.findOne({job: jobId, date: inputDatelog.date});
       if(datelogObj) {
@@ -481,6 +493,7 @@ module.exports = {
           datelogObj.completed_images = datelogObj.completed_images.concat(inputDatelog.completed_images);
         }
         await db.datelogs.updateOne({_id: datelogObj._id}, datelogObj);
+
       }
       else {
         const created = await db.datelogs.create({
@@ -564,6 +577,19 @@ module.exports = {
       if(job.status !== 'in-progress') {
         return res.status(400).json({message: "Invalid input job status!", code: 400});
       }
+
+      if(inputDatelog.material) {
+        for(let material of inputDatelog.material) {
+          const inventoryMaterial = await db.materials.findById(material._id);
+          if(material.quantity > inventoryMaterial.quantity) {
+            return res.status(400).json({message: "Not enough materials", code: 400});
+          }
+        }
+        for(let material of inputDatelog.material) {
+          await db.materials.updateOne({_id: material._id}, {$dec: {quantity: Number(material.quantity)}});
+        }
+      }
+
       const datelogObj = await db.datelogs.findOne({job: jobId, date: inputDatelog.date});
       if(datelogObj) {
         if(inputDatelog.hours) {
