@@ -19,4 +19,5 @@ db.jobs =  require("./jobs.model.js")(mongoose);
 db.invoices = require("./invoices.model.js")(mongoose);
 db.payments = require("./payment.model.js")(mongoose);
 db.datelogs = require("./datelog.model.js")(mongoose);
+db.contractor_payables = require("./contractor_payable.model.js")(mongoose);
 module.exports = db;

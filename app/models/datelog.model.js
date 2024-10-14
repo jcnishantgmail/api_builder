@@ -10,6 +10,7 @@ module.exports = (mongoose) => {
     hours:{type:Number},
     minutes:{type:Number},
     material:{type:Array,default:[]},
+    distance_travelled: {type: Number, default: 0},
     completed_images: {type: Array, default: []},
     createdAt: Date,
     updatedAt: Date

@@ -33,8 +33,8 @@ module.exports = (mongoose) => {
       isDeleted: { type: Boolean, default: false },
       createdAt: Date,
       updatedAt: Date,
-      certificate: {type: Array, default: []}
-
+      certificate: {type: Array, default: []},
+      cis_rate: {type: Number} //CIS rate in percentage. 20 means 20 percent
       // social login keys
       // facebookId: {
       //   type: "string",

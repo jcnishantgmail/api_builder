@@ -474,6 +474,7 @@ module.exports = {
         }
       }
       
+
       const datelogObj = await db.datelogs.findOne({job: jobId, date: inputDatelog.date});
       if(datelogObj) {
         if(inputDatelog.hours) {
@@ -493,12 +494,13 @@ module.exports = {
           datelogObj.completed_images = datelogObj.completed_images.concat(inputDatelog.completed_images);
         }
         await db.datelogs.updateOne({_id: datelogObj._id}, datelogObj);
+        
 
       }
       else {
         const created = await db.datelogs.create({
           job: jobId,
-          contractor: job.client,
+          contractor: job.contractor,
           date: inputDatelog.date,
           hours:inputDatelog.hours,
           minutes:inputDatelog.minutes,
@@ -510,6 +512,29 @@ module.exports = {
           datelogLastUpdated: inputDatelog.date
         });
       }
+      //Add or update contractor payable for a job
+      const payable = await db.contractor_payables.findOne({job: jobId});
+      if(payable) {
+        payable.distance_travelled += inputDatelog.distance_travelled;
+        payable.status = 'job-ongoing';
+        payable.hours += +inputDatelog.hours;
+        payable.minutes += +inputDatelog.minutes;
+        payable.hours = payable.hours + payable.minutes/60;
+        payable.minutes = payable.minutes % 60;
+        await db.contractor_payables.updateOne({_id: payable._id}, payable);
+      } else {
+        const payable = {};
+        payable.job = jobId;
+        payable.contractor = job.contractor;
+        payable.distance_travelled = inputDatelog.distance_travelled;
+        payable.status = 'job-ongoing';
+        payable.hours = +inputDatelog.hours;
+        payable.minutes = +inputDatelog.minutes;
+        payable.hours = payable.hours + payable.minutes/60;
+        payable.minutes = payable.minutes % 60;
+        await db.contractor_payables.create(payable);
+      }
+
       return res.status(200).json({
         success:true
       })
@@ -628,6 +653,58 @@ module.exports = {
       const updateQuery = await combineJobDateLogs(job);
       await db.jobs.updateOne({_id: job._id}, updateQuery);
       console.log(updateQuery);
+
+      const payable = await db.contractor_payables.findOne({job: jobId});
+      const contractor = await db.users.findOne({_id: job.contractor});
+      if(payable) {
+        payable.distance_travelled += inputDatelog.distance_travelled;
+        payable.status = 'pending';
+        payable.hours += +inputDatelog.hours;
+        payable.minutes += +inputDatelog.minutes;
+        payable.hours = payable.hours + payable.minutes/60;
+        payable.minutes = payable.minutes % 60;
+        payable.labour_charges = (+contractor.hourlyRate)*(payable.hours + payable.minutes/60);
+        payable.labour_charges = Math.round(+payable.labour_charges * 100)/100;
+        if(payable.distance_travelled === 0) {
+          payable.travel_expense = 0;
+        } else if(payable.distance_travelled <= 10) {
+          payable.travel_expense = 10;
+        } else if(payable.distance_travelled <= 50) {
+          payable.travel_expense = 50;
+        } else {
+          payable.travel_expense = payable.distance_travelled;
+        }
+        payable.cis_amt = +contractor.cis_rate * payable.labour_charges;
+        payable.travel_expense = Math.round(payable.travel_expense * 100) / 100;
+        payable.net_payable = payable.labour_charges + payable.travel_expense - payable.cis_amt;
+        await db.contractor_payables.updateOne({_id: payable._id}, payable);
+      } else {
+        const payable = {};
+        payable.job = jobId;
+        payable.contractor = job.contractor;
+        payable.distance_travelled = +inputDatelog.distance_travelled;
+        payable.status = 'pending';
+        payable.hours = +inputDatelog.hours;
+        payable.minutes = +inputDatelog.minutes;
+        payable.hours = payable.hours + payable.minutes/60;
+        payable.minutes = payable.minutes % 60;
+        payable.labour_charges = (+contractor.hourlyRate)*(payable.hours + payable.minutes/60);
+        payable.labour_charges = Math.round(+payable.labour_charges * 100)/100;
+        if(payable.distance_travelled === 0) {
+          payable.travel_expense = 0;
+        } else if(payable.distance_travelled <= 10) {
+          payable.travel_expense = 10;
+        } else if(payable.distance_travelled <= 50) {
+          payable.travel_expense = 50;
+        } else {
+          payable.travel_expense = payable.distance_travelled;
+        }
+        payable.cis_amt = +contractor.cis_rate * payable.labour_charges;
+        payable.travel_expense = Math.round(payable.travel_expense * 100) / 100;
+        payable.net_payable = payable.labour_charges + payable.travel_expense - payable.cis_amt;
+        await db.contractor_payables.create(payable);
+      }
+
       return res.status(200).json({message: "Job marked completed successfully", code: 200}); 
     } catch(err) {
       return res.status(500).json({
