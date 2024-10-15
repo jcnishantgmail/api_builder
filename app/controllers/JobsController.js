@@ -308,6 +308,7 @@ module.exports = {
           minutes:"$minutes",
           materialCategory: "$materialCategory",
           datelogLastUpdated: "$datelogLastUpdated",
+          expenseAdded: "$expenseAdded",
           datelog: "$datelog_detail"
         },
       },
