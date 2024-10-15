@@ -12,7 +12,7 @@ async function cisRatesList(req, res) {
 }
 
 async function cisRatesDelete(req, res) {
-    const {cis_rate_id} = req.body;
+    const {cis_rate_id} = req.query;
     if(!cis_rate_id) {
         return res.status(400).json({message: "cis_rate_id required!", code: 400});
     }

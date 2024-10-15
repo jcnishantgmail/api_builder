@@ -18,4 +18,5 @@ router.use("/payment", require("./payments.routes"));
 router.use("/contractorpayables", require("./contractor_payables.routes"));
 router.use("/travelrate", require("./travel_rates.routes"));
 router.use("/cisrate", require("./cis_rates.routes"));
+router.use("/contactus", require("./contactus.routes"));
 module.exports = router;

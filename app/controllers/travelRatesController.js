@@ -12,7 +12,7 @@ async function travelRatesList(req, res) {
 }
 
 async function travelRatesDelete(req, res) {
-    const {travel_rate_id} = req.body;
+    const {travel_rate_id} = req.query;
     if(!travel_rate_id) {
         return res.status(400).json({message: "travel_rate_id required!", code: 400});
     }
