@@ -692,9 +692,9 @@ module.exports = {
         payableDoc.labour_charges = (+hourlyRate)*(date_log[i].hours + date_log[i].minutes/60);
         payableDoc.status = "pending";
         payableDoc.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDoc.labour_charges);
-        payableDoc.travel_expense = computeTravelCost(payableDoc.distance_travelled);
+        payableDoc.travel_expense = await computeTravelCost(payableDoc.distance_travelled);
         payableDoc.other_expense = travel_log[i]?.other_expense;
-        payableDoc.net_payable =  payableDoc.labour_charges - payableDoc.cis_amt + payableDoc.travelCharge;
+        payableDoc.net_payable =  payableDoc.labour_charges - payableDoc.cis_amt + payableDoc.travel_expense;
         await db.contractor_payables.create(payableDoc);
       }
       
