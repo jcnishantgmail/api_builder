@@ -3,9 +3,12 @@ const db = require("../models");
 var mongoose = require("mongoose");
 
 async function contractorPayablesList(req, res) {
-    const {contractorId} = req.body;
+    const {contractorId, jobId} = req.body;
+    if(!contractorId || !jobId) {
+        return res.status(400).json({message: "contractorId or jobId missing!", code: 400});
+    }
     try {
-        const payables = await db.contractor_payables.find({contractor: contractorId});
+        const payables = await db.contractor_payables.find({contractor: contractorId, job: jobId});
         return res.status(200).json({payables: payables, success: true});
     } catch(err) {
         res.status(err.code).json({message: err.message, success: false});

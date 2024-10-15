@@ -4,7 +4,10 @@ var Mongoose = require("mongoose"),
 
 
 module.exports = (mongoose) => {
-    
+    var otherExpenseSchema = mongoose.Schema({
+        amount: {type: Number, default: 0},
+        description: {type: String, default: ''}
+    });
     var schema = mongoose.Schema(
         {
             date: Date,
@@ -15,6 +18,7 @@ module.exports = (mongoose) => {
             cis_amt: {type: Number, default: 0},
             labour_charges: {type: Number, default: 0},
             status: {type: String, enum: ["pending", "successful"]},
+            other_expense: otherExpenseSchema,
             net_payable: {type: Number, default: 0},
             createdAt: Date,
             updatedAt: Date
