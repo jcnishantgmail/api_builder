@@ -41,10 +41,6 @@ async function travelRatesAdd(req, res) {
     const { start, end, amount } = req.body;
     try {
         if((start === 0 || start > 0) && (end === 0 || end > 0) && (amount === 0 || amount > 0)) {
-            const existing = await db.travel_rates.findOne({distance: distance});
-            if(existing) {
-                return res.status(400).json({message: "Already exists", success: false});
-            }
             const created = await db.travel_rates.create({start: start, end: end, amount: amount});
             return res.status(200).json({success: true});
         } else {
