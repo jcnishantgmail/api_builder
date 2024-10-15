@@ -650,13 +650,22 @@ module.exports = {
   },
   daysWorkedList: async (req, res) => {
     const {jobId} = req.query;
-    const job = await db.jobs.findOne({_id: jobId}).populate(datelog);
-    if(!job) {
-      return res.status(400).json({message: "Job does not exist!", code: 400});
-    } else {
-      let {datelog} = job;
-      return res.status(200).json({datelogs: datelog, success: true});
+    if(!jobId) {
+      return res.status(400).json({message: "jobId required!", success: false});
     }
+    try {
+      const job = await db.jobs.findOne({_id: jobId}).populate('datelog');
+      console.log(job);
+      if(!job) {
+        return res.status(400).json({message: "Job does not exist!", code: 400});
+      } else {
+        let {datelog} = job;
+        return res.status(200).json({datelogs: datelog, success: true});
+      }
+    } catch(err) {
+      return res.status(500).json({message: err.message, success: false});
+    }
+    
   },
 
   addExpense: async (req, res) => {
@@ -664,29 +673,36 @@ module.exports = {
     if(!travel_log || !jobId || !contractorId) {
       res.status(400).json({message: "travel_log or jobId or contractorId missing", success: false});
     }
-    const job = await db.jobs.findById(jobId).populate(datelog);
-    const contractor = await db.users.findById(contractorId).populate(cis_rate);
-    const {date_log} = job;
-    let hourlyRate = +contractor.hourlyRate;
-    travel_log.sort((a, b) => new Date(a.date) - new Date(b.date));
-    if(travel_log.length != date_log.length) {
-      return res.status(400).json({message: "invalid travel log", success: false});
-    }
-    for(let i = 0;i<date_log.length; i++) {
-      let payableDoc = {};
-      payableDoc.date = new Date(date_log[i].date);
-      payableDoc.job = jobId;
-      payableDoc.contractor = contractorId;
-      payableDoc.distance_travelled = travel_log[i].distance_travelled;
-      payableDoc.labour_charges = (+hourlyRate)*(datelog[i].hours + datelog[i].minutes/60);
-      payableDoc.status = "pending";
-      payableDoc.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDoc.labour_charges);
-      payableDoc.travel_expense = computeTravelCost(payableDoc.distance_travelled);
-      payableDoc.net_payable =  payableDoc.labour_charges - payableDoc.cis_amt + payableDoc.travelCharge;
-      await db.contractor_payables.create(payableDoc);
+    try {
+      const job = await db.jobs.findById(jobId).populate('datelog');
+      const contractor = await db.users.findById(contractorId).populate('cis_rate');
+      console.log(contractor);
+      const date_log = job.datelog;
+      let hourlyRate = +contractor.hourlyRate;
+      travel_log.sort((a, b) => new Date(a.date) - new Date(b.date));
+      if(travel_log.length != date_log.length) {
+        return res.status(400).json({message: "invalid travel log", success: false});
+      }
+      for(let i = 0;i<date_log.length; i++) {
+        let payableDoc = {};
+        payableDoc.date = new Date(date_log[i].date);
+        payableDoc.job = jobId;
+        payableDoc.contractor = contractorId;
+        payableDoc.distance_travelled = travel_log[i].distance_travelled;
+        payableDoc.labour_charges = (+hourlyRate)*(date_log[i].hours + date_log[i].minutes/60);
+        payableDoc.status = "pending";
+        payableDoc.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDoc.labour_charges);
+        payableDoc.travel_expense = computeTravelCost(payableDoc.distance_travelled);
+        payableDoc.net_payable =  payableDoc.labour_charges - payableDoc.cis_amt + payableDoc.travelCharge;
+        await db.contractor_payables.create(payableDoc);
+      }
+      
+      await db.jobs.updateOne({_id:jobId}, {expenseAdded: true});
+      return res.status(200).json({message: "expense added successfully", code: 200});
+    }catch(err) {
+      return res.status(500).json({message: err.message, success: false});
     }
     
-    await db.jobs.updateOne({_id:jobId}, {expenseAdded: true});
   },
 /*
   completeJob: async (req, res)=>{
