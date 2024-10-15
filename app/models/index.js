@@ -20,4 +20,6 @@ db.invoices = require("./invoices.model.js")(mongoose);
 db.payments = require("./payment.model.js")(mongoose);
 db.datelogs = require("./datelog.model.js")(mongoose);
 db.contractor_payables = require("./contractor_payable.model.js")(mongoose);
+db.cis_rates = require("./cis_rates.model.js")(mongoose);
+db.travel_rates = require("./travel_rates.model.js");
 module.exports = db;
