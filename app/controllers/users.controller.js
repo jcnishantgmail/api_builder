@@ -456,7 +456,7 @@ module.exports = {
 
       const user_data = await Users.findOne({
         _id: id
-      }).populate("role", 'id name');
+      }).populate("role", 'id name').populate('cis_rate');
       let user = Object.assign({}, user_data._doc);
 
       if (user) {
@@ -643,6 +643,20 @@ module.exports = {
             foreignField: "_id",
             as: "skills_detail"
           }
+        },
+        {
+          $lookup: {
+            from: "cis_rates",
+            localField: "cis_rate",
+            foreignField: "_id",
+            as: "cis_rate"
+          }
+        },
+        {
+          $unwind: {
+            path: '$cis_rate',
+            preserveNullAndEmptyArrays: true,
+          },
         },    
         {
           $project: {
@@ -670,7 +684,8 @@ module.exports = {
             previous_experience_desc: "$previous_experience_desc",
             experience_level: "$experience_level",
             skills_detail:"$skills_detail",
-            certificate: "$certificate"
+            certificate: "$certificate",
+            cis_rate: "$cis_rate"
           },
         },
         

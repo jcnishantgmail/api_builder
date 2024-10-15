@@ -34,7 +34,7 @@ module.exports = (mongoose) => {
       createdAt: Date,
       updatedAt: Date,
       certificate: {type: Array, default: []},
-      cis_rate: {type: Number} //CIS rate in percentage. 20 means 20 percent
+      cis_rate: {type: Schema.Types.ObjectId, ref: 'cis_rates'}
       // social login keys
       // facebookId: {
       //   type: "string",
