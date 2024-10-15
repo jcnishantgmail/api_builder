@@ -106,7 +106,7 @@ const adminEmailForNewJob= (options) => {
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Description:</strong>${options.description}</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Location:</strong>${options.location}</p>
                              
-                               <a href="${FRONT_WEB_URL}/job/detail?id=${options.id}" style=" background-color: #1E5DBC ;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">View job</a>                             
+                               <a href="${FRONT_WEB_URL}/job/detail/${options.id}" style=" background-color: #1E5DBC ;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">View job</a>                             
 
 
                              <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
