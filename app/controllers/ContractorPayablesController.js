@@ -3,7 +3,7 @@ const db = require("../models");
 var mongoose = require("mongoose");
 
 async function contractorPayablesList(req, res) {
-    const {contractorId, jobId} = req.body;
+    const {contractorId, jobId} = req.query;
     if(!contractorId || !jobId) {
         return res.status(400).json({message: "contractorId or jobId missing!", code: 400});
     }
