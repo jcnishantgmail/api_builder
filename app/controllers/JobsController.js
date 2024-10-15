@@ -7,11 +7,13 @@ const datelog = require("../models/datelog.model");
 
 async function computeTravelCost(distance_travelled) {
   const travel_rates = await db.travel_rates.find({});
+  console.log(travel_rates);
   for(let i = 0;i<travel_rates.length;i++) {
-    if(distance_travelled >= travel_rates[i].start && distance_travelled <= travel_rates[i].end) {
+    if(+distance_travelled >= +travel_rates[i].start && +distance_travelled <= +travel_rates[i].end) {
       return travel_rates[i].amount;
     }
   }
+  return 0;
 }
 
 module.exports = {
@@ -694,6 +696,7 @@ module.exports = {
         payableDoc.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDoc.labour_charges);
         payableDoc.travel_expense = await computeTravelCost(payableDoc.distance_travelled);
         payableDoc.other_expense = travel_log[i]?.other_expense;
+        console.log(payableDoc.labour_charges, payableDoc.cis_amt, payableDoc.travel_expense);
         payableDoc.net_payable =  payableDoc.labour_charges - payableDoc.cis_amt + payableDoc.travel_expense;
         await db.contractor_payables.create(payableDoc);
       }
