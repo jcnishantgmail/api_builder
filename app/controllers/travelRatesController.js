@@ -38,17 +38,17 @@ async function travelRatesDetail(req, res) {
 }
 
 async function travelRatesAdd(req, res) {
-    const { distance, amount } = req.body;
+    const { start, end, amount } = req.body;
     try {
-        if((distance === 0 || distance > 0) && (amount === 0 || amount > 0)) {
+        if((start === 0 || start > 0) && (end === 0 || end > 0) && (amount === 0 || amount > 0)) {
             const existing = await db.travel_rates.findOne({distance: distance});
             if(existing) {
                 return res.status(400).json({message: "Already exists", success: false});
             }
-            const created = await db.travel_rates.create({distance: distance, amount: amount});
+            const created = await db.travel_rates.create({start: start, end: end, amount: amount});
             return res.status(200).json({success: true});
         } else {
-            return res.status(400).json({success: false, message: "distance or amount inappropriate!"});
+            return res.status(400).json({success: false, message: "start or end or amount inappropriate!"});
         }
     } catch(err) {
         return res.status(500).json({message: err.message, code: 500});

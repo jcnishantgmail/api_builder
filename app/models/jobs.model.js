@@ -33,6 +33,7 @@ module.exports = (mongoose) => {
       datelog: [{
         type: Schema.Types.ObjectId, ref: "datelog"
       }],
+      expenseAdded: {type: Boolean, default: false},
       createdAt: Date,
       updatedAt: Date
     },

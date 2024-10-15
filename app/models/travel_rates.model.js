@@ -4,7 +4,8 @@ var Mongoose = require("mongoose"),
 module.exports = (mongoose) => {
 
   const schema = mongoose.Schema({
-    distance: {type: Number, unique: true},
+    start: {type: Number, unique: true},
+    end: {type: Number, unique: true},
     amount: {type: Number, default: 0}
   });
 
