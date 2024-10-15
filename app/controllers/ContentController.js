@@ -198,6 +198,7 @@ module.exports = {
             isDeleted: "$isDeleted",
             status: "$status",
             addedBy: "$addedBy",
+            image: "$image"
           },
         },
       ];

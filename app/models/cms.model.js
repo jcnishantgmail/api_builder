@@ -13,6 +13,7 @@ module.exports = (mongoose) => {
         isDeleted: { type: Boolean, default: false },
         createdAt: Date,
         updatedAt: Date,
+        image: String
       },
       { timestamps: true }
     );
