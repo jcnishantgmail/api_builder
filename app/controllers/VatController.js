@@ -113,7 +113,7 @@ async function vatAdd(req, res) {
     const { rate } = req.body;
     try {
         if(!isNaN(+rate) && +rate >= 0) {
-            const existing = await db.vats.findOne({rate: +rate});
+            const existing = await db.vats.findOne({rate: +rate, isDeleted: false});
             console.log(existing);
             if(existing) {
                 return res.status(400).json({code: 400, message: "VAT rate already exists!"});
