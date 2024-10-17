@@ -9,7 +9,8 @@ module.exports = (mongoose) => {
     email: {type: String, default: ''},
     message: {type: String, default: ''},
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
+    isDeleted: {type:Boolean, default: false},
   },{timestamps: true});
 
   const contactus = mongoose.model("contactus", schema);

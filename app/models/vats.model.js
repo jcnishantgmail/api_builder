@@ -4,7 +4,7 @@ var Mongoose = require("mongoose"),
 module.exports = (mongoose) => {
 
   const schema = mongoose.Schema({
-    rate: {type: Number, unique: true},
+    rate: {type: Number},
     isDeleted: {type: Boolean, default: false}
   }, 
   {

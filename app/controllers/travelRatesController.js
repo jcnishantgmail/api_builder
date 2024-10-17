@@ -84,10 +84,10 @@ async function travelRatesDelete(req, res) {
         if(!existing) {
             return res.status(404).json({message: "Travel Range to be deleted not found!", code: 404});
         }
-        await db.travel_rates.updateOne({_id: travel_rate_id, isDeleted: true});
+        await db.travel_rates.updateOne({_id: travel_rate_id},{ isDeleted: true});
         return res.status(200).json({message: "travel rate deleted successfully", code: 200});
     } catch(err) {
-        res.status(err.code).json({message: err.message, success: false});
+        return res.status(500).json({message: err.message, code: 500});
     } 
 }
 
