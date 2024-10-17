@@ -17,6 +17,14 @@ async function cisRatesDelete(req, res) {
         return res.status(400).json({message: "cis_rate_id required!", code: 400});
     }
     try {
+        const existing_cis = await db.cis_rates.findById(cis_rate_id);
+        if(!existing_cis) {
+            return res.status(404).json({message: "CIS rate not found!", code: 404});
+        }
+        let usersWithThisCIS = await db.users.find({cis_rate: cis_rate_id});
+        if(usersWithThisCIS && usersWithThisCIS.length>0) {
+            return res.status(403).json({message: "Users with this CIS rate exist. Deletion not allowed!", code: 403});
+        }
         await db.cis_rates.deleteOne({_id: cis_rate_id});
         return res.status(200).json({message: "CIS rate deleted successfully", code: 200});
     } catch(err) {

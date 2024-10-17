@@ -377,12 +377,12 @@ module.exports = {
 
   assignContractor: async (req, res)=>{
     try{
-      let {id , contractor} = req.body
+      let {id , contractor, preferedTime} = req.body
       if(!contractor){
         contractor = null
       }
-     
-      let job = await db.jobs.findById(id).populate("property")
+      
+      let job = await db.jobs.findById(id).populate("property");
       let location = [job.property.address, job.property.address2, job.property.state, job.property.zipCode,job.property.country];
       location = location.join(", ")
       let formattedLocation = '';
@@ -402,7 +402,11 @@ module.exports = {
         formattedLocation += ', ' + job.property.country;
       }
       formattedLocation += ".";
-      await db.jobs.updateOne({_id:id},{contractor:contractor})
+      await db.jobs.updateOne({_id:id},{contractor:contractor});
+      if(job.preferedTime != preferedTime) {
+        await db.jobs.updateOne({_id: id}, {preferedTime});
+        //jobEmails.preferredTimeChangeToClient(job);
+      }
       if(contractor){
         let contratorDetail = await db.users.findById(contractor)
         jobEmails.jobAssignToContractor({
