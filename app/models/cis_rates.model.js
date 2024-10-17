@@ -4,7 +4,10 @@ var Mongoose = require("mongoose"),
 module.exports = (mongoose) => {
 
   const schema = mongoose.Schema({
-    rate: {type: Number, default: 0}
+    rate: {type: Number, default: 0},
+    isDeleted: {type: Boolean, default: false}
+  },{
+    timestamps: true
   });
 
   const cis_rates = mongoose.model("cis_rates", schema);
