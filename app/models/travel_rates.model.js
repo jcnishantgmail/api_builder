@@ -4,9 +4,10 @@ var Mongoose = require("mongoose"),
 module.exports = (mongoose) => {
 
   const schema = mongoose.Schema({
-    start: {type: Number, unique: true},
-    end: {type: Number, unique: true},
-    amount: {type: Number, default: 0}
+    start: {type: Number},
+    end: {type: Number},
+    amount: {type: Number, default: 0},
+    isDeleted: {type: Boolean, default: false}
   });
 
   const travel_rates = mongoose.model("travel_rates", schema);
