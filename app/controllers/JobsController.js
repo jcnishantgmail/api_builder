@@ -378,6 +378,8 @@ module.exports = {
   assignContractor: async (req, res)=>{
     try{
       let {id , contractor, preferedTime} = req.body
+      console.log(preferedTime);
+      console.log(new Date(preferedTime));
       if(!contractor){
         contractor = null
       }
@@ -403,7 +405,10 @@ module.exports = {
       }
       formattedLocation += ".";
       await db.jobs.updateOne({_id:id},{contractor:contractor});
-      if(job.preferedTime != preferedTime) {
+      preferedTime = new Date(preferedTime);
+      console.log(preferedTime);
+      if(job.preferedTime.getTime() != preferedTime.getTime()) {
+        console.log("HAHA");
         await db.jobs.updateOne({_id: id}, {preferedTime});
         //jobEmails.preferredTimeChangeToClient(job);
       }
