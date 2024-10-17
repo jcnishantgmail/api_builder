@@ -18,7 +18,7 @@ module.exports = (mongoose) => {
             cis_amt: {type: Number, default: 0},
             labour_charges: {type: Number, default: 0},
             status: {type: String, enum: ["pending", "successful"]},
-            other_expense: otherExpenseSchema,
+            other_expense: [otherExpenseSchema],
             net_payable: {type: Number, default: 0},
             createdAt: Date,
             updatedAt: Date

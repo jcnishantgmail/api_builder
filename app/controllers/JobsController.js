@@ -697,8 +697,10 @@ module.exports = {
         payableDoc.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDoc.labour_charges);
         payableDoc.travel_expense = await computeTravelCost(payableDoc.distance_travelled);
         payableDoc.other_expense = travel_log[i]?.other_expense;
+        let total_other_expense = 0;
+        total_other_expense = payableDoc.other_expense.reduce((tot, cur)=>tot + (+cur.amount), 0);
         console.log(payableDoc.labour_charges, payableDoc.cis_amt, payableDoc.travel_expense);
-        payableDoc.net_payable =  payableDoc.labour_charges - payableDoc.cis_amt + payableDoc.travel_expense;
+        payableDoc.net_payable =  payableDoc.labour_charges - payableDoc.cis_amt + payableDoc.travel_expense + total_other_expense;
         await db.contractor_payables.create(payableDoc);
       }
       
