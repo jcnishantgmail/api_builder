@@ -23,4 +23,5 @@ db.contractor_payables = require("./contractor_payable.model.js")(mongoose);
 db.cis_rates = require("./cis_rates.model.js")(mongoose);
 db.travel_rates = require("./travel_rates.model.js")(mongoose);
 db.contactus = require("./contactus.model.js")(mongoose);
+db.vats = require("./vats.model.js")(mongoose);
 module.exports = db;
