@@ -541,6 +541,15 @@ module.exports = {
           return res.status(400).json({message:"You are not allowed to update profile of another contractor", code: 400});
         }
       }
+      const oldHourlyRate = user.hourlyRate;
+      if(req.body.hourlyRate) {
+        console.log(typeof req.body.hourlyRate);
+        console.log(typeof oldHourlyRate, oldHourlyRate);
+        if((+req.body.hourlyRate) != (+oldHourlyRate)) {
+          user.hourlyRateLog.push({hourlyRate: +req.body.hourlyRate, rateUpdatedAt: new Date()});
+          req.body.hourlyRateLog  = user.hourlyRateLog;
+        }
+      }
       const updatedUser = await Users.updateOne({
         _id: id
       }, req.body);
@@ -551,6 +560,7 @@ module.exports = {
         message: constants.onBoarding.PROFILE_UPDATED,
       });
     } catch (err) {
+      console.log(err.message);
       return res.status(400).json({
         success: false,
         error: {
@@ -676,6 +686,8 @@ module.exports = {
             role: "$roleDetails.name",
             roleId: "$roleDetails._id",
             loginPortal: "$roleDetails.loginPortal",
+            hourlyRate: "$hourlyRate",
+            hourlyRateLog: "$hourlyRateLog",
             currency: "$currency",
             createdAt: "$createdAt",
             updatedAt: "$updatedAt",
@@ -1058,6 +1070,9 @@ module.exports = {
           data["fullName"] = req.body.firstName + " " + req.body.lastName;
         }
         data.addedBy = req.identity.id ? req.identity.id : req.identity._id
+        if(data.hourlyRate) {
+          data.hourlyRateLog = [{hourlyRate: +req.body.hourlyRate, rateUpdatedAt: new Date()}];
+        }
         // Create a user
         const user = new Users(data);
 
