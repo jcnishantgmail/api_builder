@@ -20,6 +20,7 @@ module.exports = (mongoose) => {
             status: {type: String, enum: ["pending", "successful"]},
             other_expense: [otherExpenseSchema],
             net_payable: {type: Number, default: 0},
+            isDeleted: {type: Boolean, default: false},
             createdAt: Date,
             updatedAt: Date
         },
