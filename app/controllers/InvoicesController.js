@@ -18,7 +18,7 @@ module.exports = {
         });
       }
       let data = req.body
-      let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId))
+      let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId));
       
       if(!job){
         return res.status(404).json({
@@ -27,25 +27,25 @@ module.exports = {
         })
       }
       
-      let invc = await db.invoices.findOne({jobId: req.body.jobId});
+      let invc = await db.invoices.findOne({jobId: req.body.jobId, isDeleted: false});
       if(invc) {
         return res.status(400).json({code:400, message: "Invoice for this job already exists!"});
       }
       data.client = job.client
-      data.property = job.property
+      data.property = job.property;
       req.body.addedBy = req.identity.id;
       data.invoiceNumber = "Invoice-" + (await db.invoices.countDocuments({}) + 1);  //Gernerating invoice number
       if(data.total)
         data.total = (Math.ceil(data.total * 100) / 100); //Rounding up to 2 decimals pound.pennies
       let created = await db.invoices.create(req.body);
-      if (created) {
+      if (created) { 
         await db.jobs.updateOne({_id:req.body.jobId},{isInvoiceGenerated:true});
         const user = await db.users.findById(data.client);
         data.email = user["email"];
         data.fullName = user["fullName"] ? user["fullName"] : user["firstName"];
         data.creationTime = helpers.formatCreatedAt(created.createdAt);
         data.invoiceId = created["_id"];
-        invoiceEmails.sendInvoiceMail(data);
+        //invoiceEmails.sendInvoiceMail(data);
         await db.invoices.updateOne({_id: created["_id"]},{status: "sent"});  //email sent
         console.log(data);
         return res.status(200).json({
@@ -83,10 +83,12 @@ module.exports = {
           },
         });
       }
-      const detail = await db.invoices.findById(id).populate('client').populate('property').populate('jobId')
-
+      const detail = await db.invoices.findOne({_id: id, isDeleted: false}).populate('client').populate('property').populate('jobId').populate('addedBy');
+      if(!detail) {
+        return res.status(404).json({message: "Invoice not found!", code: 404});
+      }
       return res.status(200).json({
-        success: true,
+        code: 200,
         data: detail
       });
     } catch (err) {
@@ -127,13 +129,17 @@ module.exports = {
   delete: async (req, res) => {
     try {
       const id = req.query.id;
-
+      const existing = await db.invoices.findOne({_id:id, isDeleted: false});
+      if(!existing) {
+        return res.status(404).json({message: "Invoice to be deleted doesn't exist!", code: 404});
+      }
       const updatedStatus = await db.invoices.updateOne({
         _id: id
       }, {
         isDeleted: true
       });
       if (updatedStatus) {
+        await db.jobs.updateOne({_id: existing.jobId}, {isInvoiceGenerated: false});
         return res.status(200).json({
           success: true,
           message: constants.INVOICES.DELETED,
@@ -161,6 +167,7 @@ module.exports = {
         addedBy,
         client,
         property,
+        jobId
         
       } = req.query;
       var query = {};
@@ -197,6 +204,9 @@ module.exports = {
       }
       if (property) {
         query.property = mongoose.Types.ObjectId.createFromHexString(property)
+      }
+      if(jobId) {
+        query.jobId = mongoose.Types.ObjectId.createFromHexString(jobId);
       }
 
       const pipeline = [{
@@ -262,14 +272,21 @@ module.exports = {
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
           isDeleted: "$isDeleted",
-          addedBy: "$addedBy",
+          addedBy: "$addedByDetail",
           addedByName: "$addedByDetail.fullName",
           supplier_detail:"$supplier_detail",
           "paidDate":"$paidDate",
           paymentType:"$paymentType",
           invoiceNumber:"$invoiceNumber",
-          total:"$total"
-        },
+          total:"$total",
+          datelog: "$datelog",
+          dueDate: "$dueDate",
+          terms: "$terms",   //probably number of days
+          subtotal: "$subtotal",
+          vat_total: "$vat_total",
+          total: "$total",
+          balance_due: "$balance_due"
+        }
       },
       ];
 

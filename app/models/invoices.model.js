@@ -10,7 +10,6 @@ module.exports = (mongoose) => {
             jobId: { type: Schema.Types.ObjectId, ref: "jobs", },
             client: { type: Schema.Types.ObjectId, ref: "users", },
             addedBy: { type: Schema.Types.ObjectId, ref: "users", },
-            total: { type: Number, default: 0 },
             property: { type: Schema.Types.ObjectId, ref: "properties", },
             sentDate: { type: Date },
             paidDate: { type: Date },
@@ -22,9 +21,16 @@ module.exports = (mongoose) => {
             isDeleted: { type: Boolean, default: false },
             createdAt: Date,
             updatedAt: Date,
+            addedBy: {type: Schema.Types.ObjectId, ref: "users"},
             material: {type: Array},
-            servicefee: { type: Number, default: 0 }
-        },
+            datelog: {type: Array},
+            dueDate: {type: Date},
+            terms: {type: Number},   //probably number of days
+            subtotal: {type: Number, default: 0},
+            vat_total: {type: Number, default: 0},
+            total: {type: Number, default: 0},
+            balance_due: {type: Number, default: 0},
+        }, 
         { timestamps: true }
     );
     const invoices = mongoose.model("invoices", schema);

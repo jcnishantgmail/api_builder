@@ -12,6 +12,7 @@ module.exports = (mongoose) => {
     material:{type:Array,default:[]},
     distance_travelled: {type: Number, default: 0},
     completed_images: {type: Array, default: []},
+    servicefee: {type: Number, default: 0},
     createdAt: Date,
     updatedAt: Date
   });
