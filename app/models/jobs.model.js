@@ -30,10 +30,12 @@ module.exports = (mongoose) => {
       invoiceStatus:{type:String},
       preferedTime:{type:Date},
       datelogLastUpdated: String,
+      invoice: {type: Schema.Types.ObjectId, ref: "invoices"},
       datelog: [{
         type: Schema.Types.ObjectId, ref: "datelog"
       }],
       expenseAdded: {type: Boolean, default: false},
+      isContractorPaid: {type: Boolean, default: false},
       createdAt: Date,
       updatedAt: Date
     },

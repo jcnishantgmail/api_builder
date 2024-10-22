@@ -200,7 +200,7 @@ module.exports = {
          startDate = new Date(startDate).setUTCHours(0,0,0,0)
          endDate = new Date(endDate).setUTCHours(23,59,59,0)
          query.createdAt = {$gte:new Date(startDate),$lte:new Date(endDate)}
-      }
+      } 
 
       const pipeline = [{
         $match: query,
@@ -277,6 +277,20 @@ module.exports = {
         }
       },
       {
+        $lookup: {
+          from: "invoices",
+          localField: "invoice",
+          foreignField: "_id",
+          as: "invoice"
+        }
+      },
+      {
+        $unwind: {
+          path: "$invoice",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: {
           id: "$_id",
           title: "$title",
@@ -309,7 +323,9 @@ module.exports = {
           materialCategory: "$materialCategory",
           datelogLastUpdated: "$datelogLastUpdated",
           expenseAdded: "$expenseAdded",
-          datelog: "$datelog_detail"
+          datelog: "$datelog_detail",
+          isContractorPaid: 1,
+          invoice: 1
         },
       },
       {

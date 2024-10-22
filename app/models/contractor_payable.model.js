@@ -23,7 +23,7 @@ module.exports = (mongoose) => {
             isDeleted: {type: Boolean, default: false},
             createdAt: Date,
             updatedAt: Date
-        },
+        }, 
         { timestamps: true }
     );
     const contractor_payables = mongoose.model("contractor_payables", schema);
