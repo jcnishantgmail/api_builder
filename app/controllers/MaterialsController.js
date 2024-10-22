@@ -257,7 +257,8 @@ module.exports = {
           isDeleted: "$isDeleted",
           addedBy: "$addedBy",
           addedByName: "$addedByDetail.fullName",
-          supplier_detail:"$supplier_detail"
+          supplier_detail:"$supplier_detail",
+          description: "$description"
         },
       },
       ];

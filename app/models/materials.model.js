@@ -16,6 +16,7 @@ module.exports = (mongoose) => {
       status: { type: String, default: "active" },
       addedBy: { type: Schema.Types.ObjectId, ref: "users", },
       isDeleted: { type: Boolean, default: false },
+      description: {type: String, default: ""},//will hold value of name of material by default
       createdAt: Date,
       updatedAt: Date,
 

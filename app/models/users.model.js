@@ -40,7 +40,9 @@ module.exports = (mongoose) => {
       createdAt: Date,
       updatedAt: Date,
       certificate: {type: Array, default: []},
-      cis_rate: {type: Schema.Types.ObjectId, ref: 'cis_rates'}
+      cis_rate: {type: Schema.Types.ObjectId, ref: 'cis_rates'},
+      website: {type: String},
+      vat_number: {type: Number}
       // social login keys
       // facebookId: {
       //   type: "string",

@@ -704,34 +704,47 @@ module.exports = {
     try {
       const job = await db.jobs.findById(jobId).populate('datelog');
       const contractor = await db.users.findById(contractorId).populate('cis_rate');
-      console.log(contractor);
       const date_log = job.datelog;
       let hourlyRate = +contractor.hourlyRate;
       travel_log.sort((a, b) => new Date(a.date) - new Date(b.date));
       if(travel_log.length != date_log.length) {
         return res.status(400).json({message: "invalid travel log", success: false});
       }
-      for(let i = 0;i<date_log.length; i++) {
-        let payableDoc = {};
-        payableDoc.date = new Date(date_log[i].date);
-        payableDoc.job = jobId;
-        payableDoc.contractor = contractorId;
-        payableDoc.distance_travelled = travel_log[i].distance_travelled;
-        payableDoc.labour_charges = (+hourlyRate)*(date_log[i].hours + date_log[i].minutes/60);
-        payableDoc.status = "pending";
-        payableDoc.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDoc.labour_charges);
-        payableDoc.travel_expense = await computeTravelCost(payableDoc.distance_travelled);
-        payableDoc.other_expense = travel_log[i]?.other_expense;
-        let total_other_expense = 0;
-        total_other_expense = payableDoc.other_expense.reduce((tot, cur)=>tot + (+cur.amount), 0);
-        console.log(payableDoc.labour_charges, payableDoc.cis_amt, payableDoc.travel_expense);
-        payableDoc.net_payable =  payableDoc.labour_charges - payableDoc.cis_amt + payableDoc.travel_expense + total_other_expense;
-        await db.contractor_payables.create(payableDoc);
+      let payableDoc = {};
+      payableDoc.job = new mongoose.Types.ObjectId(jobId);
+      payableDoc.contractor = new mongoose.Types.ObjectId(contractorId);
+      payableDoc.datelog = [];
+      payableDoc.total_distance_travelled = 0;
+      payableDoc.total_travel_expense = 0;
+      payableDoc.total_cis_amt = 0;
+      payableDoc.total_labour_charge = 0;
+      payableDoc.total_other_expense = 0;
+      payableDoc.total_net_payable = 0;
+      for(let i = 0;i < date_log.length; i++) {
+        let payableDatelogObj = {};
+        payableDatelogObj.date = new Date(date_log[i].date);
+        payableDatelogObj.distance_travelled = travel_log[i].distance_travelled;
+        payableDatelogObj.labour_charge = (+hourlyRate)*(date_log[i].hours + date_log[i].minutes/60);
+        payableDatelogObj.status = "pending";
+        payableDatelogObj.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDoc.labour_charge);
+        payableDatelogObj.travel_expense = await computeTravelCost(payableDoc.distance_travelled);
+        payableDatelogObj.other_expense = travel_log[i]?.other_expense;
+        let total_other_expense = payableDoc.other_expense.reduce((tot, cur)=>tot + (+cur.amount), 0);
+        payableDatelogObj.day_total_other_expense = total_other_expense;
+        payableDatelogObj.net_payable =  payableDatelogObj.labour_charges - payableDatelogObj.cis_amt + payableDatelogObj.travel_expense + payableDatelogObj.day_total_other_expense;
+        //making overall payable object
+        payableDoc.datelog.push(payableDatelogObj);
+        payableDoc.total_distance_travelled += payableDatelogObj.distance_travelled;
+        payableDoc.total_travel_expense += payableDatelogObj.travel_expense;
+        payableDoc.total_labour_charge += payableDatelogObj.labour_charge;
+        payableDoc.total_cis_amt += payableDatelogObj.cis_amt;
+        payableDoc.total_other_expense += payableDatelogObj.day_total_other_expense;
+        payableDoc.total_net_payable += payableDatelogObj.net_payable;
       }
-      
+      await db.contractor_payables.create(payableDoc);
       await db.jobs.updateOne({_id:jobId}, {expenseAdded: true});
-      return res.status(200).json({message: "expense added successfully", code: 200});
-    }catch(err) {
+      return res.status(200).json({message: "Expense added successfully", code: 200});
+    } catch(err) {
       return res.status(500).json({message: err.message, success: false});
     }
     
