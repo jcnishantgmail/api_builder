@@ -142,7 +142,7 @@ async function contractorPayablesDelete(req, res) {
 }
 
 async function contractorPayablesDetail(req, res) {
-    const { jobId, contractorId} = req.body;
+    const { jobId, contractorId} = req.query;
     if(!jobId || !contractorId) {
         return res.status(400).json({message: "jobId or contractorId missing!", code: 400});
     }
