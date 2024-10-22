@@ -15,9 +15,9 @@ router.use("/job" , require("./jobs.routes"))
 router.use("/contractor", require("./contractorDashboard.routes"))
 router.use("/invoice", require("./invoices.routes"));
 router.use("/payment", require("./payments.routes"));
-router.use("/contractorpayables", require("./contractor_payables.routes"));
-router.use("/travelrate", require("./travel_rates.routes"));
-router.use("/cisrate", require("./cis_rates.routes"));
-router.use("/contactus", require("./contactus.routes"));
+router.use("/contractorpayables", require("./contractorPayables.routes"));
+router.use("/travelrate", require("./travelRates.routes"));
+router.use("/cisrate", require("./cisRates.routes"));
+router.use("/contactus", require("./contactUs.routes"));
 router.use("/vat", require("./vats.routes"));
 module.exports = router;
