@@ -720,18 +720,20 @@ module.exports = {
       payableDoc.total_labour_charge = 0;
       payableDoc.total_other_expense = 0;
       payableDoc.total_net_payable = 0;
+
       for(let i = 0;i < date_log.length; i++) {
         let payableDatelogObj = {};
         payableDatelogObj.date = new Date(date_log[i].date);
-        payableDatelogObj.distance_travelled = travel_log[i].distance_travelled;
+        payableDatelogObj.distance_travelled = +(travel_log[i].distance_travelled);
         payableDatelogObj.labour_charge = (+hourlyRate)*(date_log[i].hours + date_log[i].minutes/60);
         payableDatelogObj.status = "pending";
-        payableDatelogObj.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDoc.labour_charge);
-        payableDatelogObj.travel_expense = await computeTravelCost(payableDoc.distance_travelled);
+        payableDatelogObj.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDatelogObj.labour_charge);
+        payableDatelogObj.travel_expense = await computeTravelCost(payableDatelogObj.distance_travelled);
         payableDatelogObj.other_expense = travel_log[i]?.other_expense;
-        let total_other_expense = payableDoc.other_expense.reduce((tot, cur)=>tot + (+cur.amount), 0);
+        let total_other_expense = payableDatelogObj.other_expense.reduce((tot, cur)=>tot + (+cur.amount), 0);
         payableDatelogObj.day_total_other_expense = total_other_expense;
-        payableDatelogObj.net_payable =  payableDatelogObj.labour_charges - payableDatelogObj.cis_amt + payableDatelogObj.travel_expense + payableDatelogObj.day_total_other_expense;
+        payableDatelogObj.net_payable =  payableDatelogObj.labour_charge - payableDatelogObj.cis_amt + payableDatelogObj.travel_expense + payableDatelogObj.day_total_other_expense;
+        console.log(payableDatelogObj);
         //making overall payable object
         payableDoc.datelog.push(payableDatelogObj);
         payableDoc.total_distance_travelled += payableDatelogObj.distance_travelled;
