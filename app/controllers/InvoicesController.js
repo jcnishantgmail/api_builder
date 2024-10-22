@@ -45,6 +45,7 @@ module.exports = {
         data.fullName = user["fullName"] ? user["fullName"] : user["firstName"];
         data.creationTime = helpers.formatCreatedAt(created.createdAt);
         data.invoiceId = created["_id"];
+        await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id});
         //invoiceEmails.sendInvoiceMail(data);
         await db.invoices.updateOne({_id: created["_id"]},{status: "sent"});  //email sent
         console.log(data);
