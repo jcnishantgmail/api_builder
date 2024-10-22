@@ -93,7 +93,7 @@ module.exports={
     sendInvoiceMail
 }
 
-
+/*
 let message = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1061,3 +1061,4 @@ color: black;">£${options.balance_due}</h3>
 </body>
 </html>`;
 
+*/

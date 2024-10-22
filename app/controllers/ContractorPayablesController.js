@@ -5,7 +5,7 @@ var mongoose = require("mongoose");
 
 async function contractorPayablesList(req, res) {
     try {
-        const { page, count, sortBy, contractor, job, startDate, endDate} = req.query;
+        const { page, count, sortBy, contractorId, jobId, startDate, endDate} = req.query;
         let query = {};
 
         query.isDeleted = false;
@@ -18,13 +18,13 @@ async function contractorPayablesList(req, res) {
           sortquery.createdAt = -1;
         }
   
-        
-        if(contractor) {
-            query.contractor = contractor;
+        console.log(contractorId, jobId);      
+        if(contractorId) {
+            query.contractor = new mongoose.Types.ObjectId(contractorId);
         }
 
-        if(job) {
-            query.job = job;
+        if(jobId) {
+            query.job = new mongoose.Types.ObjectId(jobId);
         }
 
         if(startDate && endDate){
@@ -79,7 +79,7 @@ async function contractorPayablesList(req, res) {
         ];
   
         const total = await db.contractor_payables.aggregate([...pipeline]);
-  
+        console.log(total);
         if (page && count) {
           const skipNo = (Number(page) - 1) * Number(count);
   
