@@ -5,6 +5,12 @@ module.exports = (mongoose) => {
     hourlyRate: {type: Number, default: 0},
     rateUpdatedAt: Date
   });
+
+  var bankAccountDetailsSchema = mongoose.Schema({
+    account_holder_name: String,
+    account_number: String,
+    sort_code: String
+  });
   
   var schema = mongoose.Schema(
     {
@@ -42,7 +48,8 @@ module.exports = (mongoose) => {
       certificate: {type: Array, default: []},
       cis_rate: {type: Schema.Types.ObjectId, ref: 'cis_rates'},
       website: {type: String},
-      vat_number: {type: Number}
+      vat_number: {type: String},
+      bank_account_details: bankAccountDetailsSchema
       // social login keys
       // facebookId: {
       //   type: "string",

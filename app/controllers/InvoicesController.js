@@ -34,21 +34,25 @@ module.exports = {
       data.client = job.client
       data.property = job.property;
       req.body.addedBy = req.identity.id;
-      data.invoiceNumber = "Invoice-" + (await db.invoices.countDocuments({}) + 1);  //Gernerating invoice number
+      data.invoiceNumber = (await db.invoices.countDocuments({}) + 1);  //Gernerating invoice number
       if(data.total)
         data.total = (Math.ceil(data.total * 100) / 100); //Rounding up to 2 decimals pound.pennies
       let created = await db.invoices.create(req.body);
       if (created) { 
         await db.jobs.updateOne({_id:req.body.jobId},{isInvoiceGenerated:true});
         const user = await db.users.findById(data.client);
+        console.log(typeof data.subtotal);
+        data.client = user;
         data.email = user["email"];
         data.fullName = user["fullName"] ? user["fullName"] : user["firstName"];
         data.creationTime = helpers.formatCreatedAt(created.createdAt);
         data.invoiceId = created["_id"];
+        data.addedBy = await db.users.findOne({_id: req.body.addedBy});
         await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id});
-        //invoiceEmails.sendInvoiceMail(data);
+        invoiceEmails.sendInvoiceMail(data);
         await db.invoices.updateOne({_id: created["_id"]},{status: "sent"});  //email sent
         console.log(data);
+        console.log(created);
         return res.status(200).json({
           success: true,
           message: constants.INVOICES.CREATED
