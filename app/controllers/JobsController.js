@@ -522,17 +522,17 @@ module.exports = {
         return res.status(400).json({message: "Invalid input job status!", code: 400});
       }
 
-      if(inputDatelog.material) {
-        for(let material of inputDatelog.material) {
-          const inventoryMaterial = await db.materials.findById(material._id);
-          if(material.quantity > inventoryMaterial.quantity) {
-            return res.status(400).json({message: "Not enough materials", code: 400});
-          }
-        }
-        for(let material of inputDatelog.material) {
-          await db.materials.updateOne({_id: material._id}, {$dec: {quantity: Number(material.quantity)}});
-        }
-      }
+      // if(inputDatelog.material) {
+      //   for(let material of inputDatelog.material) {
+      //     const inventoryMaterial = await db.materials.findById(material._id);
+      //     if(material.quantity > inventoryMaterial.quantity) {
+      //       return res.status(400).json({message: "Not enough materials", code: 400});
+      //     }
+      //   }
+      //   for(let material of inputDatelog.material) {
+      //     await db.materials.updateOne({_id: material._id}, {$dec: {quantity: Number(material.quantity)}});
+      //   }
+      // }
       
 
       const datelogObj = await db.datelogs.findOne({job: jobId, date: inputDatelog.date});
@@ -641,17 +641,17 @@ module.exports = {
         return res.status(400).json({message: "Invalid input job status!", code: 400});
       }
 
-      if(inputDatelog.material) {
-        for(let material of inputDatelog.material) {
-          const inventoryMaterial = await db.materials.findById(material._id);
-          if(material.quantity > inventoryMaterial.quantity) {
-            return res.status(400).json({message: "Not enough materials", code: 400});
-          }
-        }
-        for(let material of inputDatelog.material) {
-          await db.materials.updateOne({_id: material._id}, {$dec: {quantity: Number(material.quantity)}});
-        }
-      }
+      // if(inputDatelog.material) {
+      //   for(let material of inputDatelog.material) {
+      //     const inventoryMaterial = await db.materials.findById(material._id);
+      //     if(material.quantity > inventoryMaterial.quantity) {
+      //       return res.status(400).json({message: "Not enough materials", code: 400});
+      //     }
+      //   }
+      //   for(let material of inputDatelog.material) {
+      //     await db.materials.updateOne({_id: material._id}, {$dec: {quantity: Number(material.quantity)}});
+      //   }
+      // }
 
       const datelogObj = await db.datelogs.findOne({job: jobId, date: inputDatelog.date});
       if(datelogObj) {
