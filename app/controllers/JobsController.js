@@ -400,7 +400,7 @@ module.exports = {
         contractor = null
       }
       
-      let job = await db.jobs.findById(id).populate("property");
+      let job = await db.jobs.findById(id).populate("property").populate('client');
       let location = [job.property.address, job.property.address2, job.property.state, job.property.zipCode,job.property.country];
       location = location.join(", ")
       let formattedLocation = '';
@@ -423,10 +423,11 @@ module.exports = {
       await db.jobs.updateOne({_id:id},{contractor:contractor});
       preferedTime = new Date(preferedTime);
       console.log(preferedTime);
+      let timeChanged = false;
       if(job.preferedTime.getTime() != preferedTime.getTime()) {
-        console.log("HAHA");
         await db.jobs.updateOne({_id: id}, {preferedTime});
         //jobEmails.preferredTimeChangeToClient(job);
+        timeChanged = true;
       }
       if(contractor){
         let contratorDetail = await db.users.findById(contractor)
@@ -437,7 +438,28 @@ module.exports = {
           fullName:contratorDetail.fullName,
           location:formattedLocation,
           id:job._id
-        })
+        });
+        let clientDetail = job.client;
+        let ampm = preferedTime.getUTCHours()>12? 'PM': 'AM';
+        let hours = preferedTime.getUTCHours()%12;
+        if(hours === 0) {
+          hours = '12';
+        } else if(hours < 10) {
+          hours = '0' + hours;
+        }
+        let minutes = preferedTime.getUTCMinutes();
+        minutes = minutes < 10? '0'+ minutes: minutes;
+        let preferredStartTime = hours + ":" + minutes + " " + ampm;
+        jobEmails.assignContractorClientEmail({
+          jobTitle: job.title,
+          description: job.description,
+          email: clientDetail.email,
+          clientFullName: clientDetail.fullName,
+          contractorFullName: contratorDetail.fullName,
+          location: formattedLocation,
+          timeChanged: true,
+          preferredStartTime
+        });
       }
       
       return res.status(200).json({

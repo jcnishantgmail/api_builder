@@ -138,7 +138,7 @@ const sendInvoiceMail = (options) => {
                                 margin-bottom: 7px;">VAT Registration No.: ${options.addedBy.vat_number}</p>
                             </td>
                             <td colspan="4" style="width: 100%;text-align: right;">
-                                <img src="https://cdn-icons-png.freepik.com/512/1343/1343669.png?ga=GA1.1.1780752125.1727170430" alt="" style="width: 300px">
+                                <img src="https://cdn-icons-png.freepik.com/512/1343/1343669.png?ga=GA1.1.1780752125.1727170430" alt="" style="width: 200px">
                             </td>
                         </tr>
                         <tr style="vertical-align: unset;">
