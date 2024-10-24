@@ -62,11 +62,11 @@ async function contractorPayablesList(req, res) {
               from: "users",
               localField: "contractor",
               foreignField: "_id",
-              as: "contractor",
+              as: "contractor_detail",
             },
           },
           {
-            $unwind: { path: "$contractor", preserveNullAndEmptyArrays: true },
+            $unwind: { path: "$contractor_detail", preserveNullAndEmptyArrays: true },
           },
           {
             $lookup: {
@@ -84,6 +84,7 @@ async function contractorPayablesList(req, res) {
               id: "$_id",
               job: 1,
               contractor: 1,
+              contractor_detail:1,
               distance_travelled: 1,
               total_distance_travelled: 1,
               total_travel_expense: 1,
@@ -147,7 +148,7 @@ async function contractorPayablesDetail(req, res) {
         return res.status(400).json({message: "jobId or contractorId missing!", code: 400});
     }
     try {
-        const payable = await db.contractor_payables.findOne({job: jobId, contractor: contractorId, isDeleted: false});
+        const payable = await db.contractor_payables.findOne({job: jobId, contractor: contractorId, isDeleted: false}).populate('job').populate('contractor');
         if(!payable) {
           return res.status(404).json({message: "Payable to contractor not found!", code: 404});
         }
