@@ -359,13 +359,17 @@ module.exports = {
 
   resendInvoice: async (req ,res) => {
     try {
-      const { invoiceId } = req.body;
-      const invoice = await db.invoices.findById(invoiceId);
-      const user = await db.users.findById(invoice["client"]);
-      invoice.fullName = user.fullName? user.fullName: user.firstName;
-      invoice.email = user.email;
-      invoice.creationTime = helpers.formatCreatedAt(invoice.createdAt);
-      invoiceEmails.sendInvoiceMail(invoice);
+      const data = req.body;
+      data.addedBy = req.identity.id;
+      /******** *********/
+      let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId)).populate('contractor').populate('invoice');
+      data.client = await db.users.findOne({_id: job.client});
+      data.email = data.client.email;
+      data.property = job.property;
+      data.addedBy = await db.users.findOne({_id: data.addedBy});
+      data.invoiceNumber = job.invoice.invoiceNumber;
+      /******** *********/
+      invoiceEmails.sendInvoiceMail(data);
       res.status(200).json({
         success: true,
         message: constants.INVOICES.SENT_AGAIN

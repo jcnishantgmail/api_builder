@@ -33,7 +33,7 @@ module.exports = (mongoose) => {
       pinCode: String,
       verification_otp: String,
       loginPortal:String,
-      hourlyRate:{type:Number,defult:0},
+      hourlyRate:{type:Number,default:0},
       hourlyRateLog: [hourlyRateLogSchema],
       skills:[{ type: Schema.Types.ObjectId, ref: 'skills' }],
       addedType:{ type: String, enum: ["self", "admin"],  default: "self" },
