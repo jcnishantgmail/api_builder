@@ -299,6 +299,14 @@ module.exports = {
       },
       ];
 
+      let grouped = await db.invoices.aggregate([...pipeline, {
+        $group: {
+          _id: null,
+          vat_total_overall: {$sum: "$vat_total"}
+        }
+      }]);
+      console.log(grouped);
+
       const total = await db.invoices.aggregate([...pipeline]);
 
       if (page && count) {
@@ -316,6 +324,7 @@ module.exports = {
       return res.status(200).json({
         success: true,
         data: result,
+        vat_total_overall: grouped[0].vat_total_overall,
         total: total.length,
       });
     } catch (err) {
