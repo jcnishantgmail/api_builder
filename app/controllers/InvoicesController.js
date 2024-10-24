@@ -88,7 +88,11 @@ module.exports = {
           },
         });
       }
-      const detail = await db.invoices.findOne({_id: id, isDeleted: false}).populate('client').populate('property').populate('jobId').populate('addedBy');
+      const detail = await db.invoices.findOne({_id: id, isDeleted: false}).populate('client').populate('property').populate('addedBy').populate('property').populate({
+        path: 'jobId',
+        populate: {
+          path: "contractor"
+        }});
       if(!detail) {
         return res.status(404).json({message: "Invoice not found!", code: 404});
       }

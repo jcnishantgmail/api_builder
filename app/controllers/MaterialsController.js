@@ -70,7 +70,7 @@ module.exports = {
           },
         });
       }
-      const detail = await db.materials.findById(id).populate('category').populate('supplier').populate('supplier')
+      const detail = await db.materials.findById(id).populate('category').populate('supplier').populate('supplier').populate('vat');
 
       return res.status(200).json({
         success: true,
@@ -238,6 +238,20 @@ module.exports = {
           path: "$category_detail",
           preserveNullAndEmptyArrays: true,
         },
+      },
+      {
+        $lookup: {
+          from: "vats",
+          localField: "vat",
+          foreignField: "_id",
+          as: "vat"
+        }
+      },
+      {
+        $unwind: {
+          path: "$vat",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $project: {

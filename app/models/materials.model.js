@@ -9,7 +9,7 @@ module.exports = (mongoose) => {
       quantity:{type:Number,default:0},
       unit:{type:String},
       vat_included:{ type: Boolean, default: false },
-      vat:{type:Number,default:0},
+      vat:{type:Schema.Types.ObjectId,ref: "vats"},
       category:{ type: Schema.Types.ObjectId, ref: "categories", },
       standAlone: { type: Boolean, default: true },     
       supplier: { type: Schema.Types.ObjectId, ref: "users", },
