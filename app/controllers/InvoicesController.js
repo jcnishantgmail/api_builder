@@ -299,7 +299,8 @@ module.exports = {
           total:"$total",
           datelog: "$datelog",
           dueDate: "$dueDate",
-          terms: "$terms",   //probably number of days
+          terms: "$terms",   //probably number of days,
+          labour_charge: "$labour_charge",
           subtotal: "$subtotal",
           vat_total: "$vat_total",
           total: "$total",
