@@ -167,7 +167,7 @@ module.exports = {
 
   listing: async (req, res) => {
     try {
-      const {
+      let {
         search,
         page,
         count,
@@ -176,8 +176,9 @@ module.exports = {
         addedBy,
         client,
         property,
-        jobId
-        
+        jobId,
+        startDate,
+        endDate
       } = req.query;
       var query = {};
 
@@ -217,7 +218,15 @@ module.exports = {
       if(jobId) {
         query.jobId = mongoose.Types.ObjectId.createFromHexString(jobId);
       }
-
+      if(startDate && endDate) {
+        console.log(startDate, typeof startDate, endDate, typeof endDate);
+        startDate = new Date(startDate)//.setUTCHours(0, 0, 0, 0);
+        console.log(startDate);
+        endDate = new Date(endDate).setUTCHours(23, 59, 59, 0);
+        console.log(startDate, endDate);
+        query.createdAt = {$gte:new Date(startDate),$lte:new Date(endDate)}
+      }
+      console.log(query);
       const pipeline = [{
         $match: query,
       },
@@ -294,7 +303,8 @@ module.exports = {
           subtotal: "$subtotal",
           vat_total: "$vat_total",
           total: "$total",
-          balance_due: "$balance_due"
+          balance_due: "$balance_due",
+          createdAt: "$createdAt"
         }
       },
       ];
@@ -324,7 +334,7 @@ module.exports = {
       return res.status(200).json({
         success: true,
         data: result,
-        vat_total_overall: grouped[0].vat_total_overall,
+        vat_total_overall: grouped[0]?grouped[0].vat_total_overall:0,
         total: total.length,
       });
     } catch (err) {
