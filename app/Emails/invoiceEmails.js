@@ -233,25 +233,28 @@ const sendInvoiceMail = (options) => {
                         padding: 8px 2px;text-align:left;">AMOUNT</th>
                     </tr>`;
                     for(let datelog of options.datelog) {
-                        message += `<tr style="vertical-align: unset;">
-                            <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300;width: 86px;padding: 0px 2px;">
-                                <p style="margin-top: 7px;">${datelog.date}</p></td>
-                            <td style="font-size: 14px;
-                            font-family: sans-serif;
-                            font-weight: 700;padding: 0px 2px;">Services</td>
-                            <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300; width: 142px;padding: 0px 2px;">${datelog.service_description}</td>
-                            <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300;text-align: left;padding: 0px 2px;">${datelog.service_quantity}</td>
-                            <td style="font-size: 14px;font-family: sans-serif;font-weight: 300; 
-                            font-size: 14px;font-family: sans-serif;
-                            font-weight: 300;padding: 0px 2px;">${datelog.VAT_rate_labour_visible}</td>
-                            <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300;padding: 0px 2px;">${datelog.labour_charge}</td>
-                            <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300; text-align: end;padding: 0px 2px;">${datelog.labour_charge}</td>
-                        </tr>`;
+                        if(datelog.labour_charge) {
+                            message += `<tr style="vertical-align: unset;">
+                                <td style="font-size: 14px;font-family: sans-serif;
+                                font-weight: 300;width: 86px;padding: 0px 2px;">
+                                    <p style="margin-top: 7px;">${datelog.date}</p></td>
+                                <td style="font-size: 14px;
+                                font-family: sans-serif;
+                                font-weight: 700;padding: 0px 2px;">Services</td>
+                                <td style="font-size: 14px;font-family: sans-serif;
+                                font-weight: 300; width: 142px;padding: 0px 2px;">${datelog.service_description}</td>
+                                <td style="font-size: 14px;font-family: sans-serif;
+                                font-weight: 300;text-align: left;padding: 0px 2px;">${datelog.service_quantity}</td>
+                                <td style="font-size: 14px;font-family: sans-serif;font-weight: 300; 
+                                font-size: 14px;font-family: sans-serif;
+                                font-weight: 300;padding: 0px 2px;">${datelog.VAT_rate_labour_visible}</td>
+                                <td style="font-size: 14px;font-family: sans-serif;
+                                font-weight: 300;padding: 0px 2px;">${datelog.labour_charge}</td>
+                                <td style="font-size: 14px;font-family: sans-serif;
+                                font-weight: 300; text-align: end;padding: 0px 2px;">${datelog.labour_charge}</td>
+                            </tr>`;
+                        }
+                        
                         for(let material of datelog.material) {
                             message += ` <tr style="vertical-align: unset;">
                             <td style="font-size: 14px;font-family: sans-serif;
