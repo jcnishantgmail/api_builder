@@ -1,4 +1,5 @@
 "use strict";
+const { populate } = require("dotenv");
 const db = require("../models");
 var mongoose = require("mongoose");
 
@@ -80,6 +81,28 @@ async function contractorPayablesList(req, res) {
             $unwind: {path: "$job.invoice", preserveNullAndEmptyArrays: true}
           },
           {
+            $lookup: {
+              from: "users",
+              localField: "job.invoice.client",
+              foreignField: "_id",
+              as: "job.invoice.client"
+            }
+          },
+          {
+            $unwind: {path: "$job.invoice.client", preserveNullAndEmptyArrays: true}
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "job.invoice.addedBy",
+              foreignField: "_id",
+              as: "job.invoice.addedBy"
+            }
+          },
+          {
+            $unwind: {path: "$job.invoice.addedBy", preserveNullAndEmptyArrays: true}
+          },
+          {
             $project: {
               id: "$_id",
               job: 1,
@@ -148,7 +171,30 @@ async function contractorPayablesDetail(req, res) {
         return res.status(400).json({message: "jobId or contractorId missing!", code: 400});
     }
     try {
-        const payable = await db.contractor_payables.findOne({job: jobId, contractor: contractorId, isDeleted: false}).populate('job').populate('contractor');
+        const payable = await db.contractor_payables.findOne({job: jobId, contractor: contractorId, isDeleted: false})
+        .populate({
+            path: 'job',
+            model: "jobs",
+            populate: [
+              {
+                path: "contractor",
+                model: "users"
+              },
+              {
+                path: "invoice",
+                populate: [
+                  {
+                    path: "client",
+                    model: "users"
+                  },
+                  {
+                    path: "addedBy",
+                    model: "users"
+                  }
+                ]
+              }
+            ]
+          }).populate('contractor');
         if(!payable) {
           return res.status(404).json({message: "Payable to contractor not found!", code: 404});
         }
