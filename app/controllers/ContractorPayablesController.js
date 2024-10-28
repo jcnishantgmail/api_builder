@@ -138,6 +138,7 @@ async function contractorPayablesList(req, res) {
               total_net_payable: 1,
               status: 1,
               datelog: 1,
+              isPaid: 1,
               isDeleted: 1,
               createdAt: 1,
               updatedAt: 1
