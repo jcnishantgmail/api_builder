@@ -233,7 +233,7 @@ const sendInvoiceMail = (options) => {
                         padding: 8px 2px;text-align:left;">AMOUNT</th>
                     </tr>`;
                     for(let datelog of options.datelog) {
-                        if(datelog.labour_charge) {
+                        if(Number(datelog.labour_charge)) {
                             message += `<tr style="vertical-align: unset;">
                                 <td style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;width: 86px;padding: 0px 2px;">
