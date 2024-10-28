@@ -2,6 +2,27 @@
 const { populate } = require("dotenv");
 const db = require("../models");
 var mongoose = require("mongoose");
+const { success } = require("../services/Response");
+
+
+async function contractorPayablesUpdate(req, res) {
+  try {
+    const { id } = req.body;
+    console.log(req.body);
+    if(!id) {
+      return res.status(400).json({success: false, message: "id missing!"});
+    }
+    const payable = await db.contractor_payables.findOne({_id: id});
+    if(!payable) {
+      return res.status(404).json({success: false, message: "Payable not found!"});
+    }
+    const updated = await db.contractor_payables.updateOne({_id:id}, req.body);
+    return res.status(200).json({success: true, message: "Payable updated!"});
+  } catch(err) {
+    console.log(err);
+    return res.status(500).json({success: false, message: err.message});
+  }
+}
 
 
 async function contractorPayablesList(req, res) {
@@ -204,6 +225,7 @@ async function contractorPayablesDetail(req, res) {
     }
 }
 module.exports = {
+    contractorPayablesUpdate,
     contractorPayablesList,
     contractorPayablesDelete,
     contractorPayablesDetail

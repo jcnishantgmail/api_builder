@@ -31,6 +31,7 @@ module.exports = (mongoose) => {
             status: {type: String, enum: ["pending", "successful"]},
             isDeleted: {type: Boolean, default: false},
             datelog: [datelogSchema],
+            isPaid: {type: Boolean, default: false},
             createdAt: Date,
             updatedAt: Date
         }, 

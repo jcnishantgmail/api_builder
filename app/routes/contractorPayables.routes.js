@@ -3,7 +3,7 @@ var router = require("express").Router();
 router.get("/detail",contractor_payables.contractorPayablesDetail)
 router.delete("/delete",contractor_payables.contractorPayablesDelete)
 router.get("/listing",contractor_payables.contractorPayablesList)
-
+router.put('/update', contractor_payables.contractorPayablesUpdate);
 
 
 
