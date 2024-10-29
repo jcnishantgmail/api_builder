@@ -74,6 +74,7 @@ module.exports = {
       let created = await db.invoices.create(req.body);
       if (created) { 
         await db.jobs.updateOne({_id:req.body.jobId},{isInvoiceGenerated:true});
+        await db.invoices.updateOne({_id: created._id}, {dueDate: created.dueDate.setUTCHours(23, 59, 59, 0)});
         const user = await db.users.findById(data.client);
         console.log(typeof data.subtotal);
         data.client = user;
