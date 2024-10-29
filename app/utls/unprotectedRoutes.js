@@ -25,6 +25,7 @@ module.exports = {
     "/cms/detail",
     "/payment/webhook",
     "/contactus/add",
-    "/invoice/payInvoice"
+    "/invoice/payInvoice",
+    "/payment/checkPaymentStatus"
   ],
 };

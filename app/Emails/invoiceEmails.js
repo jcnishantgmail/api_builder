@@ -181,21 +181,21 @@ const sendInvoiceMail = (options) => {
                                 message += (options.client.address 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.client.address}</p>`
+                                    margin-bottom: 7px;">${options.property.address}</p>`
                                     : ``
                                 );
 
                                 message += (options.client.city
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.client.city}</p>`
+                                    margin-bottom: 7px;">${options.property.city}</p>`
                                     : ``
                                 );
 
                                 message += (options.client.zipCode 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.client.zipCode}</p>`
+                                    margin-bottom: 7px;">${options.property.zipCode}</p>`
                                     : ``
                                 ); 
                     
@@ -398,9 +398,9 @@ const sendInvoiceMail = (options) => {
                                         font-weight: 300;margin-top: 3px;
                                         margin-bottom: 3px;">As reference please use Invoice Number</p>
                                         <p style="font-size: 13px;font-family: sans-serif;font-weight: 300;
-                                        margin-top: 3px;margin-bottom: 3px;">Account details ${options.bank_account_details.account_holder_name}</p>
+                                        margin-top: 3px;margin-bottom: 3px;">Account details ${options.addedBy.bank_account_details.account_holder_name}</p>
                                         <p style="font-size: 13px;font-family: sans-serif;font-weight: 300;
-                                        margin-top: 3px;margin-bottom: 3px;">Account No ${options.bank_account_details.account_number} Sort Code ${options.bank_account_details.sort_code}</p>
+                                        margin-top: 3px;margin-bottom: 3px;">Account No ${options.addedBy.bank_account_details.account_number} Sort Code ${options.addedBy.bank_account_details.sort_code}</p>
                                         <p style="font-size: 13px;font-family: sans-serif;
                                         font-weight: 300;margin-top: 3px;margin-bottom: 3px;">Polite Note The customer shall be liable to pay 
                                             all costs, fees, disbursements and charges including legal fees and costs reasonably incurred 
