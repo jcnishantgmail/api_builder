@@ -2,7 +2,41 @@ const db = require("../models");
 const constants = require("../utls/constants");
 const invoiceEmails = require("../Emails/invoiceEmails")
 const helpers = require('../utls/helper');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 var mongoose = require("mongoose");
+
+
+
+const checkoutSessionHandler = async function (invoice) {
+  let amount = invoice["total"];
+  amount = amount * 100;
+  amount = Math.ceil(amount); //just to convert to integer - number of pennies
+  const session = await stripe.checkout.sessions.create({
+  line_items: [
+      {
+          price_data: {
+              currency: 'gbp',    
+              product_data: {
+                  name: "Invoice #" + invoice["invoiceNumber"],
+              },
+              unit_amount: amount
+          },
+          quantity: 1
+      }
+  ],
+  payment_intent_data: {
+      metadata: {
+          jobId: invoice.jobId.toString(),
+          invoiceId: invoice._id.toString()
+      }
+  },
+  mode: 'payment',
+  success_url: process.env.FRONT_WEB_URL,
+  cancel_url: process.env.FRONT_WEB_URL
+  });    
+  return session;
+};
+
 
 module.exports = {
 
@@ -18,7 +52,7 @@ module.exports = {
         });
       }
       let data = req.body
-      let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId));
+      let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId)).populate('property');
       
       if(!job){
         return res.status(404).json({
@@ -382,11 +416,12 @@ module.exports = {
       const data = req.body;
       data.addedBy = req.identity.id;
       /******** *********/
-      let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId)).populate('contractor').populate('invoice');
+      let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId)).populate('contractor').populate('invoice').populate('property');
       data.client = await db.users.findOne({_id: job.client});
       data.email = data.client.email;
       data.property = job.property;
       data.addedBy = await db.users.findOne({_id: data.addedBy});
+      data.invoiceId = job.invoice._id;
       data.invoiceNumber = job.invoice.invoiceNumber;
       /******** *********/
       invoiceEmails.sendInvoiceMail(data);
@@ -399,6 +434,28 @@ module.exports = {
       res.status(500).json({code: 500,message: "" + err});
     }
     
+  },
+
+  payInvoice: async function(req, res) {
+    try {
+      const {invoiceId} = req.body;
+      console.log(invoiceId);
+      const invoice = await db.invoices.findOne({_id: invoiceId});
+      if(!invoice) {
+        return res.status(404).json({message: "Invoice does not exist!", code: 404});
+      }
+      if(invoice.status === 'Completed') {
+        return res.status(400).json({message: "The invoice has already been paid!", code: 400});
+      }
+      if(invoice.status === 'sent' && new Date() < invoice.dueDate) {
+        const session = await checkoutSessionHandler(invoice);
+        return res.redirect(session.url);
+      } else {
+        return res.redirect(process.env.FRONT_WEB_URL);
+      }
+    } catch(err) {
+      return res.status(500).json({message: err.message, code: 500});
+    }
   }
 
 };

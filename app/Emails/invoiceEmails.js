@@ -370,6 +370,17 @@ const sendInvoiceMail = (options) => {
                                             of the value of the claim.</p>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <form action="http://localhost:6084/invoice/payInvoice" method="POST" style="display: inline-block; margin-top: 20px;">
+                                            <input type="hidden" name="invoiceId" value="${options.invoiceId}">
+                                            <button type="submit" style="padding: 10px 20px; font-size: 14px; font-family: sans-serif; color: white; background-color: #00b0ff; text-decoration: none; border: none; border-radius: 4px; cursor: pointer;">
+                                                Pay Now
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+
                             </tbody>
                         </table>
 

@@ -48,7 +48,7 @@ const updateDatabaseWithPaymentStatus = async function(paymentIntent, status) {
             paymentType: "stripe",
             status: "successful"});
         console.log(paymentDoc);
-        const updatedInvoice = await db.invoices.updateOne({ _id:mongoose.Types.ObjectId.createFromHexString(paymentIntent.metadata.invoiceId)}, {paidDate: paymentDoc["createdAt"], paymentType: 'stripe', paymentId: paymentDoc["id"], status: "completed" });
+        const updatedInvoice = await db.invoices.updateOne({ _id:mongoose.Types.ObjectId.createFromHexString(paymentIntent.metadata.invoiceId)}, {paidDate: paymentDoc["createdAt"], paymentType: 'stripe', paymentId: paymentDoc["_id"], status: "completed" });
         const updatedJob = await db.jobs.updateOne({_id: mongoose.Types.ObjectId.createFromHexString(paymentIntent.metadata.jobId)}, {invoiceStatus: "Completed"});
         return paymentIntent;
     }
