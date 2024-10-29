@@ -110,12 +110,36 @@ const webhookHandler = async function (req, res) {
     }
 };
 
+async function checkPaymentStatus(req, res) {
+    const {sessionId} = req.body;
+    try {
+       
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        
+        const paymentIntentId = session.payment_intent;
+        if (paymentIntentId) {
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+            if (paymentIntent && paymentIntent.last_payment_error) {
+                return res.status(200).json({status: "Failed", message: paymentIntent.last_payment_error.message});
+            } else {
+                return res.status(200).json({status: paymentIntent.status, message: ""});
+            }
+        } else {
+            return res.status(404).json({message: 'No PaymentIntent associated with this session.'});
+        }
+    } catch (error) {
+        return res.status(500).json({message: err.message});
+    }
+}
+
 module.exports = {
 
-    checkoutSessionHandler,
     updateDatabaseWithPaymentStatus,
     handlePaymentIntentSucceeded,
     handlePaymentIntentPaymentFailed,
-    webhookHandler
+    webhookHandler,
+    checkPaymentStatus
 
 }
