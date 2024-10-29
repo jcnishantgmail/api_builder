@@ -112,50 +112,50 @@ const sendInvoiceMail = (options) => {
                     <tbody>
                         <tr>
                             <td colspan="4">`;
-                            message += (options.admin_info?.company
+                            message += (options.addedBy?.company
                                         ?`<h3 style="font-size: 14px;margin: 0px;
                                         font-family: sans-serif;font-weight: 800;
-                                        color: black;">${options.admin_info.company}</h3>`
+                                        color: black;">${options.addedBy.company}</h3>`
                                         :'');
-                            message += (options.admin_info?.address
+                            message += (options.addedBy?.address
                                         ? `<p style="font-size: 14px;
                                         font-family: sans-serif;font-weight: 300;
-                                        margin-top: 7px;margin-bottom: 7px;">${options.admin_info.address}</p>`
+                                        margin-top: 7px;margin-bottom: 7px;">${options.addedBy.address}</p>`
                                         : '');    
-                            message += (options.admin_info?.city
+                            message += (options.addedBy?.city
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                         font-weight: 300;margin-top: 7px;
-                                        margin-bottom: 7px;">${options.admin_info.city}</p>`    
+                                        margin-bottom: 7px;">${options.addedBy.city}</p>`    
                                         : '');
                             
-                            message += (options.admin_info?.state
+                            message += (options.addedBy?.state
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                             font-weight: 300;margin-top: 7px;
-                                            margin-bottom: 7px;">${options.admin_info.state}</p>`    
+                                            margin-bottom: 7px;">${options.addedBy.state}</p>`    
                                         : '');
                                         
-                            message += (options.admin_info?.zipCode
+                            message += (options.addedBy?.zipCode
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                             font-weight: 300;margin-top: 7px;
-                                            margin-bottom: 7px;">${options.admin_info.zipCode}</p>`    
+                                            margin-bottom: 7px;">${options.addedBy.zipCode}</p>`    
                                         : '');
 
-                            message += (options.admin_info?.email
+                            message += (options.addedBy?.email
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                             font-weight: 300;margin-top: 7px;
-                                            margin-bottom: 7px;">${options.admin_info.email}</p>`    
+                                            margin-bottom: 7px;">${options.addedBy.email}</p>`    
                                         : '');
 
-                            message += (options.admin_info?.website
+                            message += (options.addedBy?.website
                                         ? `<p style="font-size: 14px;
                                             font-family: sans-serif;font-weight: 300;margin-top: 7px;
-                                            margin-bottom: 7px;">${options.admin_info.website}</p>`    
+                                            margin-bottom: 7px;">${options.addedBy.website}</p>`    
                                         : '');
 
-                            message += (options.admin_info?.city
+                            message += (options.addedBy?.city
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                         font-weight: 300;margin-top: 7px;
-                                        margin-bottom: 7px;">VAT Registration No.: ${options.admin_info.vat_number}</p>`    
+                                        margin-bottom: 7px;">VAT Registration No.: ${options.addedBy.vat_number}</p>`    
                                         : '');
 
                             
@@ -168,34 +168,34 @@ const sendInvoiceMail = (options) => {
                                 <h3 style="font-size: 14px;margin: 0px;
                                 font-family: sans-serif;font-weight: 800;
                                 color: black;margin-top: 30px;">INVOICE TO</h3>`
-                                message += (options.client_info.fullName? `<p style="font-size: 14px;font-family: sans-serif;
+                                message += (options.client.fullName? `<p style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.client_info.fullName}</p>`: ``);
-                                message += (options.client_info.company 
+                                margin-bottom: 7px;">${options.client.fullName}</p>`: ``);
+                                message += (options.client.company 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.client_info.company}</p>`
+                                    margin-bottom: 7px;">${options.client.company}</p>`
                                     : ``
                                 );
 
-                                message += (options.client_info.address 
+                                message += (options.client.address 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.client_info.address}</p>`
+                                    margin-bottom: 7px;">${options.client.address}</p>`
                                     : ``
                                 );
 
-                                message += (options.client_info.city
+                                message += (options.client.city
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.client_info.city}</p>`
+                                    margin-bottom: 7px;">${options.client.city}</p>`
                                     : ``
                                 );
 
-                                message += (options.client_info.zipCode 
+                                message += (options.client.zipCode 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.client_info.zipCode}</p>`
+                                    margin-bottom: 7px;">${options.client.zipCode}</p>`
                                     : ``
                                 ); 
                     
