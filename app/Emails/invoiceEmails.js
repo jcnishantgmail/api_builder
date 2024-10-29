@@ -111,33 +111,55 @@ const sendInvoiceMail = (options) => {
                 <table>
                     <tbody>
                         <tr>
-                            <td colspan="4">
-                                <h3 style="font-size: 14px;margin: 0px;
-                                font-family: sans-serif;font-weight: 800;
-                                color: black;">${options.addedBy.company}</h3>
-                                <p style="font-size: 14px;
-                                font-family: sans-serif;font-weight: 300;
-                                margin-top: 7px;margin-bottom: 7px;">${options.addedBy.address}</p>
-                                <p style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.addedBy.city}</p>
-                                <p style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.addedBy.state}</p>
-                                <p style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.addedBy.zipCode}</p>
-                                <p style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.addedBy.email}</p>
-                                <p style="font-size: 14px;
-                                font-family: sans-serif;font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.addedBy.website}</p>
-                                <p style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">VAT Registration No.: ${options.addedBy.vat_number}</p>
-                            </td>
-                            <td colspan="4" style="width: 100%;text-align: right;">
+                            <td colspan="4">`;
+                            message += (options.admin_info?.company
+                                        ?`<h3 style="font-size: 14px;margin: 0px;
+                                        font-family: sans-serif;font-weight: 800;
+                                        color: black;">${options.admin_info.company}</h3>`
+                                        :'');
+                            message += (options.admin_info?.address
+                                        ? `<p style="font-size: 14px;
+                                        font-family: sans-serif;font-weight: 300;
+                                        margin-top: 7px;margin-bottom: 7px;">${options.admin_info.address}</p>`
+                                        : '');    
+                            message += (options.admin_info?.city
+                                        ? `<p style="font-size: 14px;font-family: sans-serif;
+                                        font-weight: 300;margin-top: 7px;
+                                        margin-bottom: 7px;">${options.admin_info.city}</p>`    
+                                        : '');
+                            
+                            message += (options.admin_info?.state
+                                        ? `<p style="font-size: 14px;font-family: sans-serif;
+                                            font-weight: 300;margin-top: 7px;
+                                            margin-bottom: 7px;">${options.admin_info.state}</p>`    
+                                        : '');
+                                        
+                            message += (options.admin_info?.zipCode
+                                        ? `<p style="font-size: 14px;font-family: sans-serif;
+                                            font-weight: 300;margin-top: 7px;
+                                            margin-bottom: 7px;">${options.admin_info.zipCode}</p>`    
+                                        : '');
+
+                            message += (options.admin_info?.email
+                                        ? `<p style="font-size: 14px;font-family: sans-serif;
+                                            font-weight: 300;margin-top: 7px;
+                                            margin-bottom: 7px;">${options.admin_info.email}</p>`    
+                                        : '');
+
+                            message += (options.admin_info?.website
+                                        ? `<p style="font-size: 14px;
+                                            font-family: sans-serif;font-weight: 300;margin-top: 7px;
+                                            margin-bottom: 7px;">${options.admin_info.website}</p>`    
+                                        : '');
+
+                            message += (options.admin_info?.city
+                                        ? `<p style="font-size: 14px;font-family: sans-serif;
+                                        font-weight: 300;margin-top: 7px;
+                                        margin-bottom: 7px;">VAT Registration No.: ${options.admin_info.vat_number}</p>`    
+                                        : '');
+
+                            
+                        message +=    `</td><td colspan="4" style="width: 100%;text-align: right;">
                                 <img src="https://cdn-icons-png.freepik.com/512/1343/1343669.png?ga=GA1.1.1780752125.1727170430" alt="" style="width: 200px">
                             </td>
                         </tr>
@@ -146,47 +168,40 @@ const sendInvoiceMail = (options) => {
                                 <h3 style="font-size: 14px;margin: 0px;
                                 font-family: sans-serif;font-weight: 800;
                                 color: black;margin-top: 30px;">INVOICE TO</h3>`
-                                message += (options.client.fullName? `<p style="font-size: 14px;font-family: sans-serif;
+                                message += (options.client_info.fullName? `<p style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.client.fullName}</p>`: ``);
-                                message += (options.client.company 
+                                margin-bottom: 7px;">${options.client_info.fullName}</p>`: ``);
+                                message += (options.client_info.company 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.client.company}</p>`
+                                    margin-bottom: 7px;">${options.client_info.company}</p>`
                                     : ``
                                 );
 
-                                message += (options.property.address 
+                                message += (options.client_info.address 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.property.address}</p>`
+                                    margin-bottom: 7px;">${options.client_info.address}</p>`
                                     : ``
                                 );
 
-                                message += (options.property.address2
+                                message += (options.client_info.city
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.property.address2}</p>`
+                                    margin-bottom: 7px;">${options.client_info.city}</p>`
                                     : ``
                                 );
 
-                                message += (options.property.city
+                                message += (options.client_info.zipCode 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.property.city}</p>`
-                                    : ``
-                                );
-
-                                message += (options.property.zipCode 
-                                    ? `<p style="font-size: 14px;font-family: sans-serif;
-                                    font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.property.zipCode}</p></td>`
+                                    margin-bottom: 7px;">${options.client_info.zipCode}</p>`
                                     : ``
                                 ); 
                     
                             
                         
-                            message += `<td style="width: 80%; text-align: end;" >
+                            message += `</td><td style="width: 80%; text-align: end;" >
                                 <h3 style="font-size: 14px;margin-top: 7px;margin-bottom: 7px;
                                 margin-right: 6px;font-family: sans-serif;font-weight: 800;
                                 color: black;text-align: right;">INVOICE NO.</h3>
@@ -383,9 +398,9 @@ const sendInvoiceMail = (options) => {
                                         font-weight: 300;margin-top: 3px;
                                         margin-bottom: 3px;">As reference please use Invoice Number</p>
                                         <p style="font-size: 13px;font-family: sans-serif;font-weight: 300;
-                                        margin-top: 3px;margin-bottom: 3px;">Account details ${options.addedBy.bank_account_details.account_holder_name}</p>
+                                        margin-top: 3px;margin-bottom: 3px;">Account details ${options.bank_account_details.account_holder_name}</p>
                                         <p style="font-size: 13px;font-family: sans-serif;font-weight: 300;
-                                        margin-top: 3px;margin-bottom: 3px;">Account No ${options.addedBy.bank_account_details.account_number} Sort Code ${options.addedBy.bank_account_details.sort_code}</p>
+                                        margin-top: 3px;margin-bottom: 3px;">Account No ${options.bank_account_details.account_number} Sort Code ${options.bank_account_details.sort_code}</p>
                                         <p style="font-size: 13px;font-family: sans-serif;
                                         font-weight: 300;margin-top: 3px;margin-bottom: 3px;">Polite Note The customer shall be liable to pay 
                                             all costs, fees, disbursements and charges including legal fees and costs reasonably incurred 

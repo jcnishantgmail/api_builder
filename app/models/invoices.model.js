@@ -31,7 +31,10 @@ module.exports = (mongoose) => {
             total: {type: Number, default: 0},
             balance_due: {type: Number, default: 0},
             vat_summary: Array,
-            labour_charge: {type: Number, default: 0}
+            labour_charge: {type: Number, default: 0},
+            admin_info: Object,
+            client_info: Object,
+            bank_account_details: Object
         }, 
         { timestamps: true }
     );
