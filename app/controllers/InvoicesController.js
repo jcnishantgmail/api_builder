@@ -32,7 +32,7 @@ const checkoutSessionHandler = async function (invoice) {
   },
   mode: 'payment',
   success_url: process.env.FRONT_WEB_URL+`/job/detail/${invoice.jobId}`,
-  cancel_url: process.env.FRONT_WEB_URL + `/cancelPayment?sessionId=${session.id}`
+  cancel_url: process.env.FRONT_WEB_URL + `/cancelPayment`
   });    
   return session;
 };
