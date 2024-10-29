@@ -207,10 +207,10 @@ const sendInvoiceMail = (options) => {
                                 margin-bottom: 7px;">${options.invoiceNumber}</p>
                                 <p style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.sentDate}</p>
+                                margin-bottom: 7px;">${options.sentDate.toString().split("T")[0]}</p>
                                 <p style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.dueDate}</p>
+                                margin-bottom: 7px;">${options.dueDate.toString().split("T")[0]}</p>
                                 <p style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;margin-top: 7px;
                                 margin-bottom: 7px;">${options.terms} days</p>
