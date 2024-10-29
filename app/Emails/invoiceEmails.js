@@ -285,7 +285,7 @@ const sendInvoiceMail = (options) => {
                             <td style="font-size: 14px;font-family: sans-serif;
                             font-weight: 700;padding: 0px 2px;">Materials</td>
                             <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300;width: 142px;padding: 0px 2px;">${material.description}</td>
+                            font-weight: 300;width: 142px;padding: 0px 2px;">${material.material_description}</td>
                             <td style="font-size: 14px;font-family: sans-serif;
                             font-weight: 300;text-align: left;padding: 0px 2px;">${material.quantity}</td>
                             <td style="font-size: 14px;font-family: sans-serif;font-weight: 300; font-size: 14px;
