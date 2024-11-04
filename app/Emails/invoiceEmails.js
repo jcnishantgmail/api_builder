@@ -112,50 +112,50 @@ const sendInvoiceMail = (options) => {
                     <tbody>
                         <tr>
                             <td colspan="4">`;
-                            message += (options.addedBy?.company
+                            message += (options.admin_info?.company
                                         ?`<h3 style="font-size: 14px;margin: 0px;
                                         font-family: sans-serif;font-weight: 800;
-                                        color: black;">${options.addedBy.company}</h3>`
+                                        color: black;">${options.admin_info.company}</h3>`
                                         :'');
-                            message += (options.addedBy?.address
+                            message += (options.admin_info?.address
                                         ? `<p style="font-size: 14px;
                                         font-family: sans-serif;font-weight: 300;
                                         margin-top: 7px;margin-bottom: 7px;">${options.addedBy.address}</p>`
                                         : '');    
-                            message += (options.addedBy?.city
+                            message += (options.admin_info?.city
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                         font-weight: 300;margin-top: 7px;
-                                        margin-bottom: 7px;">${options.addedBy.city}</p>`    
+                                        margin-bottom: 7px;">${options.admin_info.city}</p>`    
                                         : '');
                             
-                            message += (options.addedBy?.state
+                            message += (options.admin_info?.state
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                             font-weight: 300;margin-top: 7px;
-                                            margin-bottom: 7px;">${options.addedBy.state}</p>`    
+                                            margin-bottom: 7px;">${options.admin_info.state}</p>`    
                                         : '');
                                         
-                            message += (options.addedBy?.zipCode
+                            message += (options.admin_info?.zipCode
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                             font-weight: 300;margin-top: 7px;
-                                            margin-bottom: 7px;">${options.addedBy.zipCode}</p>`    
+                                            margin-bottom: 7px;">${options.admin_info.zipCode}</p>`    
                                         : '');
 
-                            message += (options.addedBy?.email
+                            message += (options.admin_info?.email
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                             font-weight: 300;margin-top: 7px;
-                                            margin-bottom: 7px;">${options.addedBy.email}</p>`    
+                                            margin-bottom: 7px;">${options.admin_info.email}</p>`    
                                         : '');
 
-                            message += (options.addedBy?.website
+                            message += (options.admin_info?.website
                                         ? `<p style="font-size: 14px;
                                             font-family: sans-serif;font-weight: 300;margin-top: 7px;
-                                            margin-bottom: 7px;">${options.addedBy.website}</p>`    
+                                            margin-bottom: 7px;">${options.admin_info.website}</p>`    
                                         : '');
 
-                            message += (options.addedBy?.city
+                            message += (options.admin_info?.vat_number
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
                                         font-weight: 300;margin-top: 7px;
-                                        margin-bottom: 7px;">VAT Registration No.: ${options.addedBy.vat_number}</p>`    
+                                        margin-bottom: 7px;">VAT Registration No.: ${options.admin_info.vat_number}</p>`    
                                         : '');
 
                             
@@ -168,34 +168,34 @@ const sendInvoiceMail = (options) => {
                                 <h3 style="font-size: 14px;margin: 0px;
                                 font-family: sans-serif;font-weight: 800;
                                 color: black;margin-top: 30px;">INVOICE TO</h3>`
-                                message += (options.client.fullName? `<p style="font-size: 14px;font-family: sans-serif;
+                                message += (options.client_info.fullName? `<p style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${options.client.fullName}</p>`: ``);
-                                message += (options.client.company 
+                                margin-bottom: 7px;">${options.client_info.fullName}</p>`: ``);
+                                message += (options.client_info.company 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.client.company}</p>`
+                                    margin-bottom: 7px;">${options.client_info.company}</p>`
                                     : ``
                                 );
 
-                                message += (options.client.address 
+                                message += (options.client_info.address 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.property.address}</p>`
+                                    margin-bottom: 7px;">${options.client_info.address}</p>`
                                     : ``
                                 );
 
-                                message += (options.client.city
+                                message += (options.client_info.city
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.property.city}</p>`
+                                    margin-bottom: 7px;">${options.client_info.city}</p>`
                                     : ``
                                 );
 
-                                message += (options.client.zipCode 
+                                message += (options.client_info.zipCode 
                                     ? `<p style="font-size: 14px;font-family: sans-serif;
                                     font-weight: 300;margin-top: 7px;
-                                    margin-bottom: 7px;">${options.property.zipCode}</p>`
+                                    margin-bottom: 7px;">${options.client_info.zipCode}</p>`
                                     : ``
                                 ); 
                     
@@ -398,9 +398,9 @@ const sendInvoiceMail = (options) => {
                                         font-weight: 300;margin-top: 3px;
                                         margin-bottom: 3px;">As reference please use Invoice Number</p>
                                         <p style="font-size: 13px;font-family: sans-serif;font-weight: 300;
-                                        margin-top: 3px;margin-bottom: 3px;">Account details ${options.addedBy.bank_account_details.account_holder_name}</p>
+                                        margin-top: 3px;margin-bottom: 3px;">Account details ${options.bank_account_details.account_holder_name}</p>
                                         <p style="font-size: 13px;font-family: sans-serif;font-weight: 300;
-                                        margin-top: 3px;margin-bottom: 3px;">Account No ${options.addedBy.bank_account_details.account_number} Sort Code ${options.addedBy.bank_account_details.sort_code}</p>
+                                        margin-top: 3px;margin-bottom: 3px;">Account No ${options.bank_account_details.account_number} Sort Code ${options.bank_account_details.sort_code}</p>
                                         <p style="font-size: 13px;font-family: sans-serif;
                                         font-weight: 300;margin-top: 3px;margin-bottom: 3px;">Polite Note The customer shall be liable to pay 
                                             all costs, fees, disbursements and charges including legal fees and costs reasonably incurred 
