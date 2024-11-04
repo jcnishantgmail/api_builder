@@ -312,6 +312,7 @@ module.exports = {
           client:"$client",
           clientDetail: 1,
           isInvoiceGenerated:"$isInvoiceGenerated",
+          clientDetail: "$client_detail",
           clientName:"$client_detail.fullName",
           clientEmail:"$client_detail.email",
           contractor:"$contractor",
