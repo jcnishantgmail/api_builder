@@ -4,38 +4,7 @@ const invoiceEmails = require("../Emails/invoiceEmails")
 const helpers = require('../utls/helper');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 var mongoose = require("mongoose");
-
-
-
-const checkoutSessionHandler = async function (invoice) {
-  let amount = invoice["total"];
-  amount = amount * 100;
-  amount = Math.ceil(amount); //just to convert to integer - number of pennies
-  const session = await stripe.checkout.sessions.create({
-  line_items: [
-      {
-          price_data: {
-              currency: 'gbp',    
-              product_data: {
-                  name: "Invoice #" + invoice["invoiceNumber"],
-              },
-              unit_amount: amount
-          },
-          quantity: 1
-      }
-  ],
-  payment_intent_data: {
-      metadata: {
-          jobId: invoice.jobId.toString(),
-          invoiceId: invoice._id.toString()
-      }
-  },
-  mode: 'payment',
-  success_url: process.env.FRONT_WEB_URL+`/job/detail/${invoice.jobId}`,
-  cancel_url: process.env.FRONT_WEB_URL + `/cancelPayment`
-  });    
-  return session;
-};
+const { checkoutSessionHandler } = require('../services/paymentService');
 
 
 module.exports = {
@@ -73,8 +42,6 @@ module.exports = {
         data.total = (Math.ceil(data.total * 100) / 100); //Rounding up to 2 decimals pound.pennies
       let created = await db.invoices.create(req.body);
       if (created) { 
-        await db.jobs.updateOne({_id:req.body.jobId},{isInvoiceGenerated:true});
-        await db.invoices.updateOne({_id: created._id}, {dueDate: created.dueDate.setUTCHours(23, 59, 59, 0)});
         const user = await db.users.findById(data.client);
         console.log(typeof data.subtotal);
         data.client = user;
@@ -83,11 +50,9 @@ module.exports = {
         data.creationTime = helpers.formatCreatedAt(created.createdAt);
         data.invoiceId = created["_id"];
         data.addedBy = await db.users.findOne({_id: req.body.addedBy});
-        await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id});
+        await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id, isInvoiceGenerated: true});
         invoiceEmails.sendInvoiceMail(data);
-        await db.invoices.updateOne({_id: created["_id"]},{status: "sent"});  //email sent
-        console.log(data);
-        console.log(created);
+        await db.invoices.updateOne({_id: created["_id"]},{status: "sent", dueDate: created.dueDate.setUTCHours(23, 59, 59, 0)});  //email sent
         return res.status(200).json({
           success: true,
           message: constants.INVOICES.CREATED
@@ -415,13 +380,12 @@ module.exports = {
   resendInvoice: async (req ,res) => {
     try {
       const data = req.body;
-      data.addedBy = req.identity.id;
+      data.addedBy = req.identity;
       /******** *********/
       let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId)).populate('contractor').populate('invoice').populate('property');
       data.client = await db.users.findOne({_id: job.client});
       data.email = data.client.email;
       data.property = job.property;
-      data.addedBy = await db.users.findOne({_id: data.addedBy});
       data.invoiceId = job.invoice._id;
       data.invoiceNumber = job.invoice.invoiceNumber;
       /******** *********/
