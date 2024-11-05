@@ -22,7 +22,8 @@ module.exports.checkoutSessionHandler = async function (invoice) {
   payment_intent_data: {
       metadata: {
           jobId: invoice.jobId.toString(),
-          invoiceId: invoice._id.toString()
+          invoiceId: invoice._id.toString(),
+          user: invoice.client.toString()
       }
   },
   mode: 'payment',

@@ -12,6 +12,7 @@ module.exports = (mongoose) => {
             invoiceId: { type: Schema.Types.ObjectId, ref: "invoices"},
             paymentType: { type: String, enum: ["manual", "stripe"], default: "manual" },
             status: { type: String, enum: ["successful", "failed", "cancelled", "NA"], default: "pending" },
+            user: {type: Schema.Types.ObjectId, ref: "users"},
             createdAt: Date,
             updatedAt: Date,
             isDeleted: {type: Boolean, default: false}

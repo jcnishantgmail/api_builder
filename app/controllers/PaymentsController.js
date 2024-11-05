@@ -7,6 +7,7 @@ const updateDatabaseWithPaymentStatus = async function(paymentIntent, status) {
     if(status === 'succeeded') {
         const paymentDoc = await db.payments.create({id: paymentIntent.id, invoiceId: paymentIntent.metadata.invoiceId,
             job: paymentIntent.metadata.jobId,
+            user: paymentIntent.metadata.user,
             paymentType: "stripe",
             status: "successful"});
         console.log(paymentDoc);
@@ -17,6 +18,7 @@ const updateDatabaseWithPaymentStatus = async function(paymentIntent, status) {
     else if(status === 'failed') {
         const paymentDoc = await db.payments.create({id: paymentIntent.id, invoiceId: paymentIntent.metadata.invoiceId,
             job: paymentIntent.metadata.jobId,
+            user: paymentIntent.metadata.user,
             paymentType: "stripe",
             status: "failed"});
         
@@ -98,7 +100,7 @@ async function checkPaymentStatus(req, res) {
 
 
 async function paymentListing(req, res) {
-    let { search, page, count, jobId, invoiceId, startDate, endDate, paymentType, status, sortBy} = req.query;
+    let { search, page, count, jobId, invoiceId, startDate, endDate, paymentType, status, user, sortBy} = req.query;
     try {
         //No search funcionality for now
         let query = {};
@@ -123,6 +125,11 @@ async function paymentListing(req, res) {
         if(status) {
             query.status = status;
         }
+
+        if(user) {
+            query.user = user;
+        }
+
         query.isDeleted = false;
         let field, sortType;
         if(sortBy) {
@@ -168,12 +175,27 @@ async function paymentListing(req, res) {
                 }
             },
             {
+                $lookup: {
+                    from: "users",
+                    localField: "user",
+                    foreignField: "_id",
+                    as: "user"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$user",
+                    preserveNullAndEmptyArrays: true,
+                }
+            },
+            {
                 $project: {
                     _id: 1,
                     id: 1,
                     job: "$job",
                     invoiceId: 1,
                     paymentType: 1,
+                    user: "$user",
                     status: 1,
                     createdAt: 1,
                     amount: "$invoice.total"
