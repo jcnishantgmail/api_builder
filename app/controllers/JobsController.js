@@ -6,10 +6,10 @@ const { combineJobDateLogs}  = require("../utls/helper");
 const datelog = require("../models/datelog.model");
 
 async function computeTravelCost(distance_travelled) {
-  const travel_rates = await db.travel_rates.find({});
+  const travel_rates = await db.travel_rates.find({isDeleted: false});
   console.log(travel_rates);
   for(let i = 0;i<travel_rates.length;i++) {
-    if(+distance_travelled >= +travel_rates[i].start && +distance_travelled <= +travel_rates[i].end) {
+    if(+distance_travelled >= +(travel_rates[i].start) && +distance_travelled < +(travel_rates[i].end)) {
       return travel_rates[i].amount;
     }
   }

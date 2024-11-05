@@ -11,7 +11,7 @@ module.exports = (mongoose) => {
             job: { type: Schema.Types.ObjectId, ref: "jobs"},
             invoiceId: { type: Schema.Types.ObjectId, ref: "invoices"},
             paymentType: { type: String, enum: ["manual", "stripe"], default: "manual" },
-            status: { type: String, enum: ["successful", "failed", "cancelled", "NA"], default: "pending" },
+            status: { type: String, enum: ["successful", "failed", "cancelled", "NA"] },
             user: {type: Schema.Types.ObjectId, ref: "users"},
             createdAt: Date,
             updatedAt: Date,
