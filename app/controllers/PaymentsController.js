@@ -174,13 +174,13 @@ async function paymentListing(req, res) {
 
 async function paymentDelete(req, res) {
     try {
-        const id = req.query.id;
-        const existing = await db.payments.findOne({_id:id, isDeleted: false});
+        const paymentId = req.query.paymentId;
+        const existing = await db.payments.findOne({_id:paymentId, isDeleted: false});
         if(!existing) {
           return res.status(404).json({message: "Payment to be deleted doesn't exist!", success: false});
         }
         const updatedStatus = await db.payments.updateOne({
-          _id: id,
+          _id: paymentId,
           isDeleted: false
         }, {
           isDeleted: true
