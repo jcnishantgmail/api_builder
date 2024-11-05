@@ -405,7 +405,7 @@ module.exports = {
     try {
       const {invoiceId} = req.body;
       console.log(invoiceId);
-      const invoice = await db.invoices.findOne({_id: invoiceId});
+      const invoice = await db.invoices.findOne({_id: invoiceId}).populate('jobId');
       if(!invoice) {
         return res.status(404).json({message: "Invoice does not exist!", code: 404});
       }
