@@ -140,14 +140,43 @@ async function paymentListing(req, res) {
                 $match: query
             },
             {
+                $lookup: {
+                    from: "jobs",
+                    localField: "job",
+                    foreignField: "_id",
+                    as: "job"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$job",
+                    preserveNullAndEmptyArrays: true,
+                }
+            },
+            {
+                $lookup: {
+                    from: "invoices",
+                    localField: "invoiceId",
+                    foreignField: "_id",
+                    as: "invoice"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$invoice",
+                    preserveNullAndEmptyArrays: true,
+                }
+            },
+            {
                 $project: {
                     _id: 1,
                     id: 1,
-                    job: 1,
+                    job: "$job",
                     invoiceId: 1,
                     paymentType: 1,
                     status: 1,
-                    createdAt: 1
+                    createdAt: 1,
+                    amount: "$invoice.total"
                 }
             },
             {

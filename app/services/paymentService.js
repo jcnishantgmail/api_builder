@@ -1,5 +1,6 @@
 const db = require('../models');
 var mongoose = require('mongoose');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 module.exports.checkoutSessionHandler = async function (invoice) {
   let amount = invoice["total"];
