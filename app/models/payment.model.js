@@ -13,7 +13,8 @@ module.exports = (mongoose) => {
             paymentType: { type: String, enum: ["manual", "stripe"], default: "manual" },
             status: { type: String, enum: ["successful", "failed", "cancelled", "NA"], default: "pending" },
             createdAt: Date,
-            updatedAt: Date
+            updatedAt: Date,
+            isDeleted: {type: Boolean, default: false}
         },
         { timestamps: true }
     );

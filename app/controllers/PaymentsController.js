@@ -123,6 +123,7 @@ async function paymentListing(req, res) {
         if(status) {
             query.status = status;
         }
+        query.isDeleted = false;
         let field, sortType;
         if(sortBy) {
             let order = sortBy.split(" ");
