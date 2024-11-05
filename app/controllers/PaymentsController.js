@@ -5,6 +5,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const updateDatabaseWithPaymentStatus = async function(paymentIntent, status) {
     if(status === 'succeeded') {
+        console.log(paymentIntent.metadata);
         const paymentDoc = await db.payments.create({id: paymentIntent.id, invoiceId: paymentIntent.metadata.invoiceId,
             job: paymentIntent.metadata.jobId,
             user: paymentIntent.metadata.user,
@@ -16,6 +17,7 @@ const updateDatabaseWithPaymentStatus = async function(paymentIntent, status) {
         return paymentIntent;
     }
     else if(status === 'failed') {
+        console.log(paymentIntent.metadata);
         const paymentDoc = await db.payments.create({id: paymentIntent.id, invoiceId: paymentIntent.metadata.invoiceId,
             job: paymentIntent.metadata.jobId,
             user: paymentIntent.metadata.user,
@@ -127,7 +129,7 @@ async function paymentListing(req, res) {
         }
 
         if(user) {
-            query.user = user;
+            query.user = mongoose.Types.ObjectId.createFromHexString(user);
         }
 
         query.isDeleted = false;
