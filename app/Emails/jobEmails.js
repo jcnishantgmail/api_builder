@@ -41,7 +41,7 @@ const jobAssignToContractor = (options) => {
                                <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >Job Assignment</p> <p style="font-size: 16px;font-weight: 400;color: #384860;">Dear ${fullName},</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">We are pleased to inform you that you have been assigned a new job with us. Below are the details of the assignment:</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Title:</strong>${options.jobTitle}</p>
-                               <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Description:</strong>${options.description}</p>
+                               <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Description:</strong>${options.description.slice(3, -4)}</p>
                                <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Location:</strong>${options.location}</p>
                              
                                <a href="${FRONT_WEB_URL}/job/detail/${options.id}" style=" background-color: #1E5DBC ;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">View job</a>                             
