@@ -6,6 +6,8 @@ module.exports.checkoutSessionHandler = async function (invoice) {
   let amount = invoice["total"];
   amount = amount * 100;
   amount = Math.ceil(amount); //just to convert to integer - number of pennies
+  let jobId = invoice.jobId._id.toString();
+  console.log("jobId", jobId);
   const session = await stripe.checkout.sessions.create({
   line_items: [
       {
@@ -21,14 +23,15 @@ module.exports.checkoutSessionHandler = async function (invoice) {
   ],
   payment_intent_data: {
       metadata: {
-          jobId: invoice.jobId.toString(),
+          jobId: jobId,
           invoiceId: invoice._id.toString(),
           user: invoice.client.toString()
       }
   },
   mode: 'payment',
-  success_url: process.env.FRONT_WEB_URL+`/job/detail/${invoice.jobId}/${invoice.jobId.contractor.toString()}`,
+  success_url: process.env.FRONT_WEB_URL+`/job/detail/${jobId}/${invoice.jobId.contractor.toString()}`,
   cancel_url: process.env.FRONT_WEB_URL + `/cancelPayment`
   });    
+  console.log(session.url);
   return session;
 };

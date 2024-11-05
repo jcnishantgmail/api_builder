@@ -414,11 +414,13 @@ module.exports = {
       }
       if(invoice.status === 'sent' && new Date() < invoice.dueDate) {
         const session = await checkoutSessionHandler(invoice);
+        console.log("Session URL", session.url);
         return res.redirect(session.url);
       } else {
         return res.redirect(process.env.FRONT_WEB_URL);
       }
     } catch(err) {
+      console.log(err.message);
       return res.status(500).json({message: err.message, code: 500});
     }
   }
