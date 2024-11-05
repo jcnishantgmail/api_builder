@@ -10,7 +10,7 @@ module.exports = (mongoose) => {
       image: String,
       meta_desc:String,
       meta_title:String,
-      meta_keywords:String,
+      meta_keywords:Array,
       slug:String,
       status: { type: "String", enum: ["active", "deactive"], default: "active" },
       addedBy: { type: Schema.Types.ObjectId, ref: "users", },
