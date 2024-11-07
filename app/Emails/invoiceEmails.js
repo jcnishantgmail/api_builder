@@ -5,20 +5,20 @@ const { BACK_WEB_URL, FRONT_WEB_URL, ADMIN_WEB_URL } = process.env;
 
 
 function formatDate(dateString) {
+    console.log(dateString);
     let dateArr = dateString.split('-');
     return dateArr[2] + "/" + dateArr[1] + "/" + dateArr[0];
 }
 
+function formatDatetime(dateObj) {
+    const day = dateObj.getUTCDate().toString().padStart(2, '0');
+    const month = dateObj.getUTCMonth().toString().padStart(2, '0');
+    const year = dateObj.getUTCFullYear().toString();
+    return `${day}/${month}/${year}`;
+}
 
 const sendInvoiceMail = (options) => {
     let email = options.email;
-    let fullName = options.fullName;
-    let invoiceId = options["_id"]? options["_id"]: options["invoiceId"];
-    let datelog = options["datelog"];
-    if (!fullName) {
-        fullName = email;
-    }
-
     let message = `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -41,7 +41,7 @@ const sendInvoiceMail = (options) => {
                             message += (options.admin_info?.address
                                         ? `<p style="font-size: 14px;
                                         font-family: sans-serif;font-weight: 300;
-                                        margin-top: 7px;margin-bottom: 7px;">${options.addedBy.address}</p>`
+                                        margin-top: 7px;margin-bottom: 7px;">${options.admin_info.address}</p>`
                                         : '');    
                             message += (options.admin_info?.city
                                         ? `<p style="font-size: 14px;font-family: sans-serif;
@@ -143,10 +143,10 @@ const sendInvoiceMail = (options) => {
                                 margin-bottom: 7px;">${options.invoiceNumber}</p>
                                 <p style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${formatDate(options.sentDate.toString().split("T")[0])}</p>
+                                margin-bottom: 7px;">${formatDatetime(options.sentDate)}</p>
                                 <p style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;margin-top: 7px;
-                                margin-bottom: 7px;">${formatDate(options.dueDate.toString().split("T")[0])}</p>
+                                margin-bottom: 7px;">${formatDatetime(options.dueDate)}</p>
                                 <p style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;margin-top: 7px;
                                 margin-bottom: 7px;">${options.terms} days</p>
@@ -192,8 +192,9 @@ const sendInvoiceMail = (options) => {
                         padding: 8px 2px;text-align:left;">AMOUNT</th>
                     </tr>`;
                     for(let datelog of options.datelog) {
-                        if(Number(datelog.labour_charge)) {
-                            message += `<tr style="vertical-align: unset;">
+                        for(let service of datelog.services) {
+                            if(Number(datelog.labour_charge)) {
+                                message += `<tr style="vertical-align: unset;">
                                 <td style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;width: 86px;padding: 0px 2px;">
                                     <p style="margin-top: 7px;">${formatDate(datelog.date)}</p></td>
@@ -201,17 +202,18 @@ const sendInvoiceMail = (options) => {
                                 font-family: sans-serif;
                                 font-weight: 700;padding: 0px 2px;">Services</td>
                                 <td style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300; width: 142px;padding: 0px 2px;">${datelog.service_description}</td>
+                                font-weight: 300; width: 142px;padding: 0px 2px;">${service.service_description}</td>
                                 <td style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;text-align: left;padding: 0px 2px;">${datelog.service_quantity}</td>
+                                font-weight: 300;text-align: left;padding: 0px 2px;">${service.service_quantity}</td>
                                 <td style="font-size: 14px;font-family: sans-serif;font-weight: 300; 
                                 font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;padding: 0px 2px;">${datelog.VAT_rate_labour_visible}</td>
+                                font-weight: 300;padding: 0px 2px;">${service.VAT_rate_labour_visible}</td>
                                 <td style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;padding: 0px 2px;">${datelog.labour_charge}</td>
+                                font-weight: 300;padding: 0px 2px;">${service.labour_charge}</td>
                                 <td style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300; text-align: end;padding: 0px 2px;">${datelog.labour_charge}</td>
-                            </tr>`;
+                                font-weight: 300; text-align: end;padding: 0px 2px;">${service.labour_charge}</td>
+                                </tr>`;
+                            }
                         }
                         
                         for(let material of datelog.material) {
@@ -332,7 +334,7 @@ const sendInvoiceMail = (options) => {
                                 <tr>
                                     <td style="text-align: center;">
                                         <form action="http://195.35.8.196:6085/invoice/payInvoice" method="POST" style="display: inline-block; margin-top: 20px;">
-                                            <input type="hidden" name="invoiceId" value="${options.invoiceId}">
+                                            <input type="hidden" name="invoiceId" value="${options._id}">
                                             <button type="submit" style="padding: 10px 20px; font-size: 14px; font-family: sans-serif; color: white; background-color: #00b0ff; text-decoration: none; border: none; border-radius: 4px; cursor: pointer;">
                                                 Pay Now
                                             </button>

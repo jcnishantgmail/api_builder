@@ -37,32 +37,19 @@ module.exports = {
       data.client = job.client
       data.property = job.property;
       req.body.addedBy = req.identity.id;
-      data.invoiceNumber = (await db.invoices.countDocuments({}) + 1);  //Gernerating invoice number
+      data.invoiceNumber = (await db.invoices.countDocuments({}) + 1);  //Generating invoice number
       if(data.total)
-        data.total = (Math.ceil(data.total * 100) / 100); //Rounding up to 2 decimals pound.pennies
+        data.total = Number(data.total).toFixed(); //Rounding up to 2 decimals pound.pennies
       let created = await db.invoices.create(req.body);
-      if (created) { 
-        const user = await db.users.findById(data.client);
-        console.log(typeof data.subtotal);
-        data.client = user;
-        data.email = user["email"];
-        data.fullName = user["fullName"] ? user["fullName"] : user["firstName"];
-        data.creationTime = helpers.formatCreatedAt(created.createdAt);
-        data.invoiceId = created["_id"];
-        data.addedBy = await db.users.findOne({_id: req.body.addedBy});
-        await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id, isInvoiceGenerated: true});
-        invoiceEmails.sendInvoiceMail(data);
-        await db.invoices.updateOne({_id: created["_id"]},{status: "sent", dueDate: created.dueDate.setUTCHours(23, 59, 59, 0)});  //email sent
-        return res.status(200).json({
-          success: true,
-          message: constants.INVOICES.CREATED
-        });
-      } else {
-        return res.status(400).json({
-          success: false,
-          message: "Some issue exists",
-        });
-      }
+      const client = await db.users.findById(data.client);
+      created.email = client["email"];
+      await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id, isInvoiceGenerated: true});
+      invoiceEmails.sendInvoiceMail(created);
+      await db.invoices.updateOne({_id: created["_id"]},{status: "sent", dueDate: created.dueDate.setUTCHours(23, 59, 59, 0)});  //email sent
+      return res.status(200).json({
+        success: true,
+        message: constants.INVOICES.CREATED
+      });
     } catch (err) {
       return res.status(500).json({
         success: false,
@@ -219,14 +206,10 @@ module.exports = {
         query.jobId = mongoose.Types.ObjectId.createFromHexString(jobId);
       }
       if(startDate && endDate) {
-        console.log(startDate, typeof startDate, endDate, typeof endDate);
         startDate = new Date(startDate)//.setUTCHours(0, 0, 0, 0);
-        console.log(startDate);
         endDate = new Date(endDate).setUTCHours(23, 59, 59, 0);
-        console.log(startDate, endDate);
         query.createdAt = {$gte:new Date(startDate),$lte:new Date(endDate)}
       }
-      console.log(query);
       const pipeline = [{
         $match: query,
       },
@@ -316,7 +299,6 @@ module.exports = {
           vat_total_overall: {$sum: "$vat_total"}
         }
       }]);
-      console.log(grouped);
 
       const total = await db.invoices.aggregate([...pipeline]);
 
@@ -377,18 +359,13 @@ module.exports = {
     }
   },
 
+
   resendInvoice: async (req ,res) => {
     try {
-      const data = req.body;
-      data.addedBy = req.identity;
-      /******** *********/
-      let job = await db.jobs.findById(mongoose.Types.ObjectId.createFromHexString(req.body.jobId)).populate('contractor').populate('invoice').populate('property');
-      data.client = await db.users.findOne({_id: job.client});
-      data.email = data.client.email;
-      data.property = job.property;
-      data.invoiceId = job.invoice._id;
-      data.invoiceNumber = job.invoice.invoiceNumber;
-      /******** *********/
+      const { invoiceId } = req.body;
+      let invoice = await db.invoices.findOne({_id: invoiceId}).populate('client');
+      let data = Object.assign({}, invoice._doc);
+      data.email = invoice.client.email;
       invoiceEmails.sendInvoiceMail(data);
       res.status(200).json({
         success: true,
@@ -401,10 +378,10 @@ module.exports = {
     
   },
 
+
   payInvoice: async function(req, res) {
     try {
       const {invoiceId} = req.body;
-      console.log(invoiceId);
       const invoice = await db.invoices.findOne({_id: invoiceId}).populate('jobId');
       if(!invoice) {
         return res.status(404).json({message: "Invoice does not exist!", code: 404});
@@ -414,13 +391,11 @@ module.exports = {
       }
       if(invoice.status === 'sent' && new Date() < invoice.dueDate) {
         const session = await checkoutSessionHandler(invoice);
-        console.log("Session URL", session.url);
         return res.redirect(session.url);
       } else {
         return res.redirect(process.env.FRONT_WEB_URL);
       }
     } catch(err) {
-      console.log(err.message);
       return res.status(500).json({message: err.message, code: 500});
     }
   }
