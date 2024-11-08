@@ -3,18 +3,10 @@ const constants = require("../utls/constants");
 var mongoose = require("mongoose");
 const jobEmails = require("../Emails/jobEmails")
 const { combineJobDateLogs}  = require("../utls/helper");
+const { computeTravelCost } = require("../services/jobServices");
 const datelog = require("../models/datelog.model");
 
-async function computeTravelCost(distance_travelled) {
-  const travel_rates = await db.travel_rates.find({isDeleted: false});
-  console.log(travel_rates);
-  for(let i = 0;i<travel_rates.length;i++) {
-    if(+distance_travelled >= +(travel_rates[i].start) && +distance_travelled < +(travel_rates[i].end)) {
-      return travel_rates[i].amount;
-    }
-  }
-  return 0;
-}
+
 
 module.exports = {
 
@@ -91,7 +83,7 @@ module.exports = {
           },
         });
       }
-      let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property').populate('category').populate('datelog');
+      let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property').populate('category');
       
       return res.status(200).json({
         success: true,
@@ -270,14 +262,6 @@ module.exports = {
       },
       {
         $lookup: {
-          from: "datelogs",
-          localField: "datelog",
-          foreignField: "_id",
-          as: "datelog_detail"
-        }
-      },
-      {
-        $lookup: {
           from: "invoices",
           localField: "invoice",
           foreignField: "_id",
@@ -306,11 +290,9 @@ module.exports = {
           urgency: "$urgency",
           special_instruction: "$special_instruction",
           addedBy: "$addedBy",
-          addedByDetail: 1,
+          addedByDetail: "$addedByDetail",
           addedByName: "$addedByDetail.fullName",
           addedByEmail: "$addedByDetail.email",
-          client:"$client",
-          clientDetail: 1,
           isInvoiceGenerated:"$isInvoiceGenerated",
           clientDetail: "$client_detail",
           clientName:"$client_detail.fullName",
@@ -324,9 +306,8 @@ module.exports = {
           hours:"$hours",
           minutes:"$minutes",
           materialCategory: "$materialCategory",
-          datelogLastUpdated: "$datelogLastUpdated",
-          expenseAdded: "$expenseAdded",
-          datelog: "$datelog_detail",
+          materialDatelogs: "$materialDatelogs",
+          serviceDatelogs: "$serviceDatelogs",
           isContractorPaid: 1,
           invoice: 1
         },
@@ -501,323 +482,129 @@ module.exports = {
   },
 
   pauseJob: async (req, res) => {
-    try{
-      let {jobId}= req.body;
-      let inputDatelog = req.body.datelog;
-      if(!jobId){
-        return res.status(400).json({
-          success:false,
-          error:{code:400,message:"Job id required"}
-        })
+    try {
+      let { jobId, date, serviceDatelogs, materialDatelogs, expenses } = req.body;
+      if(!jobId || !date) {
+        return res.status(400).json({message: "Job Id and date required!", code: 400});
       }
-      if(!datelog){
-        return res.status(400).json({
-          success:false,
-          error:{code:400,message:"datelog required"}
-        })
-      }
-      
-      let job = await db.jobs.findById(jobId);
+      const job = await db.jobs.findOne({_id: jobId}).populate('contractor');
       if(!job) {
-        return res.status(400).json({message: "Invalid job!", code: 400});
+        return res.status(404).json({message: "Job not found!", code: 404});
       }
       if(job.status !== 'in-progress') {
         return res.status(400).json({message: "Invalid input job status!", code: 400});
       }
 
-      // if(inputDatelog.material) {
-      //   for(let material of inputDatelog.material) {
-      //     const inventoryMaterial = await db.materials.findById(material._id);
-      //     if(material.quantity > inventoryMaterial.quantity) {
-      //       return res.status(400).json({message: "Not enough materials", code: 400});
-      //     }
-      //   }
-      //   for(let material of inputDatelog.material) {
-      //     await db.materials.updateOne({_id: material._id}, {$dec: {quantity: Number(material.quantity)}});
-      //   }
-      // }
-      
-
-      const datelogObj = await db.datelogs.findOne({job: jobId, date: inputDatelog.date});
-      if(datelogObj) {
-        if(inputDatelog.hours) {
-          datelogObj.hours += Number(inputDatelog.hours);
+      if(serviceDatelogs) {
+        serviceDatelogs = serviceDatelogs.map(serviceDatelog => {
+          serviceDatelog.jobId = jobId;
+          serviceDatelog.date = date;
+          serviceDatelog.servicefee = ((+job.contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2);
+          return serviceDatelog;
+        });
+        let insertedServiceDatelogs = await db.serviceDatelogs.insertMany(serviceDatelogs);
+        for(let serviceDatelog of insertedServiceDatelogs) {
+          job.completed_images = job.completed_images.concat(serviceDatelog.completed_images);
         }
-        if(inputDatelog.minutes) {
-          datelogObj.minutes += Number(inputDatelog.minutes);
-        }
-        datelogObj.hours = Number(datelogObj.hours) + Number(datelogObj.minutes)/60;
-        datelogObj.hours = Math.floor(datelogObj.hours);
-        datelogObj.minutes = Number(datelogObj.minutes) % 60;
-        datelogObj.minutes = Math.floor(datelogObj.minutes);
-        if(inputDatelog.material) {
-          datelogObj.material = datelogObj.material.concat(inputDatelog.material);
-        }
-        if(inputDatelog.completed_images) {
-          datelogObj.completed_images = datelogObj.completed_images.concat(inputDatelog.completed_images);
-        }
-        await db.datelogs.updateOne({_id: datelogObj._id}, datelogObj);
-        
-
+        await db.jobs.updateOne({_id: jobId}, {completed_images: job.completed_images});
       }
-      else {
-        const created = await db.datelogs.create({
-          job: jobId,
-          contractor: job.contractor,
-          date: inputDatelog.date,
-          hours:inputDatelog.hours,
-          minutes:inputDatelog.minutes,
-          material:inputDatelog.material,
-          completed_images: inputDatelog.completed_images          
+      if(materialDatelogs) {
+        materialDatelogs = materialDatelogs.map(materialDatelog => {
+          materialDatelog.job = jobId;
+          materialDatelog.date = date;
+          return materialDatelog;
         });
-        await db.jobs.updateOne({_id: jobId}, {
-          $push: {datelog: created._id},
-          datelogLastUpdated: inputDatelog.date
-        });
+        await db.materialDatelogs.insertMany(materialDatelogs);
       }
 
-      return res.status(200).json({
-        success:true
-      })
-    }catch(err){
-      return res.status(500).json({
-        success:false,
-        eror:{code:500, message:""+err}
-      });
+      if(expenses) {
+        const contractor = await db.users.findOne({_id: job.contractor._id}).populate('cis_rate');
+        expenses = expenses.map(expense => {
+          expense.job = jobId;
+          expense.contractor = job.contractor._id;
+          expense.date = date;
+          expense.status = "unpaid";
+          expense.labour_charge = serviceDatelogs.reduce((tot, curServiceDatelog) => {
+            return tot + curServiceDatelog.servicefee;
+          }, 0);
+          expense.travel_expense = computeTravelCost(expense.distance_travelled);
+          expense.other_expense_total = expense.other_expense.reduce((tot, cur)=>{
+            return tot + cur.amount;
+          }, 0);
+          expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (expense.labour_charge);
+          expense.net_payable = expense.labour_charge + expense.travel_expense + expense.other_expense_total - expense.cis_amt;
+          return expense;
+        });
+        await db.contractor_payables.insertMany(expenses);
+      }
+      return res.status(200).json({message: "Job logged successfully", code: 200});
+
+    } catch(err) {
+      return res.status(500).json({message: err.message, code: 500});
     }
   },
 
-  // continueJob: async (req, res) => {
-  //   try{
-  //     let {id, date}= req.body
-  //     if(!id){
-  //       return res.status(400).json({
-  //         success:false,
-  //         error:{code:400,message:"Job id required"}
-  //       })
-  //     }
-  //     let job = await db.jobs.findById(id);
-  //     if(job.status !== 'paused') {
-  //       return res.status(403).json({message: "Invalid job status!", code: 403});
-  //     }
-  //     let original_datelog = job.datelog;
-  //     let maxDate = original_datelog.reduce((max, cur) => new Date(max) > new Date(cur.date)? max:cur.date, original_datelog[0].date);
-  //     if(maxDate === date) {
-  //       return res.status(403).json({"message": "Cannot continue job on the same day it was paused!", code: 403});  
-  //     }
-  //     await db.jobs.updateOne({_id:id},{status: "in-progress"});
-  
-  //     return res.status(200).json({
-  //       success:true,
-  //       message: "Job continued!"
-  //     })
-  //   }catch(err){
-  //     return res.status(500).json({
-  //       success:false,
-  //       eror:{code:500, message:""+err}
-  //     })
-  //   }
-  // },
-
-  completeJob: async (req, res) => {
+  completejob: async (req, res) => {
     try {
-      let {jobId}= req.body;
-      let inputDatelog = req.body.datelog;
-      if(!jobId){
-        return res.status(400).json({
-          success:false,
-          error:{code:400,message:"Job id required"}
-        })
+      let { jobId, date, serviceDatelogs, materialDatelogs, expenses } = req.body;
+      if(!jobId || !date) {
+        return res.status(400).json({message: "Job Id and date required!", code: 400});
       }
-      if(!datelog){
-        return res.status(400).json({
-          success:false,
-          error:{code:400,message:"datelog required"}
-        })
-      }
-      
-      let job = await db.jobs.findById(jobId);
+      const job = await db.jobs.findOne({_id: jobId}).populate('contractor');
       if(!job) {
-        return res.status(400).json({message: "Invalid job!", code: 400});
+        return res.status(404).json({message: "Job not found!", code: 404});
       }
       if(job.status !== 'in-progress') {
         return res.status(400).json({message: "Invalid input job status!", code: 400});
       }
 
-      // if(inputDatelog.material) {
-      //   for(let material of inputDatelog.material) {
-      //     const inventoryMaterial = await db.materials.findById(material._id);
-      //     if(material.quantity > inventoryMaterial.quantity) {
-      //       return res.status(400).json({message: "Not enough materials", code: 400});
-      //     }
-      //   }
-      //   for(let material of inputDatelog.material) {
-      //     await db.materials.updateOne({_id: material._id}, {$dec: {quantity: Number(material.quantity)}});
-      //   }
-      // }
-
-      const datelogObj = await db.datelogs.findOne({job: jobId, date: inputDatelog.date});
-      if(datelogObj) {
-        if(inputDatelog.hours) {
-          datelogObj.hours += Number(inputDatelog.hours);
-        }
-        if(inputDatelog.minutes) {
-          datelogObj.minutes += Number(inputDatelog.minutes);
-        }
-        datelogObj.hours = Number(datelogObj.hours) + Number(datelogObj.minutes)/60;
-        datelogObj.hours = Math.floor(datelogObj.hours);
-        datelogObj.minutes = Number(datelogObj.minutes) % 60;
-        datelogObj.minutes = Math.floor(datelogObj.minutes);
-        if(inputDatelog.material) {
-          datelogObj.material = datelogObj.material.concat(inputDatelog.material);
-        }
-        if(inputDatelog.completed_images) {
-          datelogObj.completed_images = datelogObj.completed_images.concat(inputDatelog.completed_images);
-        }
-        await db.datelogs.updateOne({_id: datelogObj._id}, datelogObj);
-      }
-      else {
-        const created = await db.datelogs.create({
-          job: jobId,
-          contractor: job.client,
-          date: inputDatelog.date,
-          hours:inputDatelog.hours,
-          minutes:inputDatelog.minutes,
-          material:inputDatelog.material,
-          completed_images: inputDatelog.completed_images          
+      if(serviceDatelogs) {
+        serviceDatelogs = serviceDatelogs.map(serviceDatelog => {
+          serviceDatelog.jobId = jobId;
+          serviceDatelog.date = date;
+          serviceDatelog.servicefee = ((+job.contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2);
+          return serviceDatelog;
         });
-        await db.jobs.updateOne({_id: jobId}, {
-          $push: {datelog: created._id},
-          datelogLastUpdated: inputDatelog.date
+        let insertedServiceDatelogs = await db.serviceDatelogs.insertMany(serviceDatelogs);
+        for(let serviceDatelog of insertedServiceDatelogs) {
+          job.completed_images = job.completed_images.concat(serviceDatelog.completed_images);
+        }
+        await db.jobs.updateOne({_id: jobId}, {completed_images: job.completed_images, status: "completed"});
+      }
+      
+      if(materialDatelogs) {
+        materialDatelogs = materialDatelogs.map(materialDatelog => {
+          materialDatelog.job = jobId;
+          materialDatelog.date = date;
+          return materialDatelog;
         });
+        await db.materialDatelogs.insertMany(materialDatelogs);
       }
-      const updateQuery = await combineJobDateLogs(job);
-      await db.jobs.updateOne({_id: job._id}, updateQuery);
-      return res.status(200).json({message: "Job marked completed successfully", code: 200}); 
+
+      if(expenses) {
+        const contractor = await db.users.findOne({_id: job.contractor._id}).populate('cis_rate');
+        expenses = expenses.map(expense => {
+          expense.job = jobId;
+          expense.contractor = job.contractor._id;
+          expense.date = date;
+          expense.status = "unpaid";
+          expense.labour_charge = serviceDatelogs.reduce((tot, curServiceDatelog) => {
+            return tot + curServiceDatelog.servicefee;
+          }, 0);
+          expense.travel_expense = computeTravelCost(expense.distance_travelled);
+          expense.other_expense_total = expense.other_expense.reduce((tot, cur)=>{
+            return tot + cur.amount;
+          }, 0);
+          expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (expense.labour_charge);
+          expense.net_payable = expense.labour_charge + expense.travel_expense + expense.other_expense_total - expense.cis_amt;
+          return expense;
+        });
+        await db.contractor_payables.insertMany(expenses);
+      }
+      return res.status(200).json({message: "Job logged successfully", code: 200});
     } catch(err) {
-      return res.status(500).json({
-        success:false,
-        eror:{code:500, message:""+err}
-      });
+      return res.status(500).json({message: err.message, code: 500});
     }
   },
-  daysWorkedList: async (req, res) => {
-    const {jobId} = req.query;
-    if(!jobId) {
-      return res.status(400).json({message: "jobId required!", success: false});
-    }
-    try {
-      const job = await db.jobs.findOne({_id: jobId}).populate('datelog');
-      console.log(job);
-      if(!job) {
-        return res.status(400).json({message: "Job does not exist!", code: 400});
-      } else {
-        let {datelog} = job;
-        return res.status(200).json({datelogs: datelog, success: true});
-      }
-    } catch(err) {
-      return res.status(500).json({message: err.message, success: false});
-    }
-    
-  },
 
-  addExpense: async (req, res) => {
-    let {travel_log, jobId, contractorId} = req.body;
-    if(!travel_log || !jobId || !contractorId) {
-      res.status(400).json({message: "travel_log or jobId or contractorId missing", success: false});
-    }
-    try {
-      const job = await db.jobs.findById(jobId).populate('datelog');
-      const contractor = await db.users.findById(contractorId).populate('cis_rate');
-      const date_log = job.datelog;
-      let hourlyRate = +contractor.hourlyRate;
-      travel_log.sort((a, b) => new Date(a.date) - new Date(b.date));
-      if(travel_log.length != date_log.length) {
-        return res.status(400).json({message: "invalid travel log", success: false});
-      }
-      let payableDoc = {};
-      payableDoc.job = new mongoose.Types.ObjectId(jobId);
-      payableDoc.contractor = new mongoose.Types.ObjectId(contractorId);
-      payableDoc.datelog = [];
-      payableDoc.total_distance_travelled = 0;
-      payableDoc.total_travel_expense = 0;
-      payableDoc.total_cis_amt = 0;
-      payableDoc.total_labour_charge = 0;
-      payableDoc.total_other_expense = 0;
-      payableDoc.total_net_payable = 0;
-
-      for(let i = 0;i < date_log.length; i++) {
-        let payableDatelogObj = {};
-        payableDatelogObj.date = new Date(date_log[i].date);
-        payableDatelogObj.distance_travelled = +(travel_log[i].distance_travelled);
-        payableDatelogObj.labour_charge = (+hourlyRate)*(date_log[i].hours + date_log[i].minutes/60);
-        payableDatelogObj.status = "pending";
-        payableDatelogObj.cis_amt = (+contractor.cis_rate.rate) * (0.01) * (+payableDatelogObj.labour_charge);
-        payableDatelogObj.travel_expense = await computeTravelCost(payableDatelogObj.distance_travelled);
-        payableDatelogObj.other_expense = travel_log[i]?.other_expense;
-        let total_other_expense = payableDatelogObj.other_expense.reduce((tot, cur)=>tot + (+cur.amount), 0);
-        payableDatelogObj.day_total_other_expense = total_other_expense;
-        payableDatelogObj.net_payable =  payableDatelogObj.labour_charge - payableDatelogObj.cis_amt + payableDatelogObj.travel_expense + payableDatelogObj.day_total_other_expense;
-        console.log(payableDatelogObj);
-        //making overall payable object
-        payableDoc.datelog.push(payableDatelogObj);
-        payableDoc.total_distance_travelled += payableDatelogObj.distance_travelled;
-        payableDoc.total_travel_expense += payableDatelogObj.travel_expense;
-        payableDoc.total_labour_charge += payableDatelogObj.labour_charge;
-        payableDoc.total_cis_amt += payableDatelogObj.cis_amt;
-        payableDoc.total_other_expense += payableDatelogObj.day_total_other_expense;
-        payableDoc.total_net_payable += payableDatelogObj.net_payable;
-      }
-      await db.contractor_payables.create(payableDoc);
-      await db.jobs.updateOne({_id:jobId}, {expenseAdded: true});
-      return res.status(200).json({message: "Expense added successfully", code: 200});
-    } catch(err) {
-      return res.status(500).json({message: err.message, success: false});
-    }
-    
-  },
-/*
-  completeJob: async (req, res)=>{
-    try{
-      let {id}= req.body
-      if(!id){
-        return res.status(400).json({
-          success:false,
-          error:{code:400,message:"Job id required"}
-        })
-      }
-      req.body.status = "completed"
-      let job = await db.jobs.findById(id)
-      let adminEmailPayload= {
-        id:id,
-        jobTitle:job?.title,
-        contractorName:req.identity.fullName
-      }
-      jobEmails.jobCompleteEmailToAdmin(adminEmailPayload)
-      let serviceTime = 0
-      if(req.body.hours){
-        serviceTime += Number(req.body.hours)*60 //Converting hours into minutes
-      }
-
-      if(req.body.minutes){
-        serviceTime += Number(req.body.minutes)
-      }
-
-      if(serviceTime > 0){
-        req.body.serviceTime = serviceTime
-      }
-      await db.jobs.updateOne({_id:id},req.body)
-  
-      return res.status(200).json({
-        success:true
-      })
-    }catch(err){
-      return res.status(500).json({
-        success:false,
-        eror:{code:500, message:""+err}
-      })
-    }
-   
-  }
-*/
 };

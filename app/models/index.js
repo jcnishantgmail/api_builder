@@ -18,10 +18,12 @@ db.skills = require("./skills.model.js")(mongoose);
 db.jobs =  require("./jobs.model.js")(mongoose);
 db.invoices = require("./invoices.model.js")(mongoose);
 db.payments = require("./payment.model.js")(mongoose);
-db.datelogs = require("./datelog.model.js")(mongoose);
 db.contractor_payables = require("./contractorPayable.model.js")(mongoose);
 db.cis_rates = require("./cisRates.model.js")(mongoose);
 db.travel_rates = require("./travelRates.model.js")(mongoose);
 db.contactus = require("./contactUs.model.js")(mongoose);
 db.vats = require("./vats.model.js")(mongoose);
+db.materialDatelogs = require("./materialDatelog.model.js")(mongoose);
+db.serviceDatelogs = require("./serviceDatelog.model.js")(mongoose);
+
 module.exports = db;

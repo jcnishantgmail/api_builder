@@ -9,9 +9,7 @@ router.put("/status/change",jobs.changeStatus)
 router.put('/assign/contractor', jobs.assignContractor)
 router.put("/start/job", jobs.startJob)
 router.put("/pause",jobs.pauseJob);
-router.put("/complete/job", jobs.completeJob);
-router.get("/daysWorkedList", jobs.daysWorkedList);
-router.post("/addExpense", jobs.addExpense);
+router.put("/complete", jobs.completejob);
 
 
 module.exports = router;
