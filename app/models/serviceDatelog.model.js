@@ -9,7 +9,8 @@ module.exports = (mongoose) => {
     hours:{type:Number},
     minutes:{type:Number},
     completed_images: {type: Array, default: []},
-    servicefee: {type: Number, default: 0},
+    labour_charge: {type: Number, default: 0},
+    isDeleted: {type: Boolean, default: false},
     createdAt: Date,
     updatedAt: Date
   },

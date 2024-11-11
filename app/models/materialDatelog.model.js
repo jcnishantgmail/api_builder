@@ -8,6 +8,7 @@ module.exports = (mongoose) => {
     date: {type: String, required: true},
     material: {type: Schema.Types.ObjectId, ref: "materials"},
     quantity: {type: Number, default: 0},
+    isDeleted: {type: Boolean, default: false},
     createdAt: Date,
     updatedAt: Date
   });
