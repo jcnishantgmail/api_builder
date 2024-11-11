@@ -69,6 +69,20 @@ module.exports = {
                     }
                 },
                 {
+                    $lookup: {
+                        from: "users",
+                        localField: "job.client",
+                        foreignField: "_id",
+                        as: "job.client"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$job.client",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
                     $addFields: {
                         formattedDate: {
                             $dateToString: {

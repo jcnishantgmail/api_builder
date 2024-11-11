@@ -1,8 +1,6 @@
 "use strict";
-const { populate } = require("dotenv");
 const db = require("../models");
 var mongoose = require("mongoose");
-const { success } = require("../services/Response");
 
 
 async function contractorPayablesUpdate(req, res) {
