@@ -34,16 +34,16 @@ module.exports = {
       if(invc) {
         return res.status(400).json({code:400, message: "Invoice for this job already exists!"});
       }
-      data.client = job.client
-      data.property = job.property;
+      data.client = job.client;
       req.body.addedBy = req.identity.id;
       data.invoiceNumber = (await db.invoices.countDocuments({}) + 1);  //Generating invoice number
       if(data.total)
-        data.total = Number(data.total).toFixed(); //Rounding up to 2 decimals pound.pennies
+        data.total = Number(data.total).toFixed(2); //Rounding up to 2 decimals pound.pennies
       let created = await db.invoices.create(req.body);
       const client = await db.users.findById(data.client);
       created.email = client["email"];
       await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id, isInvoiceGenerated: true});
+      console.log("created - ", created);
       invoiceEmails.sendInvoiceMail(created);
       await db.invoices.updateOne({_id: created["_id"]},{status: "sent", dueDate: created.dueDate.setUTCHours(23, 59, 59, 0)});  //email sent
       return res.status(200).json({
@@ -75,7 +75,7 @@ module.exports = {
           },
         });
       }
-      const detail = await db.invoices.findOne({_id: id, isDeleted: false}).populate('client').populate('property').populate('addedBy').populate('property').populate({
+      const detail = await db.invoices.findOne({_id: id, isDeleted: false}).populate('client').populate('addedBy').populate({
         path: 'jobId',
         populate: {
           path: "contractor"
@@ -162,7 +162,6 @@ module.exports = {
         status,
         addedBy,
         client,
-        property,
         jobId,
         startDate,
         endDate
@@ -198,9 +197,6 @@ module.exports = {
       }
       if (client) {
         query.client = mongoose.Types.ObjectId.createFromHexString(client);
-      }
-      if (property) {
-        query.property = mongoose.Types.ObjectId.createFromHexString(property)
       }
       if(jobId) {
         query.jobId = mongoose.Types.ObjectId.createFromHexString(jobId);
@@ -275,14 +271,15 @@ module.exports = {
           isDeleted: "$isDeleted",
           addedBy: "$addedByDetail",
           addedByName: "$addedByDetail.fullName",
-          supplier_detail:"$supplier_detail",
           "paidDate":"$paidDate",
           paymentType:"$paymentType",
           invoiceNumber:"$invoiceNumber",
+          services: "$services",
+          materials: "$materials",
           total:"$total",
           datelog: "$datelog",
           dueDate: "$dueDate",
-          terms: "$terms",   //probably number of days,
+          terms: "$terms",   
           labour_charge: "$labour_charge",
           subtotal: "$subtotal",
           vat_total: "$vat_total",

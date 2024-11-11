@@ -19,6 +19,20 @@ function formatDatetime(dateObj) {
 
 const sendInvoiceMail = (options) => {
     let email = options.email;
+    console.log(options);
+    options.materials = options.materials.map((material) => {
+        material.date = new Date(material.date);
+        return material;
+    });
+
+    options.services = options.services.map((service) => {
+        service.date = new Date(service.date);
+        return service;
+    });
+    let materialsAndServices = options.services.concat(options.materials);
+    materialsAndServices.sort((a, b) => {
+        return a.date - b.date;
+    });
     let message = `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -191,50 +205,48 @@ const sendInvoiceMail = (options) => {
                         color: #58abed;border: 0px;
                         padding: 8px 2px;text-align:left;">AMOUNT</th>
                     </tr>`;
-                    for(let datelog of options.datelog) {
-                        for(let service of datelog.services) {
-                            if(Number(datelog.labour_charge)) {
-                                message += `<tr style="vertical-align: unset;">
+                    for(let entry of materialsAndServices) {
+                        if('service_description' in entry) {
+                            // it is service entry
+                            message += `<tr style="vertical-align: unset;">
                                 <td style="font-size: 14px;font-family: sans-serif;
                                 font-weight: 300;width: 86px;padding: 0px 2px;">
-                                    <p style="margin-top: 7px;">${formatDate(datelog.date)}</p></td>
+                                    <p style="margin-top: 7px;">${formatDatetime(entry.date)}</p></td>
                                 <td style="font-size: 14px;
                                 font-family: sans-serif;
                                 font-weight: 700;padding: 0px 2px;">Services</td>
                                 <td style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300; width: 142px;padding: 0px 2px;">${service.service_description}</td>
+                                font-weight: 300; width: 142px;padding: 0px 2px;">${entry.service_description}</td>
                                 <td style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;text-align: left;padding: 0px 2px;">${service.service_quantity}</td>
+                                font-weight: 300;text-align: left;padding: 0px 2px;">${entry.service_quantity}</td>
                                 <td style="font-size: 14px;font-family: sans-serif;font-weight: 300; 
                                 font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;padding: 0px 2px;">${service.VAT_rate_labour_visible}</td>
+                                font-weight: 300;padding: 0px 2px;">${entry.VAT_rate_labour_visible}</td>
                                 <td style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300;padding: 0px 2px;">${service.labour_charge}</td>
+                                font-weight: 300;padding: 0px 2px;">${entry.labour_charge}</td>
                                 <td style="font-size: 14px;font-family: sans-serif;
-                                font-weight: 300; text-align: end;padding: 0px 2px;">${service.labour_charge}</td>
+                                font-weight: 300; text-align: end;padding: 0px 2px;">${entry.labour_charge}</td>
                                 </tr>`;
-                            }
-                        }
-                        
-                        for(let material of datelog.material) {
+                        } else {
+                            //it is material entry
                             message += ` <tr style="vertical-align: unset;">
                             <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300; width: 86px;padding: 0px 2px;">${formatDate(datelog.date)}</td>
+                            font-weight: 300; width: 86px;padding: 0px 2px;">${formatDatetime(entry.date)}</td>
                             <td style="font-size: 14px;font-family: sans-serif;
                             font-weight: 700;padding: 0px 2px;">Materials</td>
                             <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300;width: 142px;padding: 0px 2px;">${material.material_description}</td>
+                            font-weight: 300;width: 142px;padding: 0px 2px;">${entry.material_description}</td>
                             <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300;text-align: left;padding: 0px 2px;">${material.quantity}</td>
+                            font-weight: 300;text-align: left;padding: 0px 2px;">${entry.quantity}</td>
                             <td style="font-size: 14px;font-family: sans-serif;font-weight: 300; font-size: 14px;
-                            font-family: sans-serif;font-weight: 300;padding: 0px 2px;">${material.vat_rate_visible}</td>
+                            font-family: sans-serif;font-weight: 300;padding: 0px 2px;">${entry.vat_rate_visible}</td>
                             <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300;padding: 0px 2px;">${material.rate}</td>
+                            font-weight: 300;padding: 0px 2px;">${entry.rate}</td>
                             <td style="font-size: 14px;font-family: sans-serif;
-                            font-weight: 300; text-align: end;padding: 0px 2px;">${material.price}</td>
+                            font-weight: 300; text-align: end;padding: 0px 2px;">${entry.price}</td>
                             </tr>` 
                         }
-                }
+                    }
 
                 message +=  `</tbody>
                 </table>
