@@ -497,7 +497,7 @@ module.exports = {
 
       if(serviceDatelogs) {
         serviceDatelogs = serviceDatelogs.map(serviceDatelog => {
-          serviceDatelog.jobId = jobId;
+          serviceDatelog.job = jobId;
           serviceDatelog.date = date;
           serviceDatelog.servicefee = ((+job.contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2);
           return serviceDatelog;
@@ -560,7 +560,7 @@ module.exports = {
 
       if(serviceDatelogs) {
         serviceDatelogs = serviceDatelogs.map(serviceDatelog => {
-          serviceDatelog.jobId = jobId;
+          serviceDatelog.job = jobId;
           serviceDatelog.date = date;
           serviceDatelog.servicefee = ((+job.contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2);
           return serviceDatelog;
