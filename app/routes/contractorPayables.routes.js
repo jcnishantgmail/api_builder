@@ -1,10 +1,10 @@
-const contractor_payables = require("../controllers/ContractorPayablesController");
+const ContractorPayablesController = require("../controllers/ContractorPayablesController");
 var router = require("express").Router();
-router.get("/detail",contractor_payables.contractorPayablesDetail)
-router.delete("/delete",contractor_payables.contractorPayablesDelete)
-router.get("/listing",contractor_payables.contractorPayablesList)
-router.put('/update', contractor_payables.contractorPayablesUpdate);
-
+router.get("/detail",ContractorPayablesController.contractorPayablesDetail)
+router.delete("/delete",ContractorPayablesController.contractorPayablesDelete)
+router.get("/listing",ContractorPayablesController.contractorPayablesList)
+router.put('/update', ContractorPayablesController.contractorPayablesUpdate);
+router.get('/report', ContractorPayablesController.contractorPayablesReport);
 
 
 module.exports = router;
