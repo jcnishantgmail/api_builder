@@ -485,14 +485,14 @@ module.exports = {
     try {
       let { jobId, date, serviceDatelogs, materialDatelogs, expenses } = req.body;
       if(!jobId || !date) {
-        return res.status(400).json({message: "Job Id and date required!", code: 400});
+        return res.status(400).json({message: "Job Id and date required!", code: 400, success: false});
       }
       const job = await db.jobs.findOne({_id: jobId}).populate('contractor');
       if(!job) {
-        return res.status(404).json({message: "Job not found!", code: 404});
+        return res.status(404).json({message: "Job not found!", code: 404, success: false});
       }
       if(job.status !== 'in-progress') {
-        return res.status(400).json({message: "Invalid input job status!", code: 400});
+        return res.status(400).json({message: "Invalid input job status!", code: 400, success: false});
       }
 
       if(serviceDatelogs) {
@@ -537,10 +537,10 @@ module.exports = {
         }));
         await db.contractor_payables.insertMany(expenses);
       }
-      return res.status(200).json({message: "Job logged successfully", code: 200});
+      return res.status(200).json({success: true, message: "Job logged successfully", code: 200});
 
     } catch(err) {
-      return res.status(500).json({message: err.message, code: 500});
+      return res.status(500).json({success: false, message: err.message, code: 500});
     }
   },
 
@@ -548,14 +548,14 @@ module.exports = {
     try {
       let { jobId, date, serviceDatelogs, materialDatelogs, expenses } = req.body;
       if(!jobId || !date) {
-        return res.status(400).json({message: "Job Id and date required!", code: 400});
+        return res.status(400).json({message: "Job Id and date required!", code: 400, success: false});
       }
       const job = await db.jobs.findOne({_id: jobId}).populate('contractor');
       if(!job) {
-        return res.status(404).json({message: "Job not found!", code: 404});
+        return res.status(404).json({message: "Job not found!", code: 404, success: false});
       }
       if(job.status !== 'in-progress') {
-        return res.status(400).json({message: "Invalid input job status!", code: 400});
+        return res.status(400).json({message: "Invalid input job status!", code: 400, success: false});
       }
 
       if(serviceDatelogs) {
@@ -601,9 +601,9 @@ module.exports = {
         }));
         await db.contractor_payables.insertMany(expenses);
       }
-      return res.status(200).json({message: "Job logged successfully", code: 200});
+      return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
     } catch(err) {
-      return res.status(500).json({message: err.message, code: 500});
+      return res.status(500).json({message: err.message, code: 500, success: false});
     }
   },
 

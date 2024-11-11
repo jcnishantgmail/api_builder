@@ -44,7 +44,7 @@ module.exports = {
                 },
                 {
                     $lookup: {
-                        from: "materialDatelogs",
+                        from: "materials",
                         localField: "material",
                         foreignField: "_id",
                         as: "material",
@@ -53,6 +53,48 @@ module.exports = {
                 {
                     $unwind: {
                         path: "$material",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "vats",
+                        localField: "material.vat",
+                        foreignField: "_id",
+                        as: "material.vat",
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$material.vat",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "material.category",
+                        foreignField: "_id",
+                        as: "material.category",
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$material.category",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "material.supplier",
+                        foreignField: "_id",
+                        as: "material.supplier",
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$material.supplier",
                         preserveNullAndEmptyArrays: true
                     }
                 },
