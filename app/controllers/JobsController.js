@@ -519,7 +519,7 @@ module.exports = {
 
       if(expenses) {
         const contractor = await db.users.findOne({_id: job.contractor._id}).populate('cis_rate');
-        expenses = expenses.map(expense => {
+        expenses = await Promise.all(expenses.map(async (expense) => {
           expense.job = jobId;
           expense.contractor = job.contractor._id;
           expense.date = date;
@@ -527,14 +527,14 @@ module.exports = {
           expense.labour_charge = serviceDatelogs.reduce((tot, curServiceDatelog) => {
             return tot + curServiceDatelog.servicefee;
           }, 0);
-          expense.travel_expense = computeTravelCost(expense.distance_travelled);
+          expense.travel_expense = await computeTravelCost(expense.distance_travelled);
           expense.other_expense_total = expense.other_expense.reduce((tot, cur)=>{
             return tot + cur.amount;
           }, 0);
           expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (expense.labour_charge);
           expense.net_payable = expense.labour_charge + expense.travel_expense + expense.other_expense_total - expense.cis_amt;
           return expense;
-        });
+        }));
         await db.contractor_payables.insertMany(expenses);
       }
       return res.status(200).json({message: "Job logged successfully", code: 200});
@@ -583,7 +583,7 @@ module.exports = {
 
       if(expenses) {
         const contractor = await db.users.findOne({_id: job.contractor._id}).populate('cis_rate');
-        expenses = expenses.map(expense => {
+        expenses = await Promise.all(expenses.map(async (expense) => {
           expense.job = jobId;
           expense.contractor = job.contractor._id;
           expense.date = date;
@@ -591,14 +591,14 @@ module.exports = {
           expense.labour_charge = serviceDatelogs.reduce((tot, curServiceDatelog) => {
             return tot + curServiceDatelog.servicefee;
           }, 0);
-          expense.travel_expense = computeTravelCost(expense.distance_travelled);
+          expense.travel_expense = await computeTravelCost(expense.distance_travelled);
           expense.other_expense_total = expense.other_expense.reduce((tot, cur)=>{
             return tot + cur.amount;
           }, 0);
           expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (expense.labour_charge);
           expense.net_payable = expense.labour_charge + expense.travel_expense + expense.other_expense_total - expense.cis_amt;
           return expense;
-        });
+        }));
         await db.contractor_payables.insertMany(expenses);
       }
       return res.status(200).json({message: "Job logged successfully", code: 200});
