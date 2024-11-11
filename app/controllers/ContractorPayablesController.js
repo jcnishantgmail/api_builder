@@ -15,7 +15,7 @@ async function contractorPayablesUpdate(req, res) {
       return res.status(404).json({success: false, message: "Payable not found!"});
     }
     const updated = await db.contractor_payables.updateOne({_id:id}, req.body);
-    return res.status(200).json({success: true, message: "Payable updated!"});
+    return res.status(200).json({success: true, message: "Payable updated!", job: payable.job});
   } catch(err) {
     console.log(err);
     return res.status(500).json({success: false, message: err.message});
