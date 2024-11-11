@@ -46,11 +46,11 @@ async function contractorPayablesList(req, res) {
         }
         
         if(contractor) {
-            query.contractor = contractor;
+            query.contractor = mongoose.Types.ObjectId.createFromHexString(contractor);
         }
 
         if(job) {
-            query.job = job;
+            query.job = mongoose.Types.ObjectId.createFromHexString(job);
         }
 
         if(status) {
@@ -198,11 +198,11 @@ async function contractorPayablesReport(req, res) {
         }
         
         if(contractor) {
-            query.contractor = contractor;
+          query.contractor = mongoose.Types.ObjectId.createFromHexString(contractor);
         }
 
         if(job) {
-            query.job = job;
+            query.job = mongoose.Types.ObjectId.createFromHexString(job);
         }
 
         if(status) {
