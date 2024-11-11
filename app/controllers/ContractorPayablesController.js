@@ -25,7 +25,7 @@ async function contractorPayablesUpdate(req, res) {
 
 async function contractorPayablesList(req, res) {
     try {
-        const { page, count, sortBy, status, contractor, job, startDate, endDate} = req.query;
+        let { page, count, sortBy, status, contractor, job, startDate, endDate} = req.query;
         let query = {};
   
         // if (search) {
@@ -177,7 +177,7 @@ async function contractorPayablesList(req, res) {
 
 async function contractorPayablesReport(req, res) {
   try {
-    const { page, count, sortBy, status, contractor, job, startDate, endDate} = req.query;
+    let { page, count, sortBy, status, contractor, job, startDate, endDate} = req.query;
         let query = {};
   
         // if (search) {
