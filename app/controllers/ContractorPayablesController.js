@@ -234,7 +234,7 @@ async function contractorPayablesReport(req, res) {
               cis_amt: {$sum: "$cis_amt"},
               labour_charge: {$sum: "$labour_charge"},
               other_expense_total: {$sum: "$other_expense_total"},
-              net_payable: {$sum: "$net_payabale"},
+              net_payable: {$sum: "$net_payable"},
             }
           },
           {
