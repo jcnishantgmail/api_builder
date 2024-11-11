@@ -218,61 +218,6 @@ const formatCreatedAt = function (createdAt) {
   return `${formattedTime} GMT`;
 }
 
-async function combineJobDateLogs(job) {
-  const datelogs = await db.datelogs.find({job: job._id});
-  let totalHours = 0;
-  let totalMinutes = 0;
-  let finalMaterials = [];
-  let finalCompletedImages = [];
-  let materialMap = new Map();
-  console.log(typeof datelogs);
-  console.log(datelogs);
-  datelogs.forEach(datelog => {
-    totalHours += Number(datelog.hours);
-    totalMinutes += Number(datelog.minutes);
-    if(totalMinutes >= 60) {
-      totalHours += totalMinutes/60;
-      totalMinutes %= 60;
-    }
-    //add materials
-    for(const material of datelog.material) {
-      if(materialMap.has(material._id)) {
-        let materialMapObj = materialMap.get(material._id);
-        materialMapObj.price += material.price;
-        materialMapObj.quantity += material.quantity;
-        materialMap.set(material._id, materialMapObj);
-      }
-      else {
-        materialMap.set(material._id,material);
-      }
-    }
-    finalMaterials = Array.from(materialMap.values());
-    //add completed_images
-    const imagesSet = new Set();
-    for(const image of datelog.completed_images) {
-      imagesSet.add(image);
-    }
-    finalCompletedImages = Array.from(imagesSet);
-  });
-
-  let serviceTime = 0
-  if(totalHours){
-    serviceTime += Number(totalHours)*60; //Converting hours into minutes
-  }
-
-  if(totalMinutes){
-    serviceTime += Number(totalMinutes);
-  }
-
-  return {
-    status: "completed",
-    hours: totalHours,
-    minutes: totalMinutes,
-    material: finalMaterials,
-    completed_images: finalCompletedImages,
-    serviceTime: serviceTime
-  };
-}
 
 
 module.exports = {
@@ -292,6 +237,5 @@ module.exports = {
   phoneNumberFormatter,
   generatePassword,
   promoCode,
-  formatCreatedAt,
-  combineJobDateLogs
+  formatCreatedAt
 };

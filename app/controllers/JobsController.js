@@ -1,8 +1,7 @@
 const db = require("../models");
 const constants = require("../utls/constants");
 var mongoose = require("mongoose");
-const jobEmails = require("../Emails/jobEmails")
-const { combineJobDateLogs}  = require("../utls/helper");
+const jobEmails = require("../Emails/jobEmails");
 const { computeTravelCost } = require("../services/jobServices");
 const datelog = require("../models/datelog.model");
 
