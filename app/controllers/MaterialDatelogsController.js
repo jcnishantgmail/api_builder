@@ -99,10 +99,20 @@ module.exports = {
                     }
                 },
                 {
+                    $addFields: {
+                        formattedDate: {
+                            $dateToString: {
+                                format: "%Y-%m-%d", 
+                                date: "$date"
+                            }
+                        }
+                    }
+                },
+                {
                     $project: {
                         _id: 1,
                         job: 1,
-                        date: 1,
+                        date: "$formattedDate",
                         material: "$material",
                         quantity: 1,
                         createdAt: 1,
