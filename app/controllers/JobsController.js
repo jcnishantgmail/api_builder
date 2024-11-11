@@ -491,7 +491,7 @@ module.exports = {
         return res.status(404).json({message: "Job not found!", code: 404, success: false});
       }
       if(job.status !== 'in-progress') {
-        return res.status(400).json({message: "Invalid input job status!", code: 400, success: false});
+        return res.status(400).json({message: "Job is not in progress!", code: 400, success: false});
       }
 
       if(serviceDatelogs) {
@@ -554,7 +554,7 @@ module.exports = {
         return res.status(404).json({message: "Job not found!", code: 404, success: false});
       }
       if(job.status !== 'in-progress') {
-        return res.status(400).json({message: "Invalid input job status!", code: 400, success: false});
+        return res.status(400).json({message: "Job is not in progress!", code: 400, success: false});
       }
 
       if(serviceDatelogs) {
