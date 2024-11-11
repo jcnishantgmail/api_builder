@@ -40,34 +40,34 @@ module.exports = {
                 {
                     $sort: sortquery
                 },
-                // {
-                //     $lookup: {
-                //         from: "jobs",
-                //         localField: "job",
-                //         foreignField: "_id",
-                //         as: "job"
-                //     }
-                // },
-                // {
-                //     $unwind: {
-                //         path: "$job",
-                //         preserveNullAndEmptyArrays: true
-                //     }
-                // },
-                // {
-                //     $lookup: {
-                //         from: "users",
-                //         localField: "job.contractor",
-                //         foreignField: "_id",
-                //         as: "job.contractor"
-                //     }
-                // },
-                // {
-                //     $unwind: {
-                //         path: "$job.contractor",
-                //         preserveNullAndEmptyArrays: true
-                //     }
-                // },
+                {
+                    $lookup: {
+                        from: "jobs",
+                        localField: "job",
+                        foreignField: "_id",
+                        as: "job"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$job",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "job.contractor",
+                        foreignField: "_id",
+                        as: "job.contractor"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$job.contractor",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
                 {
                     $addFields: {
                         formattedDate: {
