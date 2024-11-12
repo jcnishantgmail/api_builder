@@ -246,6 +246,7 @@ async function contractorPayablesReport(req, res) {
               labour_charge: {$sum: "$labour_charge"},
               other_expense_total: {$sum: "$other_expense_total"},
               net_payable: {$sum: "$net_payable"},
+              payableId: {$first: "$_id"}
             }
           },
           {
@@ -320,6 +321,7 @@ async function contractorPayablesReport(req, res) {
               job: "$job",
               contractor: "$contractor",
               hasMultipleExpenseEntries: "$job.hasMultipleExpenseEntries",
+              payableId: "$payableId",
               status: "$status",
               distance_travelled: 1,
               travel_expense: 1,
