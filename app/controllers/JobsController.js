@@ -41,9 +41,6 @@ module.exports = {
       if(propertyDetail.country) {
         formattedLocation += ', ' + propertyDetail.country;
       }
-      if(req.body.contractor) {
-        req.body.status = 'in-progress';
-      }
       formattedLocation += ".";
       console.log(formattedLocation);
       jobEmails.adminEmailForNewJob({id:created._id,clientName:client.fullName,jobTitle:created.title,description:created.description,location:formattedLocation})
@@ -445,7 +442,6 @@ module.exports = {
       let timeChanged = false;
       if(job.preferedTime.getTime() != preferedTime.getTime()) {
         await db.jobs.updateOne({_id: id}, {preferedTime});
-        //jobEmails.preferredTimeChangeToClient(job);
         timeChanged = true;
       }
       if(contractor){
@@ -476,7 +472,7 @@ module.exports = {
           clientFullName: clientDetail.fullName,
           contractorFullName: contratorDetail.fullName,
           location: formattedLocation,
-          timeChanged: true,
+          timeChanged,
           preferredStartTime
         });
       }
