@@ -571,6 +571,11 @@ module.exports = {
           return expense;
         }));
         await db.contractor_payables.insertMany(expenses);
+        jobEmails.expenseAddedEmailToAdmin({
+          contractorFullName: contractor.fullName,
+          jobTitle: job.title,
+          expenseDate: date
+        });
       }
       return res.status(200).json({success: true, message: "Job logged successfully", code: 200});
 
@@ -635,14 +640,20 @@ module.exports = {
           return expense;
         }));
         await db.contractor_payables.insertMany(expenses);
-        let service_logs = await db.serviceDatelogs.find({job: jobId});
-        let totalHours = 0;
-        for(let log of service_logs) {
-          totalHours += +(log.hours);
-          totalHours += +(log.minutes)/60;
-        }
-        await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), totalHours: totalHours});
+        jobEmails.expenseAddedEmailToAdmin({
+          contractorFullName: contractor.fullName,
+          jobTitle: job.title,
+          expenseDate: date
+        });
       }
+      let service_logs = await db.serviceDatelogs.find({job: jobId});
+      let totalHours = 0;
+      for(let log of service_logs) {
+        totalHours += +(log.hours);
+        totalHours += +(log.minutes)/60;
+      }
+      await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), totalHours: totalHours});
+      
       return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
     } catch(err) {
       return res.status(500).json({message: err.message, code: 500, success: false});
