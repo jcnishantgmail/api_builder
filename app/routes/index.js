@@ -22,5 +22,6 @@ router.use("/contactus", require("./contactUs.routes"));
 router.use("/vat", require("./vats.routes"));
 router.use('/materialdatelogs', require("./materialDatelogs.routes"));
 router.use("/servicedatelogs", require("./serviceDatelogs.routes"));
+router.use("/schedule", require("./schedule.routes"));
 
 module.exports = router;
