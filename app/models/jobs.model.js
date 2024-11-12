@@ -31,6 +31,7 @@ module.exports = (mongoose) => {
       preferedTime:{type:Date},
       invoice: {type: Schema.Types.ObjectId, ref: "invoices"},
       isContractorPaid: {type: Boolean, default: false},
+      expectedTime: {type: Number, default: 0},
       createdAt: Date,
       updatedAt: Date
     },

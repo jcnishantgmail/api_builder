@@ -22,7 +22,7 @@ module.exports = {
       }
       req.body.addedBy = req.identity.id;
       if(!req.body.client){ req.body.client = req.identity.id}
-      let client = await db.users.findById(req.body.client)
+      let client = await db.users.findById(req.body.client);
       let created = await db.jobs.create(req.body);
       let propertyDetail = await db.properties.findById(req.body.property);
       let formattedLocation = '';
@@ -41,10 +41,26 @@ module.exports = {
       if(propertyDetail.country) {
         formattedLocation += ', ' + propertyDetail.country;
       }
+      if(req.body.contractor) {
+        req.body.status = 'in-progress';
+      }
       formattedLocation += ".";
       console.log(formattedLocation);
       jobEmails.adminEmailForNewJob({id:created._id,clientName:client.fullName,jobTitle:created.title,description:created.description,location:formattedLocation})
       if (created) {
+        let adder = await db.users.findOne({_id: req.identity.id}).populate('role');
+        if(adder.role.name === "Admin" && created.contractor && created.expectedTime) {
+          let endDate = new Date(new Date(created.preferedTime).setUTCHours(0, 0, 0, 0));
+          endDate.setDate(endDate.getDate() - 1 + Math.floor(created.expectedTime/8) + (created.expectedTime%8 === 0? 0: 1));
+          await db.schedules.create({
+            contractor: created.contractor,
+            job: created._id,
+            startDate: created.preferedTime,
+            endDate: endDate,
+            totalHours: created.expectedTime
+          });
+        }
+
         return res.status(200).json({
           success: true,
           message: constants.JOBS.CREATED
@@ -376,13 +392,33 @@ module.exports = {
 
   assignContractor: async (req, res)=>{
     try{
-      let {id , contractor, preferedTime} = req.body
-      console.log(preferedTime);
-      console.log(new Date(preferedTime));
+      let {id , contractor, preferedTime, expectedTime} = req.body
       if(!contractor){
         contractor = null
       }
-      
+      if(expectedTime) {
+        await db.jobs.updateOne({_id: id}, {expectedTime: expectedTime});
+        let jobSchedule = await db.schedules.findOne({job: id});
+        let endDate = new Date(new Date(preferedTime).setUTCHours(0, 0, 0, 0));
+        endDate.setDate(endDate.getDate() - 1 + Math.floor(expectedTime/8) + (expectedTime%8 === 0? 0: 1));
+        if(jobSchedule) {
+          await db.schedules.updateOne({job: id}, {
+            contractor: contractor,
+            startDate: new Date(preferedTime),
+            endDate: endDate,
+            totalHours: expectedTime
+          });
+        }
+        else {
+          await db.schedules.create({
+            job: id,
+            contractor: contractor,
+            startDate: new Date(preferedTime),
+            endDate: endDate,
+            totalHours: expectedTime
+          });
+        }
+      }
       let job = await db.jobs.findById(id).populate("property").populate('client');
       let location = [job.property.address, job.property.address2, job.property.state, job.property.zipCode,job.property.country];
       location = location.join(", ")
@@ -599,6 +635,13 @@ module.exports = {
           return expense;
         }));
         await db.contractor_payables.insertMany(expenses);
+        let service_logs = await db.serviceDatelogs.find({job: jobId});
+        let totalHours = 0;
+        for(let log of service_logs) {
+          totalHours += +(log.hours);
+          totalHours += +(log.minutes)/60;
+        }
+        await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), totalHours: totalHours});
       }
       return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
     } catch(err) {

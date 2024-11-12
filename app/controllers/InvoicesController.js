@@ -202,7 +202,7 @@ module.exports = {
         query.jobId = mongoose.Types.ObjectId.createFromHexString(jobId);
       }
       if(startDate && endDate) {
-        startDate = new Date(startDate)//.setUTCHours(0, 0, 0, 0);
+        startDate = new Date(startDate).setUTCHours(0, 0, 0, 0);
         endDate = new Date(endDate).setUTCHours(23, 59, 59, 0);
         query.createdAt = {$gte:new Date(startDate),$lte:new Date(endDate)}
       }
@@ -285,7 +285,8 @@ module.exports = {
           vat_total: "$vat_total",
           total: "$total",
           balance_due: "$balance_due",
-          createdAt: "$createdAt"
+          createdAt: "$createdAt",
+          logoURL: 1
         }
       },
       ];

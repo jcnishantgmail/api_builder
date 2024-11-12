@@ -25,5 +25,6 @@ db.contactus = require("./contactUs.model.js")(mongoose);
 db.vats = require("./vats.model.js")(mongoose);
 db.materialDatelogs = require("./materialDatelog.model.js")(mongoose);
 db.serviceDatelogs = require("./serviceDatelog.model.js")(mongoose);
+db.schedules = require("./schedules.model.js")(mongoose);
 
 module.exports = db;
