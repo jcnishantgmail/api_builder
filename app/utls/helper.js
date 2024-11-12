@@ -218,7 +218,12 @@ const formatCreatedAt = function (createdAt) {
   return `${formattedTime} GMT`;
 }
 
-
+function formatDatetime(dateObj) {
+  const day = dateObj.getUTCDate().toString().padStart(2, '0');
+  const month = dateObj.getUTCMonth().toString().padStart(2, '0');
+  const year = dateObj.getUTCFullYear().toString();
+  return `${day}/${month}/${year}`;
+}
 
 module.exports = {
   generateFileName,
@@ -237,5 +242,6 @@ module.exports = {
   phoneNumberFormatter,
   generatePassword,
   promoCode,
-  formatCreatedAt
+  formatCreatedAt,
+  formatDatetime
 };

@@ -2,20 +2,8 @@ const SmtpController = require("../controllers/SmtpController");
 const dotenv = require("dotenv");
 dotenv.config();
 const { BACK_WEB_URL, FRONT_WEB_URL, ADMIN_WEB_URL } = process.env;
+const { formatDatetime } = require("../utls/helper");
 
-
-function formatDate(dateString) {
-    console.log(dateString);
-    let dateArr = dateString.split('-');
-    return dateArr[2] + "/" + dateArr[1] + "/" + dateArr[0];
-}
-
-function formatDatetime(dateObj) {
-    const day = dateObj.getUTCDate().toString().padStart(2, '0');
-    const month = dateObj.getUTCMonth().toString().padStart(2, '0');
-    const year = dateObj.getUTCFullYear().toString();
-    return `${day}/${month}/${year}`;
-}
 
 const sendInvoiceMail = (options) => {
     let email = options.email;

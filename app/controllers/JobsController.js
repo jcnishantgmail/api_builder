@@ -574,6 +574,12 @@ module.exports = {
           return expense;
         }));
         await db.contractor_payables.insertMany(expenses);
+        if(!job.hasMultipleExpenseEntries) {
+          let expenseRecords = await db.contractor_payables.find({job: jobId});
+          if(expenseRecords.length > 1) {
+            await db.jobs.updateOne({_id: jobId}, {hasMultipleExpenseEntries: true});
+          }
+        }
         jobEmails.expenseAddedEmailToAdmin({
           contractorFullName: contractor.fullName,
           jobTitle: job.title,
@@ -643,6 +649,12 @@ module.exports = {
           return expense;
         }));
         await db.contractor_payables.insertMany(expenses);
+        if(!job.hasMultipleExpenseEntries) {
+          let expenseRecords = await db.contractor_payables.find({job: jobId});
+          if(expenseRecords.length > 1) {
+            await db.jobs.updateOne({_id: jobId}, {hasMultipleExpenseEntries: true});
+          }
+        }
         jobEmails.expenseAddedEmailToAdmin({
           contractorFullName: contractor.fullName,
           jobTitle: job.title,

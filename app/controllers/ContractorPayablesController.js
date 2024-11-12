@@ -1,20 +1,31 @@
 "use strict";
 const db = require("../models");
 var mongoose = require("mongoose");
-
+const paymentEmails = require("../Emails/paymentEmails");
+const {formatDatetime} = require("../utls/helper");
 
 async function contractorPayablesUpdate(req, res) {
   try {
-    const { id } = req.body;
+    const { id, status } = req.body;
     console.log(req.body);
     if(!id) {
       return res.status(400).json({success: false, message: "id missing!"});
     }
-    const payable = await db.contractor_payables.findOne({_id: id, isDeleted: false});
+    const payable = await db.contractor_payables.findOne({_id: id, isDeleted: false}).populate('contractor').populate('job');
     if(!payable) {
       return res.status(404).json({success: false, message: "Payable not found!"});
     }
     const updated = await db.contractor_payables.updateOne({_id:id}, req.body);
+    if(status === 'paid') {
+      paymentEmails.paymentNotificationToContractor({
+        email: payable.contractor.email,
+        id: String(payable.job._id),
+        contractorFullName: payable.contractor.fullName,
+        jobTitle: payable.job.title,
+        amount: payable.net_payable.toFixed(2),
+        date: formatDatetime(payable.date)
+      });
+    }
     return res.status(200).json({success: true, message: "Payable updated!", job: payable.job});
   } catch(err) {
     console.log(err);
@@ -308,6 +319,7 @@ async function contractorPayablesReport(req, res) {
               _id: 0,
               job: "$job",
               contractor: "$contractor",
+              hasMultipleExpenseEntries: "$job.hasMultipleExpenseEntries",
               status: "$status",
               distance_travelled: 1,
               travel_expense: 1,
