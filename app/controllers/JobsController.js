@@ -116,8 +116,14 @@ module.exports = {
   update: async (req, res) => {
     try {
       const id = req.body.id;
-      const data = req.body;
-
+      let data = req.body;
+      let {expectedTime} = req.body;
+      let job = await db.jobs.findOne({_id: id});
+      if(expectedTime) {
+        let endDate = new Date(new Date(job.preferedTime).setUTCHours(0, 0, 0, 0));
+        endDate.setDate(endDate.getDate() - 1 + Math.floor(expectedTime/8) + (expectedTime%8 === 0? 0: 1));
+        await db.schedules.updateOne({job: id}, {expectedTime: expectedTime, endDate: endDate});
+      }
 
       await db.jobs.updateOne({_id: id}, data);
 
@@ -321,7 +327,8 @@ module.exports = {
           materialDatelogs: "$materialDatelogs",
           serviceDatelogs: "$serviceDatelogs",
           isContractorPaid: 1,
-          invoice: 1
+          invoice: 1,
+          expectedTime: 1
         },
       },
       {
@@ -649,7 +656,7 @@ module.exports = {
         totalHours += +(log.minutes)/60;
       }
       await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), totalHours: totalHours});
-      
+      await db.jobs.updateOne({_id: jobId}, {expectedTime: totalHours});
       return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
     } catch(err) {
       return res.status(500).json({message: err.message, code: 500, success: false});

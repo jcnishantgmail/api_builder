@@ -3,7 +3,7 @@ const db = require("../models");
 
 module.exports = {
     listing: async function (req, res) {
-        let { jobId, startDate, isDeleted,endDate, sortBy, page, count } = req;
+        let { jobId, startDate, isDeleted,endDate, sortBy, page, count } = req.query;
         let query = {};
         try {
             if(jobId) {
@@ -32,7 +32,7 @@ module.exports = {
                 -1 :
                 1 :
                 -1;
-            
+            console.log(query);
             let pipeline = [
                 {
                     $match: query

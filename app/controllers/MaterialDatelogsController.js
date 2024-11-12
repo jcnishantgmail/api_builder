@@ -3,7 +3,7 @@ const db = require("../models");
 
 module.exports = {
     listing: async function (req, res) {
-        let { materialId, jobId, startDate, isDeleted,endDate, sortBy, page, count } = req;
+        let { materialId, jobId, startDate, isDeleted,endDate, sortBy, page, count } = req.query;
         let query = {};
         try {
             if(jobId) {

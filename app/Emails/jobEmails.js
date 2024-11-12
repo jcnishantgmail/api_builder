@@ -275,7 +275,7 @@ const expenseAddedEmailToAdmin = (options) => {
                                 <td style="background-color: #fff;padding: 40px 32px;">
                                 <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >Expense Added By Contractor</p> <p style="font-size: 16px;font-weight: 400;color: #384860;">Dear Admin,</p>
                                 <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">This is to notify you that <strong>${options.contractorFullName}</strong> has added expense for the job titled <strong>${options.jobTitle}</strong> for date ${options.date}/p>
-                                <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >Please confirm the expense in Payable to Contractor dashboard.</p>                             
+                                <p style="font-size: 24px;font-weight: 400;color:#121A26;margin-bottom: 14px;margin-top: 0px; " >Please confirm the expense in Payable to Contractor dashboard.</p>                             
                                 <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
                                 <p style="font-size: 16px;font-weight: 400;color: #384860;margin: 0px;">Builder Management Team.</p>
                                 </td>
