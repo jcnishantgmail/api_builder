@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 module.exports = {
     listing: async function(req, res) {
         try {
-            let {  page, count, sortBy, contractor, startDate, endDate } = req.query;
+            let {  page, count, sortBy, contractor, job, startDate, endDate } = req.query;
             var query = {};
       
             query.isDeleted = false;
@@ -23,12 +23,19 @@ module.exports = {
             if (contractor) {
               query.contractor = mongoose.Types.ObjectId.createFromHexString(contractor)
             }
+
+            if(job) {
+              query.job = mongoose.Types.ObjectId.createFromHexString(job);
+            }
+
             if(startDate && endDate){
                startDate = new Date(startDate).setUTCHours(0,0,0,0)
                endDate = new Date(endDate).setUTCHours(23,59,59,0)
                query.startDate = {$gte:new startDate,$lte: endDate}
             } 
-      
+
+            query.isDeleted = false;
+            console.log(query);
             const pipeline = [{
               $match: query,
             },
