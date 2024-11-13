@@ -118,7 +118,7 @@ module.exports = {
           return a.date - b.date;
         });
       }
-      
+
       return res.status(200).json({
         success: true,
         data: detail
@@ -581,19 +581,21 @@ module.exports = {
           expense.date = date;
           expense.status = "unpaid";
           expense.labour_charge = serviceDatelogs.reduce((tot, curServiceDatelog) => {
-            return tot + curServiceDatelog.servicefee;
+            return (+tot) + (+curServiceDatelog.servicefee);
           }, 0);
-          expense.travel_expense = await computeTravelCost(expense.distance_travelled);
+          expense.travel_expense = await computeTravelCost(+expense.distance_travelled);
           expense.other_expense_total = expense.other_expense.reduce((tot, cur)=>{
-            return tot + cur.amount;
+            return (+tot) + (+cur.amount);
           }, 0);
-          expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (expense.labour_charge);
-          expense.labour_charge = expense.labour_charge.toFixed(2);
-          expense.travel_expense = expense.travel_expense.toFixed(2);
-          expense.other_expense_total = expense.other_expense_total.toFixed(2);
-          expense.cis_amt = expense.cis_amt.toFixed(2);
+          expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (+expense.labour_charge);
+          expense.labour_charge = +expense.labour_charge.toFixed(2);
+          expense.travel_expense = +expense.travel_expense.toFixed(2);
+          expense.other_expense_total = +expense.other_expense_total.toFixed(2);
+          expense.cis_amt = +expense.cis_amt.toFixed(2);
+          console.log(typeof expense.labour_charge, typeof expense.travel_expense, typeof expense.other_expense_total, typeof expense.cis_amt);
           expense.net_payable = expense.labour_charge + expense.travel_expense + expense.other_expense_total - expense.cis_amt;
-          expense.net_payable = expense.net_payable.toFixed(2);
+          console.log(typeof expense.net_payable, expense.net_payable);
+          expense.net_payable = +expense.net_payable.toFixed(2);
           return expense;
         }));
         await db.contractor_payables.insertMany(expenses);
@@ -612,6 +614,7 @@ module.exports = {
       return res.status(200).json({success: true, message: "Job logged successfully", code: 200});
 
     } catch(err) {
+      console.log(err);
       return res.status(500).json({success: false, message: err.message, code: 500});
     }
   },
@@ -661,18 +664,18 @@ module.exports = {
           expense.date = date;
           expense.status = "unpaid";
           expense.labour_charge = serviceDatelogs.reduce((tot, curServiceDatelog) => {
-            return tot + curServiceDatelog.servicefee;
+            return (+tot) + (+curServiceDatelog.servicefee);
           }, 0);
           expense.travel_expense = await computeTravelCost(expense.distance_travelled);
           expense.other_expense_total = expense.other_expense.reduce((tot, cur)=>{
-            return tot + cur.amount;
+            return (+tot) + (+cur.amount);
           }, 0);
-          expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (expense.labour_charge);
+          expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (+expense.labour_charge);
           expense.net_payable = expense.labour_charge + expense.travel_expense + expense.other_expense_total - expense.cis_amt;
-          expense.labour_charge = expense.labour_charge.toFixed(2);
-          expense.travel_expense = expense.travel_expense.toFixed(2);
-          expense.other_expense_total = expense.other_expense_total.toFixed(2);
-          expense.net_payable = expense.net_payable.toFixed(2);
+          expense.labour_charge = +expense.labour_charge.toFixed(2);
+          expense.travel_expense = +expense.travel_expense.toFixed(2);
+          expense.other_expense_total = +expense.other_expense_total.toFixed(2);
+          expense.net_payable = +expense.net_payable.toFixed(2);
           return expense;
         }));
         await db.contractor_payables.insertMany(expenses);
@@ -694,11 +697,12 @@ module.exports = {
         totalHours += +(log.hours);
         totalHours += +(log.minutes)/60;
       }
-      totalHours = totalHours.toFixed(2);
+      totalHours = +totalHours.toFixed(2);
       await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), totalHours: totalHours});
       await db.jobs.updateOne({_id: jobId}, {expectedTime: totalHours});
       return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
     } catch(err) {
+      console.log(err);
       return res.status(500).json({message: err.message, code: 500, success: false});
     }
   },
