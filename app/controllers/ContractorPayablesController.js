@@ -188,15 +188,15 @@ async function contractorPayablesList(req, res) {
 
 async function contractorPayablesReport(req, res) {
   try {
-    let { page, count, sortBy, status, contractor, job, startDate, endDate} = req.query;
+    let { search, page, count, sortBy, status, contractor, job, startDate, endDate} = req.query;
         let query = {};
-  
-        // if (search) {
-        //   query.$or = [
-        //     { title: { $regex: search, $options: "i" } },
-        //     { description: { $regex: search, $options: "i" } },
-        //   ];
-        // }
+        let searchQuery = {};
+        if (search) {
+          searchQuery.$or = [
+            { "job.title": { $regex: search, $options: "i" } },
+            { "contractor.fullName": { $regex: search, $options: "i" } },
+          ];
+        }
   
         query.isDeleted = false;
   
@@ -218,18 +218,16 @@ async function contractorPayablesReport(req, res) {
 
         if(status) {
           query.status = status;
-        } else {
-          query.status = 'unpaid';
         }
 
         if(startDate && endDate){
             startDate = new Date(startDate).setUTCHours(0,0,0,0)
-            endDate = new Date(endDate).setUTCHours(23,59,59,0)
+            startDate = new Date(startDate);
+            endDate = new Date(endDate).setUTCHours(23,59,59,0);
+            endDate = new Date(endDate);
             query.date = {$gte: startDate,$lte: endDate}
          }
-
-        query.isDeleted = false;
-
+        console.log(query);
         const pipeline = [
           { $match: query },
           { $sort: sortquery },
@@ -237,7 +235,8 @@ async function contractorPayablesReport(req, res) {
             $group: {
               _id: {
                 contractor: "$contractor",
-                job: "$job"
+                job: "$job",
+                status: "$status"
               },
               status: {$first: "$status"},
               distance_travelled: {$sum: "$distance_travelled"},
@@ -333,7 +332,8 @@ async function contractorPayablesReport(req, res) {
               createdAt: 1,
               updatedAt: 1
             },
-          }
+          },
+          {$match: searchQuery}
         ];
   
         const total = await db.contractor_payables.aggregate([...pipeline]);
@@ -345,11 +345,99 @@ async function contractorPayablesReport(req, res) {
         }
   
         const result = await db.contractor_payables.aggregate([...pipeline]);
-  
+
+        let newQuery = {};
+        
+        newQuery.isDeleted = false;
+
+        
+        if(contractor) {
+          newQuery.contractor = mongoose.Types.ObjectId.createFromHexString(contractor);
+        }
+
+        if(job) {
+          newQuery.job = mongoose.Types.ObjectId.createFromHexString(job);
+        }
+
+        if(startDate && endDate){
+            startDate = new Date(startDate).setUTCHours(0,0,0,0)
+            startDate = new Date(startDate);
+            endDate = new Date(endDate).setUTCHours(23,59,59,0);
+            endDate = new Date(endDate);
+            newQuery.date = {$gte: startDate,$lte: endDate}
+         }
+
+        let pipeline2 = [
+          {
+            $match: newQuery
+          },
+          {
+          $lookup: {
+            from: "jobs",
+            localField: "_id.job",
+            foreignField: "_id",
+            as: "job",
+            },
+          },
+          {
+            $unwind: { path: "$job", preserveNullAndEmptyArrays: true },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "_id.contractor",
+              foreignField: "_id",
+              as: "contractor",
+            },
+          },
+          {
+            $unwind: { path: "$contractor", preserveNullAndEmptyArrays: true },
+          },
+          {
+            $match: searchQuery
+          },
+          {
+            $group: {
+              _id: {
+                status: "$status"
+              },
+              status: {$first: "$status"},
+              hours: {$sum: "$hours"}
+            }
+          },
+          {
+            $sort: {
+              status: -1
+            }
+          }
+        ];
+
+        let hourData = await db.contractor_payables.aggregate(pipeline2);
+        let result2 = {
+          paidHours: 0,
+          unpaidHours: 0
+        };
+        if(hourData.length === 2) {
+          result2.paidHours = hourData[0].hours;
+          result2.unpaidHours = hourData[1].hours;
+        } else if(hourData.length === 1) {
+          if(hourData[0].status === 'unpaid') {
+            result2.unpaidHours = hourData[0].hours;
+            result2.paidHours = 0;
+          } else {
+            result2.paidHours = hourData[0].hours;
+            result2.unpaidHours = 0;
+          }
+        } else {
+          result2.paidHours = 0;
+          result2.unpaidHours = 0;
+        }
+        
         return res.status(200).json({
           success: true,
           data: result,
-          total: total.length,
+          timeData: result2,
+          total: total.length
         });
   } catch(err) {
     return res.status(500).json({
@@ -358,6 +446,181 @@ async function contractorPayablesReport(req, res) {
     });
   }
 }
+
+
+// async function contractorPayablesReport(req, res) {
+//   try {
+//     let { search, page, count, sortBy, status, contractor, job, startDate, endDate} = req.query;
+//         let query = {};
+//         let searchQuery = {};
+//         if (search) {
+//           searchQuery.$or = [
+//             { "job.title": { $regex: search, $options: "i" } },
+//             { "contractor.fullName": { $regex: search, $options: "i" } },
+//           ];
+//         }
+  
+//         query.isDeleted = false;
+  
+//         let sortquery = {};
+//         if (sortBy) {
+//           const [field = "createdAt", sortType = "desc"] = sortBy.split(" ");
+//           sortquery[field] = sortType === "desc" ? -1 : 1;
+//         } else {
+//           sortquery.createdAt = -1;
+//         }
+        
+//         if(contractor) {
+//           query.contractor = mongoose.Types.ObjectId.createFromHexString(contractor);
+//         }
+
+//         if(job) {
+//             query.job = mongoose.Types.ObjectId.createFromHexString(job);
+//         }
+
+//         if(status) {
+//           query.status = status;
+//         }
+
+//         if(startDate && endDate){
+//             startDate = new Date(startDate).setUTCHours(0,0,0,0)
+//             startDate = new Date(startDate);
+//             endDate = new Date(endDate).setUTCHours(23,59,59,0);
+//             endDate = new Date(endDate);
+//             query.date = {$gte: startDate,$lte: endDate}
+//          }
+
+//         query.isDeleted = false;
+//         console.log(query);
+//         const pipeline = [
+//           { $match: query },
+//           { $sort: sortquery },
+//           {
+//             $group: {
+//               _id: {
+//                 contractor: "$contractor",
+//                 job: "$job",
+//                 status: "$status"
+//               },
+//               status: {$first: "$status"},
+//               distance_travelled: {$sum: "$distance_travelled"},
+//               travel_expense: {$sum: "$travel_expense"},
+//               cis_amt: {$sum: "$cis_amt"},
+//               labour_charge: {$sum: "$labour_charge"},
+//               other_expense_total: {$sum: "$other_expense_total"},
+//               net_payable: {$sum: "$net_payable"},
+//               payableId: {$first: "$_id"}
+//             }
+//           },
+//           {
+//             $lookup: {
+//               from: "jobs",
+//               localField: "_id.job",
+//               foreignField: "_id",
+//               as: "job",
+//             },
+//           },
+//           {
+//             $unwind: { path: "$job", preserveNullAndEmptyArrays: true },
+//           },
+//           {
+//             $lookup: {
+//               from: "users",
+//               localField: "_id.contractor",
+//               foreignField: "_id",
+//               as: "contractor",
+//             },
+//           },
+//           {
+//             $unwind: { path: "$contractor", preserveNullAndEmptyArrays: true },
+//           },
+//           {
+//             $lookup: {
+//               from: "invoices",
+//               localField: "job.invoice",
+//               foreignField: "_id",
+//               as: "job.invoice"
+//             }
+//           },
+//           {
+//             $unwind: {path: "$job.invoice", preserveNullAndEmptyArrays: true}
+//           },
+//           {
+//             $lookup: {
+//               from: "users",
+//               localField: "job.invoice.client",
+//               foreignField: "_id",
+//               as: "job.invoice.client"
+//             }
+//           },
+//           {
+//             $unwind: {path: "$job.invoice.client", preserveNullAndEmptyArrays: true}
+//           },
+//           {
+//             $lookup: {
+//               from: "users",
+//               localField: "job.invoice.addedBy",
+//               foreignField: "_id",
+//               as: "job.invoice.addedBy"
+//             }
+//           },
+//           {
+//             $unwind: {path: "$job.invoice.addedBy", preserveNullAndEmptyArrays: true}
+//           },
+//           {
+//             $addFields: {
+//                 formattedDate: {
+//                     $dateToString: {
+//                         format: "%Y-%m-%d", 
+//                         date: "$date"
+//                     }
+//                 }
+//             }
+//           },
+          
+//           {
+//             $project: {
+//               _id: 0,
+//               job: "$job",
+//               contractor: "$contractor",
+//               hasMultipleExpenseEntries: "$job.hasMultipleExpenseEntries",
+//               payableId: "$payableId",
+//               status: "$status",
+//               distance_travelled: 1,
+//               travel_expense: 1,
+//               cis_amt: 1,
+//               labour_charge: 1,
+//               other_expense_total: 1,
+//               net_payable: 1,
+//               isDeleted: 1,
+//               createdAt: 1,
+//               updatedAt: 1
+//             },
+//           }
+//         ];
+  
+//         const total = await db.contractor_payables.aggregate([...pipeline]);
+  
+//         if (page && count) {
+//           const skipNo = (Number(page) - 1) * Number(count);
+  
+//           pipeline.push({ $skip: skipNo }, { $limit: Number(count) });
+//         }
+  
+//         const result = await db.contractor_payables.aggregate([...pipeline]);
+  
+//         return res.status(200).json({
+//           success: true,
+//           data: result,
+//           total: total.length,
+//         });
+//   } catch(err) {
+//     return res.status(500).json({
+//       success: false,
+//       error: { code: 500, message: err.message },
+//     });
+//   }
+// }
 
 async function contractorPayablesDelete(req, res) {
     const {jobId, contractorId} = req.body;
