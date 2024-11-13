@@ -96,6 +96,28 @@ module.exports = {
         });
       }
       let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property').populate('category');
+      detail = detail.toObject();
+      detail.expense = await db.contractor_payables.find({job: id});
+      
+      if(detail.expense) {
+        detail.expense = detail.expense.sort((a, b) => {
+          return a.date - b.date;
+        });
+      }
+      detail.materialsDatelogs = await db.materialDatelogs.find({job: id});
+      
+      if(detail.materialDatelogs) {
+        detail.materialDatelogs = detail.materialDatelogs.sort((a, b) => {
+          return a.date - b.date;
+        });
+      }
+
+      detail.serviceDatelogs = await db.serviceDatelogs.find({job: id});
+      if(detail.serviceDatelogs) {
+        detail.serviceDatelogs = detail.serviceDatelogs.sort((a, b) => {
+          return a.date - b.date;
+        });
+      }
       
       return res.status(200).json({
         success: true,
@@ -320,12 +342,8 @@ module.exports = {
           contractorEmail:"$contractor_detail.email",
           hourlyRate:"$contractor_detail.hourlyRate",
           preferedTime:"$preferedTime",
-          material:"$material",
           hours:"$hours",
           minutes:"$minutes",
-          materialCategory: "$materialCategory",
-          materialDatelogs: "$materialDatelogs",
-          serviceDatelogs: "$serviceDatelogs",
           isContractorPaid: 1,
           invoice: 1,
           expectedTime: 1
