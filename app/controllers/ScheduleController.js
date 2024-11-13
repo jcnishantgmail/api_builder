@@ -76,7 +76,8 @@ module.exports = {
                 contractorName: "$contractor.fullName",
                 startDate: 1,
                 endDate: 1,
-                totalHours: 1
+                totalHours: 1,
+                actualHours: 1
               },
             },
             {

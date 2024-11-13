@@ -9,6 +9,7 @@ module.exports = (mongoose) => {
       startDate: Date,
       endDate: Date,
       totalHours: {type: Number, default: 0},
+      actualHours: {type: Number, default: 0},
       isDeleted: {type: Boolean, default: false}
     },
     { timestamps: true }

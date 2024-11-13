@@ -692,14 +692,13 @@ module.exports = {
         });
       }
       let service_logs = await db.serviceDatelogs.find({job: jobId});
-      let totalHours = 0;
+      let actualHours = 0;
       for(let log of service_logs) {
-        totalHours += +(log.hours);
-        totalHours += +(log.minutes)/60;
+        actualHours += +(log.hours);
+        actualHours += +(log.minutes)/60;
       }
-      totalHours = +totalHours.toFixed(2);
-      await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), totalHours: totalHours});
-      await db.jobs.updateOne({_id: jobId}, {expectedTime: totalHours});
+      actualHours = +actualHours.toFixed(2);
+      await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), actualHours});
       return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
     } catch(err) {
       console.log(err);
