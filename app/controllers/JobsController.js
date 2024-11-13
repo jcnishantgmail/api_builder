@@ -570,7 +570,12 @@ module.exports = {
             return tot + cur.amount;
           }, 0);
           expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (expense.labour_charge);
+          expense.labour_charge = expense.labour_charge.toFixed(2);
+          expense.travel_expense = expense.travel_expense.toFixed(2);
+          expense.other_expense_total = expense.other_expense_total.toFixed(2);
+          expense.cis_amt = expense.cis_amt.toFixed(2);
           expense.net_payable = expense.labour_charge + expense.travel_expense + expense.other_expense_total - expense.cis_amt;
+          expense.net_payable = expense.net_payable.toFixed(2);
           return expense;
         }));
         await db.contractor_payables.insertMany(expenses);
@@ -646,6 +651,10 @@ module.exports = {
           }, 0);
           expense.cis_amt = (0.01) * (+contractor.cis_rate.rate) * (expense.labour_charge);
           expense.net_payable = expense.labour_charge + expense.travel_expense + expense.other_expense_total - expense.cis_amt;
+          expense.labour_charge = expense.labour_charge.toFixed(2);
+          expense.travel_expense = expense.travel_expense.toFixed(2);
+          expense.other_expense_total = expense.other_expense_total.toFixed(2);
+          expense.net_payable = expense.net_payable.toFixed(2);
           return expense;
         }));
         await db.contractor_payables.insertMany(expenses);
@@ -667,6 +676,7 @@ module.exports = {
         totalHours += +(log.hours);
         totalHours += +(log.minutes)/60;
       }
+      totalHours = totalHours.toFixed(2);
       await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), totalHours: totalHours});
       await db.jobs.updateOne({_id: jobId}, {expectedTime: totalHours});
       return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
