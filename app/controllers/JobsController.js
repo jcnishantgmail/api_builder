@@ -3,7 +3,6 @@ const constants = require("../utls/constants");
 var mongoose = require("mongoose");
 const jobEmails = require("../Emails/jobEmails");
 const { computeTravelCost } = require("../services/jobServices");
-const datelog = require("../models/datelog.model");
 
 
 
@@ -104,7 +103,7 @@ module.exports = {
           return a.date - b.date;
         });
       }
-      detail.materialsDatelogs = await db.materialDatelogs.find({job: id});
+      detail.materialsDatelogs = await db.materialDatelogs.find({job: id}).populate('material');
       
       if(detail.materialDatelogs) {
         detail.materialDatelogs = detail.materialDatelogs.sort((a, b) => {
