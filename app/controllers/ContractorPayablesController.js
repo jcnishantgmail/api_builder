@@ -407,7 +407,7 @@ async function contractorPayablesReport(req, res) {
           },
           {
             $sort: {
-              status: -1
+              status: 1
             }
           }
         ];
@@ -432,7 +432,7 @@ async function contractorPayablesReport(req, res) {
           result2.paidHours = 0;
           result2.unpaidHours = 0;
         }
-        
+
         return res.status(200).json({
           success: true,
           data: result,
