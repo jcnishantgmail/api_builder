@@ -711,7 +711,8 @@ module.exports = {
             experience_level: "$experience_level",
             skills_detail:"$skills_detail",
             certificate: "$certificate",
-            cis_rate: "$cis_rate"
+            cis_rate: "$cis_rate",
+            cisRateLog: "$cisRateLog"
           },
         },
         
