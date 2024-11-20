@@ -546,10 +546,24 @@ module.exports = {
         console.log(typeof req.body.hourlyRate);
         console.log(typeof oldHourlyRate, oldHourlyRate);
         if((+req.body.hourlyRate) != (+oldHourlyRate)) {
-          user.hourlyRateLog.push({hourlyRate: +req.body.hourlyRate, rateUpdatedAt: new Date()});
+          user.hourlyRateLog.push({hourlyRate: +req.body.hourlyRate, rateUpdatedAt: new Date(new Date().setUTCHours(0,0,0,0))});
           req.body.hourlyRateLog  = user.hourlyRateLog;
         }
       }
+      if(req.body.cis_rate) {
+        let cisRate = await db.cis_rates.findOne({_id: req.body.cis_rate, isDeleted: false});
+        if(cisRate) {
+          if(user.cisRateLog && cisRate.rate != user.cisRateLog[user.cisRateLog.length-1].rate) {
+            req.body.cisRateLog = [...user.cisRateLog, {
+                rate: cisRate.rate,
+                cisUpdatedAt: new Date(new Date().setUTCHours(0,0,0,0))
+              }]
+            }
+          }
+      }
+      
+      
+
       const updatedUser = await Users.updateOne({
         _id: id
       }, req.body);
@@ -1071,7 +1085,17 @@ module.exports = {
         }
         data.addedBy = req.identity.id ? req.identity.id : req.identity._id
         if(data.hourlyRate) {
-          data.hourlyRateLog = [{hourlyRate: +req.body.hourlyRate, rateUpdatedAt: new Date()}];
+          data.hourlyRateLog = [{hourlyRate: +req.body.hourlyRate, rateUpdatedAt: new Date(new Date().setUTCHours(0,0,0,0))}];
+        }
+        if(data.cis_rate) {
+          let cisRate = await db.cis_rates.findOne({_id: data.cis_rate});
+          if(cisRate) {
+            data.cisRateLog = [{
+              date: new Date(new Date().setUTCHours(0,0,0,0)),
+              rate: cisRate.rate
+            }];
+          }
+          
         }
         // Create a user
         const user = new Users(data);

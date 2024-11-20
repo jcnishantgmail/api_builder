@@ -47,6 +47,7 @@ module.exports = (mongoose) => {
       updatedAt: Date,
       certificate: {type: Array, default: []},
       cis_rate: {type: Schema.Types.ObjectId, ref: 'cis_rates'},
+      cisRateLog: {type: Array, default: []},
       website: {type: String},
       vat_number: {type: String},
       bank_account_details: bankAccountDetailsSchema
