@@ -89,7 +89,6 @@ async function contactUsList(req, res) {
             }
           );
         }
-        console.log(pipeline);
         const result = await db.contactus.aggregate([...pipeline]);
   
         return res.status(200).json({

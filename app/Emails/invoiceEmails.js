@@ -7,7 +7,6 @@ const { formatDatetime } = require("../utls/helper");
 
 const sendInvoiceMail = (options) => {
     let email = options.email;
-    console.log(options);
     options.materials = options.materials.map((material) => {
         material.date = new Date(material.date);
         return material;

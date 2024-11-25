@@ -57,7 +57,6 @@ async function travelRatesList(req, res) {
             }
           );
         }
-        console.log(pipeline);
         const result = await db.travel_rates.aggregate([...pipeline]);
   
         return res.status(200).json({

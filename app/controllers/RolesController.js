@@ -32,7 +32,6 @@ module.exports = {
                     },
                 });
             }
-            console.log(data)
             const created = await db.roles.create(data);
 
             return res.status(200).json({
@@ -40,7 +39,6 @@ module.exports = {
                 message: constants.roles.CREATED,
             });
         } catch (err) {
-            console.log(err)
             return res.status(400).json({
                 success: false,
                 error: { code: 400, message: '' + err },

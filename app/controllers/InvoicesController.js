@@ -43,7 +43,6 @@ module.exports = {
       const client = await db.users.findById(data.client);
       created.email = client["email"];
       await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id, isInvoiceGenerated: true});
-      console.log("created - ", created);
       invoiceEmails.sendInvoiceMail(created);
       await db.invoices.updateOne({_id: created["_id"]},{status: "sent", dueDate: created.dueDate.setUTCHours(23, 59, 59, 0)});  //email sent
       return res.status(200).json({

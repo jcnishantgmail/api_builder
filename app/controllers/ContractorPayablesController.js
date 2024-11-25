@@ -7,7 +7,6 @@ const {formatDatetime} = require("../utls/helper");
 async function contractorPayablesUpdate(req, res) {
   try {
     const { id, status } = req.body;
-    console.log(req.body);
     if(!id) {
       return res.status(400).json({success: false, message: "id missing!"});
     }
@@ -28,7 +27,6 @@ async function contractorPayablesUpdate(req, res) {
     }
     return res.status(200).json({success: true, message: "Payable updated!", job: payable.job});
   } catch(err) {
-    console.log(err);
     return res.status(500).json({success: false, message: err.message});
   }
 }
@@ -227,7 +225,6 @@ async function contractorPayablesReport(req, res) {
             endDate = new Date(endDate);
             query.date = {$gte: startDate,$lte: endDate}
          }
-        console.log(query);
         const pipeline = [
           { $match: query },
           { $sort: sortquery },
@@ -491,7 +488,6 @@ async function contractorPayablesReport(req, res) {
 //          }
 
 //         query.isDeleted = false;
-//         console.log(query);
 //         const pipeline = [
 //           { $match: query },
 //           { $sort: sortquery },

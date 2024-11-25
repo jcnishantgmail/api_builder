@@ -95,7 +95,6 @@ module.exports = {
 
   listing: async (req, res) => {
     try {
-      console.log("iiiiiiiiiiiii")
       const { search, page, count, sortBy, status, addedBy, type, parent_discounts, discounts_type } = req.query;
       var query = {};
 
@@ -202,7 +201,6 @@ module.exports = {
         total: total.length,
       });
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         success: false,
         error: { code: 500, message: "" + err },

@@ -41,7 +41,6 @@ module.exports = {
         formattedLocation += ', ' + propertyDetail.country;
       }
       formattedLocation += ".";
-      console.log(formattedLocation);
       jobEmails.adminEmailForNewJob({id:created._id,clientName:client.fullName,jobTitle:created.title,description:created.description,location:formattedLocation})
       if (created) {
         let adder = await db.users.findOne({_id: req.identity.id}).populate('role');
@@ -68,7 +67,6 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log("err",err)
       return res.status(500).json({
         success: false,
         error: {
@@ -123,7 +121,6 @@ module.exports = {
         data: detail
       });
     } catch (err) {
-      console.log(err);
       return res.status(500).json({
         success: false,
         error: {
@@ -462,7 +459,6 @@ module.exports = {
       formattedLocation += ".";
       await db.jobs.updateOne({_id:id},{contractor:contractor});
       preferedTime = new Date(preferedTime);
-      console.log(preferedTime);
       let timeChanged = false;
       if(job.preferedTime.getTime() != preferedTime.getTime()) {
         await db.jobs.updateOne({_id: id}, {preferedTime});
@@ -591,9 +587,7 @@ module.exports = {
           expense.travel_expense = +expense.travel_expense.toFixed(2);
           expense.other_expense_total = +expense.other_expense_total.toFixed(2);
           expense.cis_amt = +expense.cis_amt.toFixed(2);
-          console.log(typeof expense.labour_charge, typeof expense.travel_expense, typeof expense.other_expense_total, typeof expense.cis_amt);
           expense.net_payable = expense.labour_charge + expense.travel_expense + expense.other_expense_total - expense.cis_amt;
-          console.log(typeof expense.net_payable, expense.net_payable);
           expense.net_payable = +expense.net_payable.toFixed(2);
           return expense;
         }));
@@ -613,7 +607,6 @@ module.exports = {
       return res.status(200).json({success: true, message: "Job logged successfully", code: 200});
 
     } catch(err) {
-      console.log(err);
       return res.status(500).json({success: false, message: err.message, code: 500});
     }
   },
@@ -700,7 +693,6 @@ module.exports = {
       await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), actualHours});
       return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
     } catch(err) {
-      console.log(err);
       return res.status(500).json({message: err.message, code: 500, success: false});
     }
   },

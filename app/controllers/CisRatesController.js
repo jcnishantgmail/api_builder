@@ -55,7 +55,6 @@ async function cisRatesList(req, res) {
             }
           );
         }
-        console.log(pipeline);
         const result = await db.cis_rates.aggregate([...pipeline]);
   
         return res.status(200).json({

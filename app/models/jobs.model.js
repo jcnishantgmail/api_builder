@@ -12,7 +12,7 @@ module.exports = (mongoose) => {
       completed_images: {type: Array, default: []},
       status: { type: "String", enum: ["pending", "in-progress", "paused" ,"completed", "cancelled"], default: "pending" },
       addedBy: { type: Schema.Types.ObjectId, ref: "users", },
-      contractor: { type: Schema.Types.ObjectId, ref: "users", },
+      contractor: [{ type: Schema.Types.ObjectId, ref: "users" }],
       client: { type: Schema.Types.ObjectId, ref: "users", },
       property: { type: Schema.Types.ObjectId, ref: "properties", },
       isDeleted: { type: Boolean, default: false },

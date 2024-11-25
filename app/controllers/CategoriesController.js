@@ -467,7 +467,6 @@ module.exports = {
       return response.success(null, constants.CATEGORY.CREATED, req, res);
     }
     catch (error) {
-      // console.log(error,"err");
       return response.failed(null, `${error}`, req, res);
     }
   },

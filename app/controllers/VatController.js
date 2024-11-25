@@ -59,7 +59,6 @@ async function vatList(req, res) {
             }
           );
         }
-        console.log(pipeline);
         const result = await db.vats.aggregate([...pipeline]);
   
         return res.status(200).json({
@@ -114,14 +113,12 @@ async function vatAdd(req, res) {
     try {
         if(!isNaN(+rate) && +rate >= 0) {
             const existing = await db.vats.findOne({rate: +rate, isDeleted: false});
-            console.log(existing);
             if(existing) {
                 return res.status(400).json({code: 400, message: "VAT rate already exists!"});
             }
             const created = await db.vats.create({rate: +rate});
             return res.status(200).json({code: 200, message: "New VAT rate added"});
         } else {
-            console.log(rate);
             return res.status(400).json({code: 400, message: "invalid input!"});
         }
     } catch(err) {

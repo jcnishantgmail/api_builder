@@ -135,7 +135,6 @@ module.exports = {
 
   adminLogin: async (req, res) => {
     try {
-      console.log("admin login")
       const data = req.body;
       if (!req.body.email || typeof req.body.email == undefined) {
         return res.status(404).json({
@@ -417,7 +416,6 @@ module.exports = {
       const user_data = await Users.findOne({
         _id: id
       }).populate("role", 'id name permissions').populate("skills").populate('cis_rate');
-      console.log(user_data)
       const token = jwt.sign({
         id: user_data.id,
         role: user_data.role._id
@@ -526,13 +524,10 @@ module.exports = {
       if (req.body.email) {
         req.body.email = req.body.email.toLowerCase()
       }
-      // console.log(req.body,"++++++++++++++updatedUser")
       const requestingUser = await req.identity.populate('role');
-      console.log(requestingUser);
       if(requestingUser.role.name === 'Contractor') {
         if(requestingUser._id.toString() === id) {
           let { hourlyRate } = req.body;
-          console.log(hourlyRate);
           if(hourlyRate) {
             return res.status(400).json({message: "You are not allowed to modify hourly rate", code: 400});
           }
@@ -543,8 +538,6 @@ module.exports = {
       }
       const oldHourlyRate = user.hourlyRate;
       if(req.body.hourlyRate) {
-        console.log(typeof req.body.hourlyRate);
-        console.log(typeof oldHourlyRate, oldHourlyRate);
         if((+req.body.hourlyRate) != (+oldHourlyRate)) {
           user.hourlyRateLog.push({hourlyRate: +req.body.hourlyRate, rateUpdatedAt: new Date(new Date().setUTCHours(0,0,0,0))});
           req.body.hourlyRateLog  = user.hourlyRateLog;
@@ -574,7 +567,6 @@ module.exports = {
         message: constants.onBoarding.PROFILE_UPDATED,
       });
     } catch (err) {
-      console.log(err.message);
       return res.status(400).json({
         success: false,
         error: {
@@ -807,8 +799,6 @@ module.exports = {
       query.email = req.body.email.toLowerCase();
       query.isDeleted = false;
       const user = await Users.findOne(query).populate('role');
-
-      console.log(user)
       if (user && user.role.loginPortal == 'admin') {
         const verificationCode = await helper.generateVerificationCode(6);
 
@@ -1833,7 +1823,6 @@ module.exports = {
       if (country) {
         query.country = country;
       }
-      console.log(query)
       const pipeline = [
 
         {
@@ -2087,7 +2076,6 @@ module.exports = {
       message: "Verification code send to your number successfully"
     }); 
     } catch (err) {
-      console.log(err, "++++++++++++++++++++++++++++err");
       return res.status(500).json({  // Return an error response
         success: false,
         code: 500,

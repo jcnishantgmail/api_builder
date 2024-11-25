@@ -5,19 +5,16 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const updateDatabaseWithPaymentStatus = async function(paymentIntent, status) {
     if(status === 'succeeded') {
-        console.log(paymentIntent.metadata);
         const paymentDoc = await db.payments.create({id: paymentIntent.id, invoiceId: paymentIntent.metadata.invoiceId,
             job: paymentIntent.metadata.jobId,
             user: paymentIntent.metadata.user,
             paymentType: "stripe",
             status: "successful"});
-        console.log(paymentDoc);
         const updatedInvoice = await db.invoices.updateOne({ _id:paymentIntent.metadata.invoiceId}, {paidDate: paymentDoc["createdAt"], paymentType: 'stripe', paymentId: paymentDoc["_id"], status: "paid" });
         const updatedJob = await db.jobs.updateOne({_id: paymentIntent.metadata.jobId}, {invoiceStatus: "paid"});
         return paymentIntent;
     }
     else if(status === 'failed') {
-        console.log(paymentIntent.metadata);
         const paymentDoc = await db.payments.create({id: paymentIntent.id, invoiceId: paymentIntent.metadata.invoiceId,
             job: paymentIntent.metadata.jobId,
             user: paymentIntent.metadata.user,
@@ -50,7 +47,6 @@ const webhookHandler = async function (req, res) {
             switch (event.type) {
                 case 'payment_intent.succeeded':
                     const paymentIntent = event.data.object;
-                    console.log(paymentIntent.metadata);
                     response = await handlePaymentIntentSucceeded(paymentIntent)
                     res.json(response);
                     break;
@@ -66,12 +62,10 @@ const webhookHandler = async function (req, res) {
                     res.status(400).json({message: "Payment cancelled"});
                     break;
                 default:
-                    console.log(`Unhandled event type ${event.type}`);
                     res.json({ event: event.type});
                     break;
             }
     } catch(err) {
-        console.log(err);
         res.status(500).json({message: err.message});
     }
 };

@@ -36,7 +36,6 @@ module.exports = {
         });
       }
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         code: 500,
         error: { code: 500, message: "" + error },

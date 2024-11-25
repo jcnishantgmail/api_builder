@@ -32,7 +32,6 @@ module.exports = {
                 -1 :
                 1 :
                 -1;
-            console.log(query);
             let pipeline = [
                 {
                     $match: query

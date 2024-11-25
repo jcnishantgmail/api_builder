@@ -35,7 +35,6 @@ module.exports = {
             } 
 
             query.isDeleted = false;
-            console.log(query);
             const pipeline = [{
               $match: query,
             },
@@ -105,7 +104,6 @@ module.exports = {
               total: total.length,
             });
           } catch (err) {
-            console.log(err);
             return res.status(500).json({
               success: false,
               error: {
