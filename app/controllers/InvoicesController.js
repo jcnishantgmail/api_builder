@@ -384,7 +384,7 @@ module.exports = {
       if(!invoice) {
         return res.status(404).json({message: "Invoice does not exist!", code: 404});
       }
-      if(invoice.status === 'Completed') {
+      if(invoice.status === 'paid') {
         return res.status(400).json({message: "The invoice has already been paid!", code: 400});
       }
       if(invoice.status === 'sent' && new Date() < invoice.dueDate) {

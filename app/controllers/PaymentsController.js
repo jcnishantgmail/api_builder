@@ -12,8 +12,8 @@ const updateDatabaseWithPaymentStatus = async function(paymentIntent, status) {
             paymentType: "stripe",
             status: "successful"});
         console.log(paymentDoc);
-        const updatedInvoice = await db.invoices.updateOne({ _id:paymentIntent.metadata.invoiceId}, {paidDate: paymentDoc["createdAt"], paymentType: 'stripe', paymentId: paymentDoc["_id"], status: "completed" });
-        const updatedJob = await db.jobs.updateOne({_id: paymentIntent.metadata.jobId}, {invoiceStatus: "Completed"});
+        const updatedInvoice = await db.invoices.updateOne({ _id:paymentIntent.metadata.invoiceId}, {paidDate: paymentDoc["createdAt"], paymentType: 'stripe', paymentId: paymentDoc["_id"], status: "paid" });
+        const updatedJob = await db.jobs.updateOne({_id: paymentIntent.metadata.jobId}, {invoiceStatus: "paid"});
         return paymentIntent;
     }
     else if(status === 'failed') {
