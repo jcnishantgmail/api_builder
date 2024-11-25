@@ -47,13 +47,26 @@ module.exports = {
         if(adder.role.name === "Admin" && created.contractor && created.expectedTime) {
           let endDate = new Date(new Date(created.preferedTime).setUTCHours(0, 0, 0, 0));
           endDate.setDate(endDate.getDate() - 1 + Math.floor(created.expectedTime/8) + (created.expectedTime%8 === 0? 0: 1));
-          await db.schedules.create({
-            contractor: created.contractor,
-            job: created._id,
-            startDate: created.preferedTime,
-            endDate: endDate,
-            totalHours: created.expectedTime
-          });
+          // await db.schedules.create({
+          //   contractor: created.contractor,
+          //   job: created._id,
+          //   startDate: created.preferedTime,
+          //   endDate: endDate,
+          //   totalHours: created.expectedTime
+          // });
+
+          await Promise.all(
+            created.contractor.map((contractorId) =>
+              db.schedules.create({
+                contractor: contractorId,
+                job: created._id,
+                startDate: created.preferedTime,
+                endDate: endDate,
+                totalHours: created.expectedTime,
+              })
+            )
+          );
+          
         }
 
         return res.status(200).json({
@@ -140,7 +153,7 @@ module.exports = {
       if(expectedTime) {
         let endDate = new Date(new Date(job.preferedTime).setUTCHours(0, 0, 0, 0));
         endDate.setDate(endDate.getDate() - 1 + Math.floor(expectedTime/8) + (expectedTime%8 === 0? 0: 1));
-        await db.schedules.updateOne({job: id}, {expectedTime: expectedTime, endDate: endDate});
+        await db.schedules.updateMany({job: id}, {expectedTime: expectedTime, endDate: endDate});
       }
 
       await db.jobs.updateOne({_id: id}, data);
@@ -276,12 +289,6 @@ module.exports = {
       },
 
       {
-        $unwind: {
-          path: "$contractor_detail",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
         $lookup: {
           from: "properties",
           localField: "property",
@@ -334,13 +341,13 @@ module.exports = {
           clientName:"$client_detail.fullName",
           clientEmail:"$client_detail.email",
           contractor:"$contractor",
-          contractorName:"$contractor_detail.fullName",
-          contractorEmail:"$contractor_detail.email",
-          hourlyRate:"$contractor_detail.hourlyRate",
+          contractorDetail: "$contractor_detail",
+          // contractorName:"$contractor_detail.fullName",
+          // contractorEmail:"$contractor_detail.email",
+          // hourlyRate:"$contractor_detail.hourlyRate",
           preferedTime:"$preferedTime",
           hours:"$hours",
           minutes:"$minutes",
-          isContractorPaid: 1,
           invoice: 1,
           expectedTime: 1
         },
@@ -412,29 +419,59 @@ module.exports = {
     try{
       let {id , contractor, preferedTime, expectedTime} = req.body
       if(!contractor){
-        contractor = null
+        contractor = [];
       }
       if(expectedTime) {
         await db.jobs.updateOne({_id: id}, {expectedTime: expectedTime});
-        let jobSchedule = await db.schedules.findOne({job: id});
+        let jobSchedule = await db.schedules.find({job: id});
         let endDate = new Date(new Date(preferedTime).setUTCHours(0, 0, 0, 0));
         endDate.setDate(endDate.getDate() - 1 + Math.floor(expectedTime/8) + (expectedTime%8 === 0? 0: 1));
         if(jobSchedule) {
-          await db.schedules.updateOne({job: id}, {
-            contractor: contractor,
-            startDate: new Date(preferedTime),
-            endDate: endDate,
-            totalHours: expectedTime
-          });
+          await db.schedules.updateMany({
+            job: id
+          },
+          {
+            isDeleted: true
+          }
+        );
+          await Promise.all(
+            contractor.map((contractorId) =>
+              db.schedules.create({
+                contractor: contractorId,
+                job: id,
+                startDate: preferedTime,
+                endDate: endDate,
+                totalHours: expectedTime
+              })
+            )
+          );
+
+          // await db.schedules.updateOne({job: id}, {
+          //   contractor: contractor,
+          //   startDate: new Date(preferedTime),
+          //   endDate: endDate,
+          //   totalHours: expectedTime
+          // });
         }
         else {
-          await db.schedules.create({
-            job: id,
-            contractor: contractor,
-            startDate: new Date(preferedTime),
-            endDate: endDate,
-            totalHours: expectedTime
-          });
+          await Promise.all(
+            contractor.map((contractorId) =>
+              db.schedules.create({
+                contractor: contractorId,
+                job: id,
+                startDate: preferedTime,
+                endDate: endDate,
+                totalHours: expectedTime,
+              })
+            )
+          );
+          // await db.schedules.create({
+          //   job: id,
+          //   contractor: contractor,
+          //   startDate: new Date(preferedTime),
+          //   endDate: endDate,
+          //   totalHours: expectedTime
+          // });
         }
       }
       let job = await db.jobs.findById(id).populate("property").populate('client');
@@ -465,15 +502,18 @@ module.exports = {
         timeChanged = true;
       }
       if(contractor){
-        let contratorDetail = await db.users.findById(contractor)
-        jobEmails.jobAssignToContractor({
-          jobTitle:job.title,
-          description:job.description,
-          email:contratorDetail.email,
-          fullName:contratorDetail.fullName,
-          location:formattedLocation,
-          id:job._id
-        });
+        let contratorDetail = await db.users.find({_id: {$in: contractor}});
+        for(let individualContractor of contractor) {
+          jobEmails.jobAssignToContractor({
+            jobTitle:job.title,
+            description:job.description,
+            email:individualContractor.email,
+            fullName:individualContractor.fullName,
+            location:formattedLocation,
+            id:job._id
+          });
+        }
+        
         let clientDetail = job.client;
         let ampm = preferedTime.getUTCHours()>12? 'PM': 'AM';
         let hours = preferedTime.getUTCHours()%12;
@@ -490,7 +530,7 @@ module.exports = {
           description: job.description,
           email: clientDetail.email,
           clientFullName: clientDetail.fullName,
-          contractorFullName: contratorDetail.fullName,
+          contractorDetail: contratorDetail,
           location: formattedLocation,
           timeChanged,
           preferredStartTime
@@ -534,11 +574,15 @@ module.exports = {
 
   pauseJob: async (req, res) => {
     try {
-      let { jobId, date, serviceDatelogs, materialDatelogs, expenses } = req.body;
-      if(!jobId || !date) {
-        return res.status(400).json({message: "Job Id and date required!", code: 400, success: false});
+      let { jobId, contractorId, date, serviceDatelogs, materialDatelogs, expenses } = req.body;
+      if(!jobId || !date || !contractorId) {
+        return res.status(400).json({message: "Job Id, contractor Id and date required!", code: 400, success: false});
       }
-      const job = await db.jobs.findOne({_id: jobId}).populate('contractor');
+      const contractor = await db.users.findOne({_id: contractorId}).populate('cis_rate');
+      if(!contractor) {
+        return res.status(404).json({message: "Contractor not found!", success: false});
+      }
+      const job = await db.jobs.findOne({_id: jobId});//.populate('contractor');
       if(!job) {
         return res.status(404).json({message: "Job not found!", code: 404, success: false});
       }
@@ -550,7 +594,8 @@ module.exports = {
         serviceDatelogs = serviceDatelogs.map(serviceDatelog => {
           serviceDatelog.job = jobId;
           serviceDatelog.date = date;
-          serviceDatelog.servicefee = ((+job.contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2);
+          serviceDatelog.contractor = contractorId;
+          serviceDatelog.servicefee = ((+contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2);
           return serviceDatelog;
         });
         let insertedServiceDatelogs = await db.serviceDatelogs.insertMany(serviceDatelogs);
@@ -562,6 +607,7 @@ module.exports = {
       if(materialDatelogs) {
         materialDatelogs = materialDatelogs.map(materialDatelog => {
           materialDatelog.job = jobId;
+          materialDatelog.contractor = contractorId;
           materialDatelog.date = date;
           return materialDatelog;
         });
@@ -569,10 +615,10 @@ module.exports = {
       }
 
       if(expenses) {
-        const contractor = await db.users.findOne({_id: job.contractor._id}).populate('cis_rate');
+        // const contractor = await db.users.findOne({_id: job.contractor._id}).populate('cis_rate');
         expenses = await Promise.all(expenses.map(async (expense) => {
           expense.job = jobId;
-          expense.contractor = job.contractor._id;
+          expense.contractor = contractorId;
           expense.date = date;
           expense.status = "unpaid";
           expense.labour_charge = serviceDatelogs.reduce((tot, curServiceDatelog) => {
@@ -613,11 +659,12 @@ module.exports = {
 
   completejob: async (req, res) => {
     try {
-      let { jobId, date, serviceDatelogs, materialDatelogs, expenses } = req.body;
-      if(!jobId || !date) {
-        return res.status(400).json({message: "Job Id and date required!", code: 400, success: false});
+      let { jobId, contractorId, date, serviceDatelogs, materialDatelogs, expenses } = req.body;
+      if(!jobId || !date || !contractorId) {
+        return res.status(400).json({message: "Job Id, contractor Id and date required!", code: 400, success: false});
       }
-      const job = await db.jobs.findOne({_id: jobId}).populate('contractor');
+      const contractor = await db.users.findOne({_id: contractorId}).populate('cis_rate');
+      const job = await db.jobs.findOne({_id: jobId});//.populate('contractor');
       if(!job) {
         return res.status(404).json({message: "Job not found!", code: 404, success: false});
       }
@@ -629,6 +676,7 @@ module.exports = {
         serviceDatelogs = serviceDatelogs.map(serviceDatelog => {
           serviceDatelog.job = jobId;
           serviceDatelog.date = date;
+          serviceDatelog.contractor = contractorId;
           serviceDatelog.servicefee = ((+job.contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2);
           return serviceDatelog;
         });
@@ -642,6 +690,7 @@ module.exports = {
       if(materialDatelogs) {
         materialDatelogs = materialDatelogs.map(materialDatelog => {
           materialDatelog.job = jobId;
+          materialDatelog.contractor = contractorId;
           materialDatelog.date = date;
           return materialDatelog;
         });
@@ -649,10 +698,9 @@ module.exports = {
       }
 
       if(expenses) {
-        const contractor = await db.users.findOne({_id: job.contractor._id}).populate('cis_rate');
         expenses = await Promise.all(expenses.map(async (expense) => {
           expense.job = jobId;
-          expense.contractor = job.contractor._id;
+          expense.contractor = contractorId;
           expense.date = date;
           expense.status = "unpaid";
           expense.labour_charge = serviceDatelogs.reduce((tot, curServiceDatelog) => {
@@ -690,7 +738,7 @@ module.exports = {
         actualHours += +(log.minutes)/60;
       }
       actualHours = +actualHours.toFixed(2);
-      await db.schedules.updateOne({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), actualHours});
+      await db.schedules.updateMany({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), actualHours});
       return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
     } catch(err) {
       return res.status(500).json({message: err.message, code: 500, success: false});

@@ -3,12 +3,17 @@ const db = require("../models");
 
 module.exports = {
     listing: async function (req, res) {
-        let { materialId, jobId, startDate, isDeleted,endDate, sortBy, page, count } = req.query;
+        let { materialId, jobId, contractorId, startDate, isDeleted,endDate, sortBy, page, count } = req.query;
         let query = {};
         try {
             if(jobId) {
                 query.job = mongoose.Types.ObjectId.createFromHexString(jobId);
             }
+
+            if(contractorId) {
+                query.contractor = mongoose.Types.ObjectId.createFromHexString(contractorId);
+            }
+
             if(materialId) {
                 query.material = mongoose.Types.ObjectId.createFromHexString(materialId);
             }
@@ -53,6 +58,20 @@ module.exports = {
                 {
                     $unwind: {
                         path: "$material",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "contractor",
+                        foreignField: "_id",
+                        as: "contractor",
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$contractor",
                         preserveNullAndEmptyArrays: true
                     }
                 },
@@ -114,6 +133,7 @@ module.exports = {
                         job: 1,
                         date: "$formattedDate",
                         material: "$material",
+                        contractor: 1,
                         quantity: 1,
                         createdAt: 1,
                         updatedAt: 1

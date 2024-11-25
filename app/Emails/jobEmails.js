@@ -70,7 +70,10 @@ const assignContractorClientEmail = (options)=>{
     let verificationCode = options.verificationCode;
     let fullName = options.firstName ? options.firstName : options.clientFullName;
     userId = options.userId;
-
+    // Build the contractor names list
+    let contractorNames = options.contractorDetail
+    .map((contractor) => `<li>${contractor.fullName}</li>`)
+    .join("");
     if (!fullName) {
         fullName = email;
     }
@@ -102,7 +105,12 @@ const assignContractorClientEmail = (options)=>{
                                                 <tr>
                                                     <td style="background-color: #fff;padding: 40px 32px;">
                                                     <p style="font-size: 24px;font-weight: bold;color:#121A26;margin-bottom: 14px;margin-top: 0px;">Job Assignment</p> <p style="font-size: 16px;font-weight: 400;color: #384860;">Dear ${fullName},</p>
-                                                    <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">We are pleased to inform you that the job you posted with us has been assigned to ${options.contractorFullName}. Below are the details of the assignment:</p>
+                                                    <p style="font-size: 16px;font-weight: 400;color: #384860;line-height: 21px;padding-right: 31px;margin-top: 0px;">
+                                                        We are pleased to inform you that the job you posted with us has been assigned to the following contractor(s):
+                                                    </p>
+                                                    <ul style="font-size: 16px;font-weight: 400;color: #384860;line-height: 24px;padding-left: 20px;">
+                                                        ${contractorNames}
+                                                    </ul>
                                                     <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Title:</strong> ${options.jobTitle}</p>
                                                     <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Description:</strong> ${options.description}</p>
                                                     <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Location:</strong> ${options.location}</p>`
@@ -112,19 +120,19 @@ const assignContractorClientEmail = (options)=>{
     } else {
         message += `<p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Start Time:</strong> ${options.preferredStartTime}</p>`
     }
-                                        message +=  `<a href="${FRONT_WEB_URL}/job/detail/${options.id}" style=" background-color: #1E5DBC ;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">View job</a>                             
-                                                    <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
-                                                    <p style="font-size: 16px;font-weight: 400;color: #384860;margin: 0px;">Builder Management Team.</p>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </body>
-                </html>`;
+                            message +=  `<a href="${FRONT_WEB_URL}/job/detail/${options.id}" style=" background-color: #1E5DBC ;color: #fff;width: 130px;display: block;text-align: center;font-size: 14px;padding: 11px 0px;margin: 30px 0px;">View job</a>                             
+                                        <p style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 0px;">Best Regards, </p>
+                                        <p style="font-size: 16px;font-weight: 400;color: #384860;margin: 0px;">Builder Management Team.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </body>
+    </html>`;
 
 
     SmtpController.sendEmail(email, `Job Assignment ${options.jobTitle}`, message);

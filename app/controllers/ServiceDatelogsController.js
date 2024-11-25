@@ -3,11 +3,15 @@ const db = require("../models");
 
 module.exports = {
     listing: async function (req, res) {
-        let { jobId, startDate, isDeleted,endDate, sortBy, page, count } = req.query;
+        let { jobId, contractorId, startDate, isDeleted,endDate, sortBy, page, count } = req.query;
         let query = {};
         try {
             if(jobId) {
                 query.job = mongoose.Types.ObjectId.createFromHexString(jobId);
+            }
+
+            if(contractorId) {
+                query.contractor = mongoose.Types.ObjectId.createFromHexString(contractorId);
             }
 
             if(startDate && endDate) {
@@ -56,14 +60,14 @@ module.exports = {
                 {
                     $lookup: {
                         from: "users",
-                        localField: "job.contractor",
+                        localField: "contractor",
                         foreignField: "_id",
-                        as: "job.contractor"
+                        as: "contractor"
                     }
                 },
                 {
                     $unwind: {
-                        path: "$job.contractor",
+                        path: "$contractor",
                         preserveNullAndEmptyArrays: true
                     }
                 },
@@ -95,6 +99,7 @@ module.exports = {
                     $project: {
                         _id: 1,
                         job: 1,
+                        contractor: 1,
                         date: "$formattedDate",
                         hours: 1,
                         minutes: 1,

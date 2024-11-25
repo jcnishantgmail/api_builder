@@ -5,6 +5,7 @@ module.exports = (mongoose) => {
 
   const schema = mongoose.Schema({
     job: {type: Schema.Types.ObjectId, ref: "jobs"},
+    contractor: {type: Schema.Types.ObjectId, ref: "users"},
     date: {type: Date, required: true},
     material: {type: Schema.Types.ObjectId, ref: "materials"},
     quantity: {type: Number, default: 0},
