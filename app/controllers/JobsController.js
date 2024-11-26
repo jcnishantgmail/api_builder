@@ -677,7 +677,7 @@ module.exports = {
           serviceDatelog.job = jobId;
           serviceDatelog.date = date;
           serviceDatelog.contractor = contractorId;
-          serviceDatelog.servicefee = ((+job.contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2);
+          serviceDatelog.servicefee = ((+contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2);
           return serviceDatelog;
         });
         let insertedServiceDatelogs = await db.serviceDatelogs.insertMany(serviceDatelogs);
