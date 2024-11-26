@@ -342,9 +342,6 @@ module.exports = {
           clientEmail:"$client_detail.email",
           contractor:"$contractor",
           contractorDetail: "$contractor_detail",
-          // contractorName:"$contractor_detail.fullName",
-          // contractorEmail:"$contractor_detail.email",
-          // hourlyRate:"$contractor_detail.hourlyRate",
           preferedTime:"$preferedTime",
           hours:"$hours",
           minutes:"$minutes",
@@ -445,13 +442,6 @@ module.exports = {
               })
             )
           );
-
-          // await db.schedules.updateOne({job: id}, {
-          //   contractor: contractor,
-          //   startDate: new Date(preferedTime),
-          //   endDate: endDate,
-          //   totalHours: expectedTime
-          // });
         }
         else {
           await Promise.all(
@@ -465,13 +455,6 @@ module.exports = {
               })
             )
           );
-          // await db.schedules.create({
-          //   job: id,
-          //   contractor: contractor,
-          //   startDate: new Date(preferedTime),
-          //   endDate: endDate,
-          //   totalHours: expectedTime
-          // });
         }
       }
       let job = await db.jobs.findById(id).populate("property").populate('client');
@@ -582,7 +565,7 @@ module.exports = {
       if(!contractor) {
         return res.status(404).json({message: "Contractor not found!", success: false});
       }
-      const job = await db.jobs.findOne({_id: jobId});//.populate('contractor');
+      const job = await db.jobs.findOne({_id: jobId});
       if(!job) {
         return res.status(404).json({message: "Job not found!", code: 404, success: false});
       }
@@ -615,7 +598,6 @@ module.exports = {
       }
 
       if(expenses) {
-        // const contractor = await db.users.findOne({_id: job.contractor._id}).populate('cis_rate');
         expenses = await Promise.all(expenses.map(async (expense) => {
           expense.job = jobId;
           expense.contractor = contractorId;
@@ -664,7 +646,7 @@ module.exports = {
         return res.status(400).json({message: "Job Id, contractor Id and date required!", code: 400, success: false});
       }
       const contractor = await db.users.findOne({_id: contractorId}).populate('cis_rate');
-      const job = await db.jobs.findOne({_id: jobId});//.populate('contractor');
+      const job = await db.jobs.findOne({_id: jobId});
       if(!job) {
         return res.status(404).json({message: "Job not found!", code: 404, success: false});
       }

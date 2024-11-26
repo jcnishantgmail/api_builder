@@ -445,179 +445,6 @@ async function contractorPayablesReport(req, res) {
 }
 
 
-// async function contractorPayablesReport(req, res) {
-//   try {
-//     let { search, page, count, sortBy, status, contractor, job, startDate, endDate} = req.query;
-//         let query = {};
-//         let searchQuery = {};
-//         if (search) {
-//           searchQuery.$or = [
-//             { "job.title": { $regex: search, $options: "i" } },
-//             { "contractor.fullName": { $regex: search, $options: "i" } },
-//           ];
-//         }
-  
-//         query.isDeleted = false;
-  
-//         let sortquery = {};
-//         if (sortBy) {
-//           const [field = "createdAt", sortType = "desc"] = sortBy.split(" ");
-//           sortquery[field] = sortType === "desc" ? -1 : 1;
-//         } else {
-//           sortquery.createdAt = -1;
-//         }
-        
-//         if(contractor) {
-//           query.contractor = mongoose.Types.ObjectId.createFromHexString(contractor);
-//         }
-
-//         if(job) {
-//             query.job = mongoose.Types.ObjectId.createFromHexString(job);
-//         }
-
-//         if(status) {
-//           query.status = status;
-//         }
-
-//         if(startDate && endDate){
-//             startDate = new Date(startDate).setUTCHours(0,0,0,0)
-//             startDate = new Date(startDate);
-//             endDate = new Date(endDate).setUTCHours(23,59,59,0);
-//             endDate = new Date(endDate);
-//             query.date = {$gte: startDate,$lte: endDate}
-//          }
-
-//         query.isDeleted = false;
-//         const pipeline = [
-//           { $match: query },
-//           { $sort: sortquery },
-//           {
-//             $group: {
-//               _id: {
-//                 contractor: "$contractor",
-//                 job: "$job",
-//                 status: "$status"
-//               },
-//               status: {$first: "$status"},
-//               distance_travelled: {$sum: "$distance_travelled"},
-//               travel_expense: {$sum: "$travel_expense"},
-//               cis_amt: {$sum: "$cis_amt"},
-//               labour_charge: {$sum: "$labour_charge"},
-//               other_expense_total: {$sum: "$other_expense_total"},
-//               net_payable: {$sum: "$net_payable"},
-//               payableId: {$first: "$_id"}
-//             }
-//           },
-//           {
-//             $lookup: {
-//               from: "jobs",
-//               localField: "_id.job",
-//               foreignField: "_id",
-//               as: "job",
-//             },
-//           },
-//           {
-//             $unwind: { path: "$job", preserveNullAndEmptyArrays: true },
-//           },
-//           {
-//             $lookup: {
-//               from: "users",
-//               localField: "_id.contractor",
-//               foreignField: "_id",
-//               as: "contractor",
-//             },
-//           },
-//           {
-//             $unwind: { path: "$contractor", preserveNullAndEmptyArrays: true },
-//           },
-//           {
-//             $lookup: {
-//               from: "invoices",
-//               localField: "job.invoice",
-//               foreignField: "_id",
-//               as: "job.invoice"
-//             }
-//           },
-//           {
-//             $unwind: {path: "$job.invoice", preserveNullAndEmptyArrays: true}
-//           },
-//           {
-//             $lookup: {
-//               from: "users",
-//               localField: "job.invoice.client",
-//               foreignField: "_id",
-//               as: "job.invoice.client"
-//             }
-//           },
-//           {
-//             $unwind: {path: "$job.invoice.client", preserveNullAndEmptyArrays: true}
-//           },
-//           {
-//             $lookup: {
-//               from: "users",
-//               localField: "job.invoice.addedBy",
-//               foreignField: "_id",
-//               as: "job.invoice.addedBy"
-//             }
-//           },
-//           {
-//             $unwind: {path: "$job.invoice.addedBy", preserveNullAndEmptyArrays: true}
-//           },
-//           {
-//             $addFields: {
-//                 formattedDate: {
-//                     $dateToString: {
-//                         format: "%Y-%m-%d", 
-//                         date: "$date"
-//                     }
-//                 }
-//             }
-//           },
-          
-//           {
-//             $project: {
-//               _id: 0,
-//               job: "$job",
-//               contractor: "$contractor",
-//               hasMultipleExpenseEntries: "$job.hasMultipleExpenseEntries",
-//               payableId: "$payableId",
-//               status: "$status",
-//               distance_travelled: 1,
-//               travel_expense: 1,
-//               cis_amt: 1,
-//               labour_charge: 1,
-//               other_expense_total: 1,
-//               net_payable: 1,
-//               isDeleted: 1,
-//               createdAt: 1,
-//               updatedAt: 1
-//             },
-//           }
-//         ];
-  
-//         const total = await db.contractor_payables.aggregate([...pipeline]);
-  
-//         if (page && count) {
-//           const skipNo = (Number(page) - 1) * Number(count);
-  
-//           pipeline.push({ $skip: skipNo }, { $limit: Number(count) });
-//         }
-  
-//         const result = await db.contractor_payables.aggregate([...pipeline]);
-  
-//         return res.status(200).json({
-//           success: true,
-//           data: result,
-//           total: total.length,
-//         });
-//   } catch(err) {
-//     return res.status(500).json({
-//       success: false,
-//       error: { code: 500, message: err.message },
-//     });
-//   }
-// }
-
 async function contractorPayablesDelete(req, res) {
     const {jobId, contractorId} = req.body;
     if(!jobId || !contractorId || !date) { 
@@ -673,10 +500,103 @@ async function contractorPayablesDetail(req, res) {
         res.status(500).json({message: err.message, success: false});
     }
 }
+
+
+async function contractorPayablesDashboardReport(req, res) {
+  try {
+    let { page, count, sortBy, startDate, endDate} = req.query;
+        let query = {};
+  
+        query.isDeleted = false;
+  
+        let sortquery = {};
+        if (sortBy) {
+          const [field = "createdAt", sortType = "desc"] = sortBy.split(" ");
+          sortquery[field] = sortType === "desc" ? -1 : 1;
+        } else {
+          sortquery.createdAt = -1;
+        }
+        
+        if(startDate && endDate){
+            startDate = new Date(startDate).setUTCHours(0,0,0,0)
+            startDate = new Date(startDate);
+            endDate = new Date(endDate).setUTCHours(23,59,59,0);
+            endDate = new Date(endDate);
+            query.date = {$gte: startDate,$lte: endDate}
+         }
+        const pipeline = [
+          { $match: query },
+          { $sort: sortquery },
+          {
+            $group: {
+              _id: {
+                contractor: "$contractor"
+              },
+              distance_travelled: {$sum: "$distance_travelled"},
+              travel_expense: {$sum: "$travel_expense"},
+              cis_amt: {$sum: "$cis_amt"},
+              labour_charge: {$sum: "$labour_charge"},
+              other_expense_total: {$sum: "$other_expense_total"},
+              net_payable: {$sum: "$net_payable"},
+            }
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "_id.contractor",
+              foreignField: "_id",
+              as: "contractor",
+            },
+          },
+          {
+            $unwind: { path: "$contractor", preserveNullAndEmptyArrays: true },
+          },
+          {
+            $project: {
+              _id: 0,
+              contractor: "$contractor",
+              distance_travelled: 1,
+              travel_expense: 1,
+              cis_amt: 1,
+              labour_charge: 1,
+              other_expense_total: 1,
+              net_payable: 1,
+              isDeleted: 1,
+              createdAt: 1,
+              updatedAt: 1
+            },
+          },
+        ];
+  
+        const total = await db.contractor_payables.aggregate([...pipeline]);
+  
+        if (page && count) {
+          const skipNo = (Number(page) - 1) * Number(count);
+  
+          pipeline.push({ $skip: skipNo }, { $limit: Number(count) });
+        }
+  
+        const result = await db.contractor_payables.aggregate([...pipeline]);
+        return res.status(200).json({
+          success: true,
+          data: result,
+          total: total.length
+        });
+  } catch(err) {
+    return res.status(500).json({
+      success: false,
+      error: { code: 500, message: err.message },
+    });
+  }
+}
+
+
+
 module.exports = {
     contractorPayablesUpdate,
     contractorPayablesList,
     contractorPayablesDelete,
     contractorPayablesDetail,
-    contractorPayablesReport
+    contractorPayablesReport,
+    contractorPayablesDashboardReport
 };
