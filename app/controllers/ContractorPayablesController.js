@@ -532,6 +532,7 @@ async function contractorPayablesDashboardReport(req, res) {
               _id: {
                 contractor: "$contractor"
               },
+              hours: {$sum: "$hours"},
               distance_travelled: {$sum: "$distance_travelled"},
               travel_expense: {$sum: "$travel_expense"},
               cis_amt: {$sum: "$cis_amt"},
@@ -555,6 +556,7 @@ async function contractorPayablesDashboardReport(req, res) {
             $project: {
               _id: 0,
               contractor: "$contractor",
+              hours: 1,
               distance_travelled: 1,
               travel_expense: 1,
               cis_amt: 1,
