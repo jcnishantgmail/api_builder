@@ -522,7 +522,13 @@ module.exports = {
         await Emails.updatePasswordEmail(emailPayload);
       }
       if (req.body.email) {
-        req.body.email = req.body.email.toLowerCase()
+        req.body.email = req.body.email.toLowerCase();
+        if(req.body.email !== user.email) {
+          let existing = await db.users.findOne({email: req.body.email});
+          if(existing) {
+            return res.status(409).json({message: "A user with this email address already exists!", success: false});
+          }
+        }
       }
       const requestingUser = await req.identity.populate('role');
       if(requestingUser.role.name === 'Contractor') {
