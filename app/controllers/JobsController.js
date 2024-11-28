@@ -704,6 +704,7 @@ module.exports = {
       }
       actualHours = +actualHours.toFixed(2);
       await db.schedules.updateMany({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), actualHours});
+      await db.jobs.updateOne({_id: jobId}, {status: "completed"});
       return res.status(200).json({message: "Job logged successfully", code: 200, success: true});
     } catch(err) {
       return res.status(500).json({message: err.message, code: 500, success: false});
