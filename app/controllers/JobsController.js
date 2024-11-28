@@ -715,7 +715,7 @@ module.exports = {
     try {
       const id = req.body.id;
       let data = req.body;
-      let {expectedTime, serviceExpenseDatelogs, materialDatelogs} = req.body;
+      let {expectedTime, expense, materialDatelogs} = req.body;
       let job = await db.jobs.findOne({_id: id});
       if(expectedTime) {
         let endDate = new Date(new Date(job.preferedTime).setUTCHours(0, 0, 0, 0));
@@ -772,7 +772,7 @@ module.exports = {
             // Calculate labor charge
             expenseLog.labour_charge = (+hourlyRate * expenseLog.hours).toFixed(2);
             // Calculate CIS amount
-            const cisAmt = (0.01 * +cisRate.rate * +expenseLog.labour_charge).toFixed(2);
+            const cisAmt = (0.01 * +cisRate * +expenseLog.labour_charge).toFixed(2);
             expenseLog.cis_amt = +cisAmt;
             // Compute travel expense (awaited)
             expenseLog.travel_expense = await computeTravelCost(+expenseLog.distance_travelled);
