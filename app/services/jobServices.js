@@ -9,3 +9,28 @@ exports.computeTravelCost = async (distance_travelled) => {
     }
     return 0;
   }
+
+exports.computeHourlyRate = (contractorsList, contractor, date) => {
+    let contractorInfoArr = contractorsList.filter((contractorInfo) => {
+      return String(contractorInfo._id) === String(contractor);
+    });
+    if(contractorInfoArr) {
+      let hourlyRateLog = contractorInfoArr[0].hourlyRateLog;
+      let hourlyRate = hourlyRateLog[0].hourlyRate;
+      for(let log of hourlyRateLog) {
+        if(new Date(date) >= log.rateUpdatedAt) {
+          hourlyRate = log.hourlyRate;
+        }
+      }
+      return hourlyRate;
+    } else return 0;
+  }
+  
+exports.computeCISRate = (contractorsList, contractor) => {
+    let contractorInfoArr = contractorsList.filter((contractorInfo) => {
+      return String(contractorInfo._id) === String(contractor);
+    });
+    if(contractorInfoArr) {
+      return contractorInfoArr[0].cis_rate.rate;
+    } else return 0;
+}

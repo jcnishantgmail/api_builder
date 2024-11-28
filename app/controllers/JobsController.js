@@ -2,8 +2,7 @@ const db = require("../models");
 const constants = require("../utls/constants");
 var mongoose = require("mongoose");
 const jobEmails = require("../Emails/jobEmails");
-const { computeTravelCost } = require("../services/jobServices");
-
+const { computeTravelCost, computeHourlyRate, computeCISRate } = require("../services/jobServices");
 
 
 module.exports = {
@@ -715,8 +714,9 @@ module.exports = {
           return ("_id" in datelog);
         });
         let inputIds = materialDatelogsWithId.map((datelog) => {
-          return datelog._id;
+          return mongoose.Types.ObjectId.createFromHexString(datelog._id);
         });
+        // Delete materialDatelogs that are not in input
         await db.materialDatelogs.deleteMany({
           job: id,
           _id: {
@@ -724,20 +724,86 @@ module.exports = {
           }
         });
 
-        materialDatelogs = materialDatelogs.map(materialDatelog => {
-          materialDatelog.job = jobId;
-          materialDatelog.contractor = contractor;
-          materialDatelog.date = date;
+        //Update material datelogs that have that have _id
+        const operations = materialDatelogsWithId.map((datelog) => ({
+          updateOne: {
+            filter: { _id: datelog._id },
+            update: { $set: datelog },
+          },
+        }));
+
+        let result = await db.materialDatelogs.bulkWrite(operations);
+        let materialDatelogsToBeInserted = materialDatelogsWithoutId.map(materialDatelog => {
+          materialDatelog.job = id;
           return materialDatelog;
         });
-        await db.materialDatelogs.insertMany(materialDatelogs);
+        if(materialDatelogsToBeInserted)
+          await db.materialDatelogs.insertMany(materialDatelogsToBeInserted);
       }
 
-      if(serviceExpenseDatelogs) {
-
-      }
-
+      if(expense) { 
+        let contractorRoleId = await db.roles.findOne({name: "Contractor"});
+        let contractorsList = db.users.find({role: contractorRoleId}).populate('cis_rate');
+        expense = await Promise.all(
+          expense.map(async (expenseLog) => {
+            // Calculate hours including minutes
+            expenseLog.job = id;
+            expenseLog.hours = +expenseLog.hours + (+expenseLog.minutes) / 60;
+            // Compute hourly rate and CIS rate
+            let hourlyRate = computeHourlyRate(contractorsList, expenseLog.contractor, expenseLog.date);
+            let cisRate = computeCISRate(contractorsList, expenseLog.contractor, expenseLog.date);
+            // Calculate labor charge
+            expenseLog.labour_charge = (+hourlyRate * expenseLog.hours).toFixed(2);
+            // Calculate CIS amount
+            const cisAmt = (0.01 * +cisRate.rate * +expenseLog.labour_charge).toFixed(2);
+            expenseLog.cis_amt = +cisAmt;
+            // Compute travel expense (awaited)
+            expenseLog.travel_expense = await computeTravelCost(+expenseLog.distance_travelled);
+            // Calculate other expenses total
+            expenseLog.other_expense_total = expenseLog.other_expense.reduce(
+              (tot, cur) => +tot + +cur.amount,
+              0
+            );
+            expenseLog.other_expense_total = +expenseLog.other_expense_total.toFixed(2);
+            // Compute net payable
+            expenseLog.net_payable = (
+              +expenseLog.labour_charge +
+              +expenseLog.travel_expense +
+              +expenseLog.other_expense_total -
+              +expenseLog.cis_amt
+            ).toFixed(2);
       
+            return expenseLog;
+          }));
+        let expenselogsWithoutId = expense.filter((expenseLog) => {
+          return !("_id" in expenseLog);
+        });
+        let expenselogsWithId = expense.filter((expenseLog) => {
+          return ("_id" in expenseLog);
+        });
+        let inputIds = expenselogsWithId.map((expenseLog) => {
+          return mongoose.Types.ObjectId.createFromHexString(expenseLog._id);
+        });
+        // Delete materialDatelogs that are not in input
+        await db.contractor_payables.deleteMany({
+          job: id,
+          _id: {
+            $nin: inputIds
+          }
+        });
+        //update existing expense logs
+        const operations = expenselogsWithId.map((expenseLog) => ({
+          updateOne: {
+            filter: { _id: expenseLog._id },
+            update: { $set: expenseLog },
+          },
+        }));
+
+        let result = await db.contractor_payables.bulkWrite(operations);
+        //Insert new expense logs
+        if(expenselogsWithoutId)
+          await db.contractor_payables.insertMany(expenselogsWithoutId);
+      }
 
       await db.jobs.updateOne({_id: id}, data);
 
@@ -746,10 +812,10 @@ module.exports = {
         message: constants.JOBS.UPDATED,
       });
     } catch (err) {
-      return res.status(400).json({
+      return res.status(500).json({
         success: false,
         error: {
-          code: 400,
+          code: 500,
           message: "" + err
         },
       });
