@@ -106,11 +106,27 @@ module.exports = {
       }
       let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email').populate('contractor' , 'id fullName email').populate('property').populate('category');
       detail = detail.toObject();
-      detail.expense = await db.contractor_payables.find({job: id});
+      detail.expense = await db.contractor_payables.find({job: id, isDeleted: false});
       
       if(detail.expense) {
         detail.expense = detail.expense.sort((a, b) => {
           return a.date - b.date;
+        });
+
+        detail.serviceDatelogs = detail.expense.filter((expenseLog)=>{
+          return !(expenseLog.hours === 0);
+        }).map((expenseLog)=>{
+          let hours = +Math.floor(expenseLog.hours);
+          let minutes = Math.floor((+expenseLog.hours - hours)*60);
+          return {
+            job: id,
+            contractor: expenseLog.contractor,
+            date: expenseLog.date,
+            hours:hours,
+            minutes:minutes,
+            completed_images: expenseLog.completed_images,
+            labour_charge: expenseLog.labour_charge
+          };
         });
       }
       detail.materialsDatelogs = await db.materialDatelogs.find({job: id}).populate('material');

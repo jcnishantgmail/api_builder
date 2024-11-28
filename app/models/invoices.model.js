@@ -18,7 +18,7 @@ module.exports = (mongoose) => {
             proofs: { type: Array, default: [] },
             invoiceNumber: { type: String },
             paymentId: { type: String },
-            status: { type: String, enum: ["pending", "sent", "paid", "cancelled"], default: "pending" },
+            status: { type: String, enum: ["pending", "sent", "paid", "cancelled", "invalid"], default: "pending" },
             isDeleted: { type: Boolean, default: false },
             createdAt: Date,
             updatedAt: Date,

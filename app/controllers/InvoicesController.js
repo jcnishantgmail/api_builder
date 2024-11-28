@@ -40,6 +40,8 @@ module.exports = {
       if(data.total)
         data.total = Number(data.total).toFixed(2); //Rounding up to 2 decimals pound.pennies
       let created = await db.invoices.create(req.body);
+      //Invalidate all other invoices if generating this
+      await db.invoices.updateMany({jobId: req.body.jobId, _id: {$nin: [created._id]}}, {status: "invalid"});
       const client = await db.users.findById(data.client);
       created.email = client["email"];
       await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id, isInvoiceGenerated: true});
@@ -378,14 +380,18 @@ module.exports = {
 
   payInvoice: async function(req, res) {
     try {
-      const {invoiceId} = req.body;
+      const { invoiceId } = req.body;
       const invoice = await db.invoices.findOne({_id: invoiceId}).populate('jobId');
+      
       if(!invoice) {
         return res.status(404).json({message: "Invoice does not exist!", code: 404});
       }
       if(invoice.status === 'paid') {
         return res.status(400).json({message: "The invoice has already been paid!", code: 400});
       }
+      if(invoice.status === 'invalid') {
+        return res.status(400).json({success: false, message: "This invoice is not valid anymore!"});
+      } 
       if(invoice.status === 'sent' && new Date() < invoice.dueDate) {
         const session = await checkoutSessionHandler(invoice);
         return res.redirect(session.url);
