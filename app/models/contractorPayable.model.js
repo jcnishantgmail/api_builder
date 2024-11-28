@@ -12,7 +12,6 @@ module.exports = (mongoose) => {
         {
             date: Date,
             job: {type: Schema.Types.ObjectId, ref: "jobs"},
-            serviceDatelog: {type: Schema.Types.ObjectId, ref: "servicedatelogs"},
             hours: {type: Number, default: 0},
             contractor: {type: Schema.Types.ObjectId, ref: "users"},
             status: {type: String, enum: ["paid", "unpaid"], default: "unpaid"},

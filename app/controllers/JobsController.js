@@ -122,13 +122,6 @@ module.exports = {
         });
       }
 
-      detail.serviceDatelogs = await db.serviceDatelogs.find({job: id});
-      if(detail.serviceDatelogs) {
-        detail.serviceDatelogs = detail.serviceDatelogs.sort((a, b) => {
-          return a.date - b.date;
-        });
-      }
-
       return res.status(200).json({
         success: true,
         data: detail
@@ -557,7 +550,7 @@ module.exports = {
 
   pauseJob: async (req, res) => {
     try {
-      let { jobId, contractorId, date, serviceDatelog, materialDatelogs, expense } = req.body;
+      let { jobId, contractorId, date, materialDatelogs, expense } = req.body;
       if(!jobId || !date || !contractorId) {
         return res.status(400).json({message: "Job Id, contractor Id and date required!", code: 400, success: false});
       }
@@ -572,53 +565,36 @@ module.exports = {
       if(job.status !== 'in-progress') {
         return res.status(400).json({message: "Job is not in progress!", code: 400, success: false});
       }
-      let createdPayable;
-      if(serviceDatelog) {
-        serviceDatelog = {
-          job: jobId,
-          date: date,
-          contractor: contractorId,
-          servicefee: ((+contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2)
-        }
-        let insertedServiceDatelog = await db.serviceDatelogs.create(serviceDatelog);
-        job.completed_images = job.completed_images.concat(serviceDatelog.completed_images);
-        await db.jobs.updateOne({_id: jobId}, {completed_images: job.completed_images});
-        //create a contractor payable for this service log
-        let labour_charge = serviceDatelog.servicefee;
-        let cis_amt = (0.01) * (+contractor.cis_rate.rate) * (+serviceDatelog.servicefee);
-        createdPayable = await db.contractor_payables.create({
-          serviceDatelog: insertedServiceDatelog._id,
-          job: jobId,
-          contractor: contractorId,
-          date: date,
-          status: 'unpaid',
-          labour_charge: labour_charge,
-          cis_amt: cis_amt,
-          net_payable: labour_charge - net_payable,
-          hours: serviceDatelog.hours + (serviceDatelog.minutes)/60
-        });
-      }
-      if(materialDatelogs) {
-        materialDatelogs = materialDatelogs.map(materialDatelog => {
-          materialDatelog.job = jobId;
-          materialDatelog.contractor = contractorId;
-          materialDatelog.date = date;
-          return materialDatelog;
-        });
-        await db.materialDatelogs.insertMany(materialDatelogs);
-      }
-
       if(expense) {
-        createdPayable = createdPayable.toObject();
-        createdPayable.travel_expense = await computeTravelCost(+expense.distance_travelled);
-        createdPayable.travel_expense = +createdPayable.travel_expense;
-        createdPayable.other_expense_total = expense.other_expense.reduce((tot, cur)=>{
+        let hours = (+expense.hours + (+expense.minutes)/60);
+        let labour_charge = ((+contractor.hourlyRate)*(hours)).toFixed(2);
+        let cis_amt = (0.01) * (+contractor.cis_rate.rate) * (+labour_charge);
+        let travel_expense = await computeTravelCost(+expense.distance_travelled);
+        travel_expense = +travel_expense;
+        let other_expense_total = expense.other_expense.reduce((tot, cur)=>{
           return (+tot) + (+cur.amount);
         }, 0);
-        createdPayable.other_expense_total = +createdPayable.other_expense_total.toFixed(2);
-        createdPayable.net_payable = createdPayable.labour_charge + createdPayable.travel_expense + createdPayable.other_expense_total - createdPayable.cis_amt;
-        createdPayable.net_payable = +createdPayable.net_payable.toFixed(2);
-        await db.contractor_payables.updateOne({_id: createdPayable._id}, createdPayable);
+        other_expense_total = +other_expense_total.toFixed(2);
+        let net_payable = labour_charge + travel_expense + other_expense_total - cis_amt;
+        net_payable = +net_payable.toFixed(2);
+        let expenseObj = {
+          job: jobId,
+          date: date,
+          contractor: contractorId,
+          hours: hours,
+          status: "unpaid",
+          completed_images: expense.completed_images,
+          labour_charge: labour_charge,
+          cis_amt: cis_amt,
+          travel_expense: travel_expense,
+          other_expense: expense.other_expense,
+          other_expense_total: other_expense_total,
+          net_payable: net_payable
+        }
+        job.completed_images = expense.completed_images.concat(expense.completed_images);
+        await db.jobs.updateOne({_id: jobId}, {completed_images: job.completed_images});
+        //create a contractor payable for this
+        let createdPayable = await db.contractor_payables.create(expenseObj);
         if(!job.hasMultipleExpenseEntries) {
           let expenseRecords = await db.contractor_payables.find({job: jobId});
           if(expenseRecords.length > 1) {
@@ -631,6 +607,16 @@ module.exports = {
           expenseDate: date
         });
       }
+      if(materialDatelogs) {
+        materialDatelogs = materialDatelogs.map(materialDatelog => {
+          materialDatelog.job = jobId;
+          materialDatelog.contractor = contractorId;
+          materialDatelog.date = date;
+          return materialDatelog;
+        });
+        await db.materialDatelogs.insertMany(materialDatelogs);
+      }
+
       return res.status(200).json({success: true, message: "Job logged successfully", code: 200});
 
     } catch(err) {
@@ -640,8 +626,7 @@ module.exports = {
 
   completejob: async (req, res) => {
     try {
-      // let { jobId, contractorId, date, serviceDatelogs, materialDatelogs, expenses } = req.body;
-      let { jobId, contractorId, date, serviceDatelog, materialDatelogs, expense } = req.body;
+      let { jobId, contractorId, date, materialDatelogs, expense } = req.body;
       if(!jobId || !date || !contractorId) {
         return res.status(400).json({message: "Job Id, contractor Id and date required!", code: 400, success: false});
       }
@@ -654,53 +639,36 @@ module.exports = {
         return res.status(400).json({message: "Job is not in progress!", code: 400, success: false});
       }
 
-      let createdPayable;
-      if(serviceDatelog) {
-        serviceDatelog = {
-          job: jobId,
-          date: date,
-          contractor: contractorId,
-          servicefee: ((+contractor.hourlyRate)*((+serviceDatelog.hours)+((+serviceDatelog.minutes)/60))).toFixed(2)
-        }
-        let insertedServiceDatelog = await db.serviceDatelogs.create(serviceDatelog);
-        job.completed_images = job.completed_images.concat(serviceDatelog.completed_images);
-        await db.jobs.updateOne({_id: jobId}, {completed_images: job.completed_images});
-        //create a contractor payable for this service log
-        let labour_charge = serviceDatelog.servicefee;
-        let cis_amt = (0.01) * (+contractor.cis_rate.rate) * (+serviceDatelog.servicefee);
-        createdPayable = await db.contractor_payables.create({
-          serviceDatelog: insertedServiceDatelog._id,
-          job: jobId,
-          contractor: contractorId,
-          date: date,
-          status: 'unpaid',
-          labour_charge: labour_charge,
-          cis_amt: cis_amt,
-          net_payable: labour_charge - net_payable,
-          hours: serviceDatelog.hours + (serviceDatelog.minutes)/60
-        });
-      }
-      if(materialDatelogs) {
-        materialDatelogs = materialDatelogs.map(materialDatelog => {
-          materialDatelog.job = jobId;
-          materialDatelog.contractor = contractorId;
-          materialDatelog.date = date;
-          return materialDatelog;
-        });
-        await db.materialDatelogs.insertMany(materialDatelogs);
-      }
-
       if(expense) {
-        createdPayable = createdPayable.toObject();
-        createdPayable.travel_expense = await computeTravelCost(+expense.distance_travelled);
-        createdPayable.travel_expense = +createdPayable.travel_expense;
-        createdPayable.other_expense_total = expense.other_expense.reduce((tot, cur)=>{
+        let hours = (+expense.hours + (+expense.minutes)/60);
+        let labour_charge = ((+contractor.hourlyRate)*(hours)).toFixed(2);
+        let cis_amt = (0.01) * (+contractor.cis_rate.rate) * (+labour_charge);
+        let travel_expense = await computeTravelCost(+expense.distance_travelled);
+        travel_expense = +travel_expense;
+        let other_expense_total = expense.other_expense.reduce((tot, cur)=>{
           return (+tot) + (+cur.amount);
         }, 0);
-        createdPayable.other_expense_total = +createdPayable.other_expense_total.toFixed(2);
-        createdPayable.net_payable = createdPayable.labour_charge + createdPayable.travel_expense + createdPayable.other_expense_total - createdPayable.cis_amt;
-        createdPayable.net_payable = +createdPayable.net_payable.toFixed(2);
-        await db.contractor_payables.updateOne({_id: createdPayable._id}, createdPayable);
+        other_expense_total = +other_expense_total.toFixed(2);
+        let net_payable = labour_charge + travel_expense + other_expense_total - cis_amt;
+        net_payable = +net_payable.toFixed(2);
+        let expenseObj = {
+          job: jobId,
+          date: date,
+          contractor: contractorId,
+          hours: hours,
+          status: "unpaid",
+          completed_images: expense.completed_images,
+          labour_charge: labour_charge,
+          cis_amt: cis_amt,
+          travel_expense: travel_expense,
+          other_expense: expense.other_expense,
+          other_expense_total: other_expense_total,
+          net_payable: net_payable
+        }
+        job.completed_images = expense.completed_images.concat(expense.completed_images);
+        await db.jobs.updateOne({_id: jobId}, {completed_images: job.completed_images});
+        //create a contractor payable for this
+        let createdPayable = await db.contractor_payables.create(expenseObj);
         if(!job.hasMultipleExpenseEntries) {
           let expenseRecords = await db.contractor_payables.find({job: jobId});
           if(expenseRecords.length > 1) {
@@ -714,11 +682,10 @@ module.exports = {
         });
       }
 
-      let service_logs = await db.serviceDatelogs.find({job: jobId});
+      let service_logs = await db.contractor_payables.find({job: jobId});
       let actualHours = 0;
       for(let log of service_logs) {
         actualHours += +(log.hours);
-        actualHours += +(log.minutes)/60;
       }
       actualHours = +actualHours.toFixed(2);
       await db.schedules.updateMany({job: jobId}, {endDate: new Date(date).setUTCHours(0, 0 , 0, 0), actualHours});
@@ -732,7 +699,7 @@ module.exports = {
     try {
       const id = req.body.id;
       let data = req.body;
-      let {expectedTime, serviceDatelogs, materialDatelogs, expense} = req.body;
+      let {expectedTime, serviceExpenseDatelogs, materialDatelogs} = req.body;
       let job = await db.jobs.findOne({_id: id});
       if(expectedTime) {
         let endDate = new Date(new Date(job.preferedTime).setUTCHours(0, 0, 0, 0));
@@ -741,16 +708,35 @@ module.exports = {
       }
 
       if(materialDatelogs) {
-        
+        let materialDatelogsWithoutId = materialDatelogs.filter((datelog) => {
+          return !("_id" in datelog);
+        });
+        let materialDatelogsWithId = materialDatelogs.filter((datelog) => {
+          return ("_id" in datelog);
+        });
+        let inputIds = materialDatelogsWithId.map((datelog) => {
+          return datelog._id;
+        });
+        await db.materialDatelogs.deleteMany({
+          job: id,
+          _id: {
+            $nin: inputIds
+          }
+        });
+
+        materialDatelogs = materialDatelogs.map(materialDatelog => {
+          materialDatelog.job = jobId;
+          materialDatelog.contractor = contractor;
+          materialDatelog.date = date;
+          return materialDatelog;
+        });
+        await db.materialDatelogs.insertMany(materialDatelogs);
       }
 
-      if(serviceDatelogs) {
+      if(serviceExpenseDatelogs) {
 
       }
 
-      if(expense) {
-
-      }
       
 
       await db.jobs.updateOne({_id: id}, data);
