@@ -729,6 +729,8 @@ module.exports = {
         });
         let materialDatelogsWithId = materialDatelogs.filter((datelog) => {
           return ("_id" in datelog);
+        }).map((materialDatelog)=>{
+            materialDatelog.material = materialDatelog.material._id;
         });
         let inputIds = materialDatelogsWithId.map((datelog) => {
           return mongoose.Types.ObjectId.createFromHexString(datelog._id);
