@@ -729,8 +729,6 @@ module.exports = {
         });
         let materialDatelogsWithId = materialDatelogs.filter((datelog) => {
           return ("_id" in datelog);
-        }).map((materialDatelog)=>{
-            materialDatelog.material = materialDatelog.material._id;
         });
         let inputIds = materialDatelogsWithId.map((datelog) => {
           return mongoose.Types.ObjectId.createFromHexString(datelog._id);
@@ -762,7 +760,7 @@ module.exports = {
 
       if(expense) { 
         let contractorRoleId = await db.roles.findOne({name: "Contractor"});
-        let contractorsList = db.users.find({role: contractorRoleId, isDeleted: false}).populate('cis_rate');
+        let contractorsList = await db.users.find({role: contractorRoleId, isDeleted: false}).populate('cis_rate');
         expense = await Promise.all(
           expense.map(async (expenseLog) => {
             // Calculate hours including minutes
