@@ -20,7 +20,7 @@ module.exports = {
       }
       req.body.addedBy = req.identity.id;
       if(!req.body.client){ req.body.client = req.identity.id}
-      let client = await db.users.findById(req.body.client);
+      let client = await db.users.findOne({_id: req.body.client, isDeleted: false});
       let created = await db.jobs.create(req.body);
       let propertyDetail = await db.properties.findById(req.body.property);
       let formattedLocation = '';
@@ -42,7 +42,7 @@ module.exports = {
       formattedLocation += ".";
       jobEmails.adminEmailForNewJob({id:created._id,clientName:client.fullName,jobTitle:created.title,description:created.description,location:formattedLocation})
       if (created) {
-        let adder = await db.users.findOne({_id: req.identity.id}).populate('role');
+        let adder = await db.users.findOne({_id: req.identity.id, isDeleted: false}).populate('role');
         if(adder.role.name === "Admin" && created.contractor && created.expectedTime) {
           let endDate = new Date(new Date(created.preferedTime).setUTCHours(0, 0, 0, 0));
           endDate.setDate(endDate.getDate() - 1 + Math.floor(created.expectedTime/8) + (created.expectedTime%8 === 0? 0: 1));
@@ -493,7 +493,7 @@ module.exports = {
         timeChanged = true;
       }
       if(contractor){
-        let contratorDetail = await db.users.find({_id: {$in: contractor}});
+        let contratorDetail = await db.users.find({_id: {$in: contractor}, isDeleted: false});
         for(let individualContractor of contractor) {
           jobEmails.jobAssignToContractor({
             jobTitle:job.title,
@@ -569,7 +569,7 @@ module.exports = {
       if(!jobId || !date || !contractorId) {
         return res.status(400).json({message: "Job Id, contractor Id and date required!", code: 400, success: false});
       }
-      const contractor = await db.users.findOne({_id: contractorId}).populate('cis_rate');
+      const contractor = await db.users.findOne({_id: contractorId, isDeleted: false}).populate('cis_rate');
       if(!contractor) {
         return res.status(404).json({message: "Contractor not found!", success: false});
       }
@@ -645,7 +645,7 @@ module.exports = {
       if(!jobId || !date || !contractorId) {
         return res.status(400).json({message: "Job Id, contractor Id and date required!", code: 400, success: false});
       }
-      const contractor = await db.users.findOne({_id: contractorId}).populate('cis_rate');
+      const contractor = await db.users.findOne({_id: contractorId, isDeleted: false}).populate('cis_rate');
       const job = await db.jobs.findOne({_id: jobId});
       if(!job) {
         return res.status(404).json({message: "Job not found!", code: 404, success: false});
@@ -760,7 +760,7 @@ module.exports = {
 
       if(expense) { 
         let contractorRoleId = await db.roles.findOne({name: "Contractor"});
-        let contractorsList = db.users.find({role: contractorRoleId}).populate('cis_rate');
+        let contractorsList = db.users.find({role: contractorRoleId, isDeleted: false}).populate('cis_rate');
         expense = await Promise.all(
           expense.map(async (expenseLog) => {
             // Calculate hours including minutes

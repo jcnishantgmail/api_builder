@@ -42,7 +42,7 @@ module.exports = {
       let created = await db.invoices.create(req.body);
       //Invalidate all other invoices if generating this
       await db.invoices.updateMany({jobId: req.body.jobId, _id: {$nin: [created._id]}}, {status: "invalid"});
-      const client = await db.users.findById(data.client);
+      const client = await db.users.findOne({_id: data.client, isDeleted: false});
       created.email = client["email"];
       await db.jobs.updateOne({_id: req.body.jobId}, {invoice: created._id, isInvoiceGenerated: true});
       invoiceEmails.sendInvoiceMail(created);

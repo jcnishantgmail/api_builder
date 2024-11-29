@@ -35,7 +35,7 @@ module.exports = async (req, res, next) => {
        * and this is saved in req.user object
        */
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await Users.findById({ _id: decodedToken.id });
+      const user = await Users.findOne({ _id: decodedToken.id, isDeleted: false });
       if (user.isDeleted == true) {
         return res.status(401).json({
           success: false,

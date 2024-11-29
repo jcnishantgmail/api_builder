@@ -81,7 +81,8 @@ module.exports = {
       if (createdUSer) {
         let verificationOtp =  helper.generateOTP(4)
         await db.users.updateOne({
-          _id: createdUSer.id
+          _id: createdUSer.id,
+          isDeleted: false
         }, {
           verification_otp: verificationOtp
         })
@@ -115,10 +116,10 @@ module.exports = {
     try{
       let {id} = req.query
 
-      let user = await db.users.findById(id)
+      let user = await db.users.findOne({_id: id, isDeleted: false});
 
       if(user && user.isVerified == 'N'){
-        await db.users.updateOne({_id:id},{isVerified:'Y'})
+        await db.users.updateOne({_id:id, isDeleted: false},{isVerified:'Y'})
         return res.redirect(`${process.env.FRONT_WEB_URL}/login?id=${id}`);
       }else{
         return res.redirect(`${process.env.FRONT_WEB_URL}/login`);
@@ -356,7 +357,7 @@ module.exports = {
   autoLogin: async (req, res) => {
     try {
       const id = req.body.id;
-      var user = await Users.findById(id).populate('role')
+      var user = await Users.findOne({_id: id, isDeleted: false}).populate('role')
       if (!user) {
         return res.status(400).json({
           success: false,
@@ -389,7 +390,8 @@ module.exports = {
       admindata["access_token"] = token;
       delete admindata.password
       await db.users.updateOne({
-        _id: admindata.id
+        _id: admindata.id,
+        isDeleted: false
       }, {
         lastLogin: new Date()
       });
@@ -414,8 +416,12 @@ module.exports = {
       const id = mongoose.Types.ObjectId.createFromHexString(req.query.id);
 
       const user_data = await Users.findOne({
-        _id: id
+        _id: id,
+        isDeleted: false
       }).populate("role", 'id name permissions').populate("skills").populate('cis_rate');
+      if(!user_data) {
+        return res.status(404).json({message: "User not found!", success: false});
+      }
       const token = jwt.sign({
         id: user_data.id,
         role: user_data.role._id
@@ -453,8 +459,11 @@ module.exports = {
       const id = mongoose.Types.ObjectId.createFromHexString(req.query.id);
 
       const user_data = await Users.findOne({
-        _id: id
+        _id: id, isDeleted: false
       }).populate("role", 'id name').populate('cis_rate');
+      if(!user_data) {
+        return res.status(404).json({message: "User not found!", success: false});
+      }
       let user = Object.assign({}, user_data._doc);
 
       if (user) {
@@ -502,8 +511,12 @@ module.exports = {
         req.body.fullName = req.body.firstName
       }
       const user = await Users.findOne({
-        _id: id
+        _id: id,
+        isDeleted: false
       });
+      if(!user) {
+        return res.status(404).json({message: "User not found!", success: false});
+      }
       var password;
       /**Updating password if present in payload */
       if (req.body.password) {
@@ -524,7 +537,7 @@ module.exports = {
       if (req.body.email) {
         req.body.email = req.body.email.toLowerCase();
         if(req.body.email !== user.email) {
-          let existing = await db.users.findOne({email: req.body.email});
+          let existing = await db.users.findOne({email: req.body.email, isDeleted: false});
           if(existing) {
             return res.status(409).json({message: "A user with this email address already exists!", success: false});
           }
@@ -564,7 +577,8 @@ module.exports = {
       
 
       const updatedUser = await Users.updateOne({
-        _id: id
+        _id: id,
+        isDeleted: false
       }, req.body);
 
 
@@ -754,9 +768,12 @@ module.exports = {
     try {
       const newPassword = req.body.newPassword;
       const currentPassword = req.body.currentPassword;
-      const user = await Users.findById({
-        _id: req.identity.id
+      const user = await Users.findOne({
+        _id: req.identity.id, isDeleted: false
       });
+      if(!user) {
+        return res.status(404).json({message: "User not found!", success: false});
+      }
       if (!bcrypt.compareSync(currentPassword, user.password)) {
         return res.status(400).json({
           success: false,
@@ -770,7 +787,7 @@ module.exports = {
           newPassword,
           bcrypt.genSaltSync(10)
         );
-        await Users.findByIdAndUpdate(user._id, {
+        await Users.updateOne({_id: user._id, isDeleted: false}, {
           password: password
         });
 
@@ -809,7 +826,8 @@ module.exports = {
         const verificationCode = await helper.generateVerificationCode(6);
 
         await Users.updateOne({
-          _id: user.id
+          _id: user.id,
+          isDeleted: false
         }, {
           verificationCode: verificationCode
         });
@@ -873,7 +891,8 @@ module.exports = {
         const verificationCode = await helper.generateVerificationCode(4);
 
         await Users.updateOne({
-          _id: user.id
+          _id: user.id,
+          isDeleted: false
         }, {
           verificationCode: verificationCode
         });
@@ -927,7 +946,7 @@ module.exports = {
         });
       }
 
-      const user = await Users.findById(id);
+      const user = await Users.findOne({_id: id, isDeleted: false});
 
       if (user.verificationCode && user.verificationCode != req.body.verificationCode) {
         return res.status(400).json({
@@ -954,7 +973,8 @@ module.exports = {
         bcrypt.genSaltSync(10)
       );
       await Users.updateOne({
-        _id: user.id
+        _id: user.id,
+        isDeleted: false
       }, {
         password: password,
         verificationCode: ""
@@ -989,14 +1009,15 @@ module.exports = {
         });
       }
 
-      const user = await Users.findById(id);
+      const user = await Users.findOne({_id: id, isDeleted: false});
       if (user) {
         const password = await bcrypt.hashSync(
           req.body.password,
           bcrypt.genSaltSync(10)
         );
         await Users.updateOne({
-          _id: user.id
+          _id: user.id,
+          isDeleted: false
         }, {
           password: password
         });
@@ -1133,7 +1154,8 @@ module.exports = {
       const status = req.body.status;
 
      await Users.updateOne({
-        _id: id
+        _id: id,
+        isDeleted: false
       }, {
         status: status
       });
@@ -1157,7 +1179,8 @@ module.exports = {
       const id = req.query.id;
 
       const deletedUser = await db.users.updateOne({
-        _id: id
+        _id: id,
+        isDeleted: false
       }, {
         isDeleted: true
       });
@@ -1526,7 +1549,8 @@ module.exports = {
         userdata = Object.assign({}, user._doc);
         userdata["access_token"] = token;
         const updatedUser = await db.users.updateOne({
-          _id: userdata.id
+          _id: userdata.id,
+          isDeleted: false
         }, {
           lastLogin: new Date()
         });
@@ -1576,7 +1600,8 @@ module.exports = {
         userdata["access_token"] = token;
         userdata["social_login"] = true;
         const updatedUser = await db.users.updateOne({
-          _id: userdata.id
+          _id: userdata.id,
+          isDeleted: false
         }, {
           lastLogin: new Date()
         });
@@ -1604,14 +1629,16 @@ module.exports = {
       let updatedUser
       if(req.body.isSms == true){
          updatedUser = await db.users.updateOne({
-          email: req.body.email
+          email: req.body.email,
+          isDeleted: false
         }, {
           verification_otp: verificationOtp,
           mobileNo:req.body.mobileNo
         })
       }else{
          updatedUser = await db.users.updateOne({
-          email: req.body.email
+          email: req.body.email,
+          isDeleted: false
         }, {
           verification_otp: verificationOtp
         })
@@ -1643,7 +1670,7 @@ module.exports = {
   verifyOtp: async (req, res) => {
     try {
       let data = req.body
-      let user = await db.users.findOne({email:data.email});
+      let user = await db.users.findOne({email:data.email, isDeleted: false});
       if (user) {
         if (user.verification_otp != data.otp) {
           return res.status(400).json({
@@ -1655,7 +1682,8 @@ module.exports = {
           })
         } else {
           let updatedUser = await db.users.updateOne({
-            _id: user.id
+            _id: user.id,
+            isDeleted: false
           }, {
             isVerified: "Y",
             verification_otp: null
@@ -1712,7 +1740,7 @@ module.exports = {
   verifyForgotOtp: async (req, res) => {
     try {
       let data = req.body
-      let user = await db.users.findById(data.id);
+      let user = await db.users.findOne({_id: data.id, isDeleted: false});
       if (user) {
         if (user.verificationCode && user.verificationCode != data.otp) {
           return res.status(400).json({
@@ -1732,7 +1760,8 @@ module.exports = {
           })
         } else {
           let updatedUser = await db.users.updateOne({
-            _id: data.id
+            _id: data.id,
+            isDeleted: false
           }, {
             verificationCode: null
           })
@@ -2070,7 +2099,8 @@ module.exports = {
         to: `+${req.body.mobileNo}`
     })
     var updatedUser = await db.users.updateOne({
-      email: req.body.email
+      email: req.body.email,
+      isDeleted: false
     }, {
       verification_otp: verificationOtp,
       mobileNo:`+${req.body.mobileNo}`
