@@ -326,6 +326,14 @@ module.exports = {
         },
       },
       {
+        $lookup: {
+          from: "contractor_payables",
+          localField: "_id",
+          foreignField: "job",
+          as: "serviceDatelogs"
+        }
+      },
+      {
         $project: {
           id: "$_id",
           title: "$title",
@@ -353,6 +361,7 @@ module.exports = {
           preferedTime:"$preferedTime",
           hours:"$hours",
           minutes:"$minutes",
+          serviceDatelogs: "$serviceDatelogs",
           invoice: 1,
           expectedTime: 1
         },
@@ -599,6 +608,7 @@ module.exports = {
           hours: hours,
           status: "unpaid",
           completed_images: expense.completed_images,
+          distance_travelled: expense.distance_travelled,
           labour_charge: labour_charge,
           cis_amt: cis_amt,
           travel_expense: travel_expense,
@@ -673,6 +683,7 @@ module.exports = {
           hours: hours,
           status: "unpaid",
           completed_images: expense.completed_images,
+          distance_travelled: expense.distance_travelled,
           labour_charge: labour_charge,
           cis_amt: cis_amt,
           travel_expense: travel_expense,
@@ -680,6 +691,17 @@ module.exports = {
           other_expense_total: other_expense_total,
           net_payable: net_payable
         }
+
+        if(materialDatelogs) {
+          materialDatelogs = materialDatelogs.map(materialDatelog => {
+            materialDatelog.job = jobId;
+            materialDatelog.contractor = contractorId;
+            materialDatelog.date = date;
+            return materialDatelog;
+          });
+          await db.materialDatelogs.insertMany(materialDatelogs);
+        }
+        
         job.completed_images = expense.completed_images.concat(expense.completed_images);
         await db.jobs.updateOne({_id: jobId}, {completed_images: job.completed_images});
         //create a contractor payable for this
