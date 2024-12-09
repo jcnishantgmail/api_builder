@@ -30,10 +30,10 @@ module.exports = {
         })
       }
       
-      let invc = await db.invoices.findOne({jobId: req.body.jobId, isDeleted: false});
-      if(invc) {
-        return res.status(400).json({code:400, message: "Invoice for this job already exists!"});
-      }
+      // let invc = await db.invoices.findOne({jobId: req.body.jobId, isDeleted: false});
+      // if(invc) {
+      //   return res.status(400).json({code:400, message: "Invoice for this job already exists!"});
+      // }
       data.client = job.client;
       req.body.addedBy = req.identity.id;
       data.invoiceNumber = (await db.invoices.countDocuments({}) + 1);  //Generating invoice number
