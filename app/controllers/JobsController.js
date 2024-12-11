@@ -615,6 +615,7 @@ module.exports = {
           labour_charge: labour_charge,
           cis_amt: cis_amt,
           travel_expense: travel_expense,
+          other_expense: expense.other_expense,
           other_expense_total_self: other_expense_total_self,
           other_expense_total_company: other_expense_total_company,
           net_payable: net_payable
