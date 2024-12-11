@@ -594,11 +594,15 @@ module.exports = {
         let cis_amt = (0.01) * (+contractor.cis_rate.rate) * (+labour_charge);
         let travel_expense = await computeTravelCost(+expense.distance_travelled);
         travel_expense = +travel_expense;
-        let other_expense_total = expense.other_expense.reduce((tot, cur)=>{
+        let other_expense_total_self = expense.other_expense.filter((cur)=>cur.source === "self").reduce((tot, cur)=>{
           return (+tot) + (+cur.amount);
         }, 0);
-        other_expense_total = +other_expense_total.toFixed(2);
-        let net_payable = labour_charge + travel_expense + other_expense_total - cis_amt;
+        other_expense_total_self = +other_expense_total_self.toFixed(2);
+        let other_expense_total_company = expense.other_expense.filter((cur)=>cur.source === "company").reduce((tot, cur)=>{
+          return (+tot) + (+cur.amount);
+        }, 0);
+        other_expense_total_company = +other_expense_total_company.toFixed(2);
+        let net_payable = labour_charge + travel_expense + other_expense_total_self - cis_amt;
         net_payable = +net_payable.toFixed(2);
         let expenseObj = {
           job: jobId,
@@ -611,8 +615,8 @@ module.exports = {
           labour_charge: labour_charge,
           cis_amt: cis_amt,
           travel_expense: travel_expense,
-          other_expense: expense.other_expense,
-          other_expense_total: other_expense_total,
+          other_expense_total_self: other_expense_total_self,
+          other_expense_total_company: other_expense_total_company,
           net_payable: net_payable
         }
         job.completed_images = expense.completed_images.concat(expense.completed_images);
@@ -669,11 +673,15 @@ module.exports = {
         let cis_amt = (0.01) * (+contractor.cis_rate.rate) * (+labour_charge);
         let travel_expense = await computeTravelCost(+expense.distance_travelled);
         travel_expense = +travel_expense;
-        let other_expense_total = expense.other_expense.reduce((tot, cur)=>{
+        let other_expense_total_self = expense.other_expense.filter((cur)=>cur.source === "self").reduce((tot, cur)=>{
           return (+tot) + (+cur.amount);
         }, 0);
-        other_expense_total = +other_expense_total.toFixed(2);
-        let net_payable = labour_charge + travel_expense + other_expense_total - cis_amt;
+        other_expense_total_self = +other_expense_total_self.toFixed(2);
+        let other_expense_total_company = expense.other_expense.filter((cur)=>cur.source === "company").reduce((tot, cur)=>{
+          return (+tot) + (+cur.amount);
+        }, 0);
+        other_expense_total_company = +other_expense_total_company.toFixed(2);
+        let net_payable = labour_charge + travel_expense + other_expense_total_self - cis_amt;
         net_payable = +net_payable.toFixed(2);
         let expenseObj = {
           job: jobId,
@@ -687,7 +695,8 @@ module.exports = {
           cis_amt: cis_amt,
           travel_expense: travel_expense,
           other_expense: expense.other_expense,
-          other_expense_total: other_expense_total,
+          other_expense_total_self: other_expense_total_self,
+          other_expense_total_company: other_expense_total_company,
           net_payable: net_payable
         }
 
@@ -798,16 +807,21 @@ module.exports = {
             // Compute travel expense (awaited)
             expenseLog.travel_expense = await computeTravelCost(+expenseLog.distance_travelled);
             // Calculate other expenses total
-            expenseLog.other_expense_total = expenseLog.other_expense.reduce(
+            expenseLog.other_expense_total_company = expenseLog.other_expense.filter((cur)=>cur.source === "company").reduce(
               (tot, cur) => +tot + +cur.amount,
               0
             );
-            expenseLog.other_expense_total = +expenseLog.other_expense_total.toFixed(2);
+            expenseLog.other_expense_total_company = +expenseLog.other_expense_total_company.toFixed(2);
+            expenseLog.other_expense_total_self = expenseLog.other_expense.filter((cur)=>cur.source === "self").reduce(
+              (tot, cur) => +tot + +cur.amount,
+              0
+            );
+            expenseLog.other_expense_total_self = +expenseLog.other_expense_total_self.toFixed(2);
             // Compute net payable
             expenseLog.net_payable = (
               +expenseLog.labour_charge +
               +expenseLog.travel_expense +
-              +expenseLog.other_expense_total -
+              +expenseLog.other_expense_total_self -
               +expenseLog.cis_amt
             ).toFixed(2);
       
