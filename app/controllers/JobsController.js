@@ -602,7 +602,7 @@ module.exports = {
           return (+tot) + (+cur.amount);
         }, 0);
         other_expense_total_company = +other_expense_total_company.toFixed(2);
-        let net_payable = labour_charge + travel_expense + other_expense_total_self - cis_amt;
+        let net_payable = (+labour_charge) + (+travel_expense) + (+other_expense_total_self) - (+cis_amt);
         net_payable = +net_payable.toFixed(2);
         let expenseObj = {
           job: jobId,
@@ -682,7 +682,7 @@ module.exports = {
           return (+tot) + (+cur.amount);
         }, 0);
         other_expense_total_company = +other_expense_total_company.toFixed(2);
-        let net_payable = labour_charge + travel_expense + other_expense_total_self - cis_amt;
+        let net_payable = (+labour_charge) + (+travel_expense) + (+other_expense_total_self) - (+cis_amt);
         net_payable = +net_payable.toFixed(2);
         let expenseObj = {
           job: jobId,

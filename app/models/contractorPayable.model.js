@@ -5,7 +5,8 @@ var Mongoose = require("mongoose"),
 module.exports = (mongoose) => {
     var otherExpenseSchema = mongoose.Schema({
         amount: {type: Number, default: 0},
-        description: {type: String, default: ''}
+        description: {type: String, default: ''},
+        source: {type: String, default: 'self'}
     });
 
     var schema = mongoose.Schema(
