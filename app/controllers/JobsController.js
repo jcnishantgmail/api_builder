@@ -120,12 +120,11 @@ module.exports = {
           let minutes = Math.floor((+expenseLog.hours - hours)*60);
           return {
             job: id,
-            contractor: expenseLog.contractor,
+            client: detail.client,
             date: expenseLog.date,
             hours:hours,
             minutes:minutes,
-            completed_images: expenseLog.completed_images,
-            labour_charge: expenseLog.labour_charge
+            completed_images: expenseLog.completed_images
           };
         });
       }
