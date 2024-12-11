@@ -191,7 +191,11 @@ module.exports = {
           1 :
         -1;
       if (status) {
-        query.status = status;
+        if(status === 'all') {
+          query.status = {$in: ["pending", "sent", "paid", "cancelled"]}
+        } else {
+          query.status = status;
+        }
       }
       if (addedBy) {
         query.addedBy = mongoose.Types.ObjectId.createFromHexString(addedBy);
