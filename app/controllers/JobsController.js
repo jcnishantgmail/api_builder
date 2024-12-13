@@ -503,10 +503,12 @@ module.exports = {
       }
       if(contractor){
         let contractorDetail = await db.users.find({_id: {$in: contractor}, isDeleted: false});
+        console.log(contractorDetail);
         for(let individualContractor of contractorDetail) {
+          console.log(individualContractor);
           jobEmails.jobAssignToContractor({
             jobTitle:job.title,
-            description:job.description,
+            description:job.description.slice(3, -4),
             email:individualContractor.email,
             fullName:individualContractor.fullName,
             location:formattedLocation,
@@ -527,7 +529,7 @@ module.exports = {
         let preferredStartTime = hours + ":" + minutes + " " + ampm;
         jobEmails.assignContractorClientEmail({
           jobTitle: job.title,
-          description: job.description,
+          description: job.description.slice(3, -4),
           email: clientDetail.email,
           clientFullName: clientDetail.fullName,
           contractorDetail: contratorDetail,
