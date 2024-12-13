@@ -112,7 +112,7 @@ const assignContractorClientEmail = (options)=>{
                                                         ${contractorNames}
                                                     </ul>
                                                     <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Title:</strong> ${options.jobTitle}</p>
-                                                    <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Description:</strong> ${options.description}</p>
+                                                    <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Description:</strong> ${options.description.slice(3, -4)}</p>
                                                     <p style="font-size: 16px;font-weight: 400;color: #384860;"><strong>Job Location:</strong> ${options.location}</p>`
     if(options.timeChanged) {
         message += `<p style="font-size: 16px;font-weight: 400;color: #384860;">Job start time has changed.</p>`;

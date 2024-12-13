@@ -502,8 +502,8 @@ module.exports = {
         timeChanged = true;
       }
       if(contractor){
-        let contratorDetail = await db.users.find({_id: {$in: contractor}, isDeleted: false});
-        for(let individualContractor of contractor) {
+        let contractorDetail = await db.users.find({_id: {$in: contractor}, isDeleted: false});
+        for(let individualContractor of contractorDetail) {
           jobEmails.jobAssignToContractor({
             jobTitle:job.title,
             description:job.description,
