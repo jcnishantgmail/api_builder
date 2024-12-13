@@ -134,7 +134,7 @@ const add_user_email = (options) => {
 
 
 
-    SmtpController.sendEmail(email, `Registeration`, message);
+    SmtpController.sendEmail(email, `Registration`, message);
 };
 
 const invite_user_email = (options) => {
