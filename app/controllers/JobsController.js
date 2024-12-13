@@ -121,6 +121,7 @@ module.exports = {
           return {
             job: id,
             client: detail.client,
+            contractor: expenseLog.contractor,
             date: expenseLog.date,
             hours:hours,
             minutes:minutes,
