@@ -104,7 +104,7 @@ module.exports = {
           },
         });
       }
-      let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email hourlyRate').populate('contractor' , 'id fullName email').populate('property').populate('category');
+      let detail = await db.jobs.findById(id).populate('addedBy' , 'id fullName email').populate('client' , 'id fullName email hourlyRate address address2 zipCode state country city').populate('contractor' , 'id fullName email').populate('property').populate('category');
       detail = detail.toObject();
       detail.expense = await db.contractor_payables.find({job: id, isDeleted: false}).populate('contractor');
       
