@@ -136,6 +136,14 @@ module.exports = {
         detail.materialDatelogs = detail.materialDatelogs.sort((a, b) => {
           return a.date - b.date;
         });
+        for(let i = 0;i < detail.materialDatelogs.length; i++) {
+          if(detail.materialDatelogs[i].isCustom) {
+            detail.materialDatelogs[i].material = {
+              name: detail.materialDatelogs[i].materialName,
+              price: detail.materialDatelogs[i].price
+            };
+          }
+        }
       }
 
       return res.status(200).json({
