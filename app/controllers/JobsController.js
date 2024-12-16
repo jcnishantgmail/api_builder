@@ -131,21 +131,20 @@ module.exports = {
         });
       }
       detail.materialsDatelogs = await db.materialDatelogs.find({job: id}).populate('material').populate('contractor');
-      
-      if(detail.materialDatelogs) {
-        detail.materialDatelogs = detail.materialDatelogs.sort((a, b) => {
+      detail.materialsDatelogs = detail.materialsDatelogs?.map((cur)=> cur.toObject());
+      if(detail.materialsDatelogs) {
+        detail.materialsDatelogs = detail.materialsDatelogs.sort((a, b) => {
           return a.date - b.date;
         });
-        for(let i = 0;i < detail.materialDatelogs.length; i++) {
-          if(detail.materialDatelogs[i].isCustom) {
-            detail.materialDatelogs[i].material = {
-              name: detail.materialDatelogs[i].materialName,
-              price: detail.materialDatelogs[i].price
+        for(let i = 0;i < detail.materialsDatelogs.length; i++) {
+          if(detail.materialsDatelogs[i].isCustom) {
+            detail.materialsDatelogs[i].material = {
+              name: detail.materialsDatelogs[i].materialName,
+              price: detail.materialsDatelogs[i].price
             };
           }
         }
       }
-
       return res.status(200).json({
         success: true,
         data: detail
