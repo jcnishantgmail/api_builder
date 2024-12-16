@@ -122,6 +122,7 @@ module.exports = {
             job: id,
             client: detail.client,
             contractor: expenseLog.contractor,
+            service_description: expenseLog.service_description,
             date: expenseLog.date,
             hours:hours,
             minutes:minutes,
@@ -583,7 +584,7 @@ module.exports = {
       if(!contractor) {
         return res.status(404).json({message: "Contractor not found!", success: false});
       }
-      const job = await db.jobs.findOne({_id: jobId});
+      const job = await db.jobs.findOne({_id: jobId, isDeleted: false});
       if(!job) {
         return res.status(404).json({message: "Job not found!", code: 404, success: false});
       }
@@ -610,6 +611,7 @@ module.exports = {
           job: jobId,
           date: date,
           contractor: contractorId,
+          service_description: expense.service_description,
           hours: hours,
           status: "unpaid",
           completed_images: expense.completed_images,
@@ -690,6 +692,7 @@ module.exports = {
           job: jobId,
           date: date,
           contractor: contractorId,
+          service_description: expense.service_description,
           hours: hours,
           status: "unpaid",
           completed_images: expense.completed_images,

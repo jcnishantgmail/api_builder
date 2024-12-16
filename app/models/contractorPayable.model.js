@@ -15,6 +15,7 @@ module.exports = (mongoose) => {
             job: {type: Schema.Types.ObjectId, ref: "jobs"},
             hours: {type: Number, default: 0},
             contractor: {type: Schema.Types.ObjectId, ref: "users"},
+            service_description: {type: String, default: ""},
             status: {type: String, enum: ["paid", "unpaid"], default: "unpaid"},
             distance_travelled: {type: Number, default: 0},
             travel_expense: {type: Number, default: 0},
