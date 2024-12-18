@@ -20,6 +20,7 @@ const sendInvoiceMail = (options) => {
     materialsAndServices.sort((a, b) => {
         return a.date - b.date;
     });
+    
     let message = `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -82,7 +83,7 @@ const sendInvoiceMail = (options) => {
 
                             
                         message +=    `</td><td colspan="4" style="width: 100%;text-align: right;">
-                                <img src="https://cdn-icons-png.freepik.com/512/1343/1343669.png?ga=GA1.1.1780752125.1727170430" alt="" style="width: 200px">
+                                <img src="https://api.richardconstruction.co.uk/img/${options.logoUrl}" alt="Logo" style="width: 200px">
                             </td>
                         </tr>
                         <tr style="vertical-align: unset;">

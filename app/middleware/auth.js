@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
    * Check if authorization header is set
    */
   const url = req.url.split("?");
-  if (unprotectedRoutes.includes(url[0])) {
+  if (unprotectedRoutes.includes(url[0]) || url[0].startsWith("/img")) {
     next();
     return;
   }
