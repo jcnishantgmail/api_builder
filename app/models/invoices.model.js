@@ -11,7 +11,7 @@ module.exports = (mongoose) => {
             client: { type: Schema.Types.ObjectId, ref: "users", },
             addedBy: { type: Schema.Types.ObjectId, ref: "users", },
             property: { type: Schema.Types.ObjectId, ref: "properties", },
-            terms: {type: String, default: ""},
+            conditions: {type: String, default: ""},
             logoURL: {type: String, default: ''},
             sentDate: { type: Date },
             paidDate: { type: Date },
