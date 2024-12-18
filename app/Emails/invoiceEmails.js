@@ -307,7 +307,7 @@ const sendInvoiceMail = (options) => {
                         
                 message +=  `</tbody>
                         </table>
-                        <table>
+                        <table style="width: 100%">
                             <tbody>
                                 <tr>
                                     <td style="text-align: center;">
