@@ -23,7 +23,7 @@ module.exports = (mongoose) => {
       dialCode: String,
       mobileNo: String,
       image: {type: Array, default: []},
-      logoUrl: {type: String},
+      logoURL: {type: String},
       address: String,
       address2:{type:String},
       company:{type:String},
