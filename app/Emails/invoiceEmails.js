@@ -325,10 +325,7 @@ const sendInvoiceMail = (options) => {
                                         <p style="font-size: 13px;font-family: sans-serif;font-weight: 300;
                                         margin-top: 3px;margin-bottom: 3px;">Account No ${options.bank_account_details.account_number} Sort Code ${options.bank_account_details.sort_code}</p>
                                         <p style="font-size: 13px;font-family: sans-serif;
-                                        font-weight: 300;margin-top: 3px;margin-bottom: 3px;">Polite Note The customer shall be liable to pay 
-                                            all costs, fees, disbursements and charges including legal fees and costs reasonably incurred 
-                                            by the client in the recovery of any unpaid invoices regardless
-                                            of the value of the claim.</p>
+                                        font-weight: 300;margin-top: 3px;margin-bottom: 3px;">${options.conditions}</p>
                                     </td>
                                 </tr>
                                 <tr>
