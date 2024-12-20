@@ -11,6 +11,7 @@ module.exports = (mongoose) => {
             client: { type: Schema.Types.ObjectId, ref: "users", },
             addedBy: { type: Schema.Types.ObjectId, ref: "users", },
             property: { type: Schema.Types.ObjectId, ref: "properties", },
+            hasFixedCostService: {type: Boolean, default: false},
             conditions: {type: String, default: ""},
             logoURL: {type: String, default: ''},
             sentDate: { type: Date },
@@ -35,7 +36,8 @@ module.exports = (mongoose) => {
             labour_charge: {type: Number, default: 0},
             admin_info: Object,
             client_info: Object,
-            bank_account_details: Object
+            bank_account_details: Object,
+            emailText: Object
         }, 
         { timestamps: true }
     );
