@@ -192,7 +192,7 @@ const sendInvoiceMail = (options) => {
                                             <td style="font-size: 14px; font-family: sans-serif; font-weight: 300; padding: 8px;">${entry.material_description}</td>
                                             <td style="font-size: 14px; font-family: sans-serif; font-weight: 300; padding: 8px;">${entry.rate}</td>
                                             <td style="font-size: 14px; font-family: sans-serif; font-weight: 300; padding: 8px;">${entry.quantity}</td>
-                                            <td style="font-size: 14px; font-family: sans-serif; font-weight: 300; padding: 8px;">${entry.VAT_rate_labour_visible}</td>
+                                            <td style="font-size: 14px; font-family: sans-serif; font-weight: 300; padding: 8px;">${entry.vat_rate_visible}</td>
                                             <td style="font-size: 14px; font-family: sans-serif; font-weight: 300; padding: 8px;">${entry.price}</td>
                                         </tr>`;
                         }
