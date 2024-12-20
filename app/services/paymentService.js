@@ -28,7 +28,7 @@ module.exports.checkoutSessionHandler = async function (invoice) {
       }
   },
   mode: 'payment',
-  success_url: process.env.FRONT_WEB_URL+`/job/detail/${jobId}/${invoice.jobId.contractor.toString()}`,
+  success_url: process.env.FRONT_WEB_URL+`/job/detail/${jobId}`,
   cancel_url: process.env.FRONT_WEB_URL + `/cancelPayment`,
   customer_email: invoice.client_info.email
   });    
