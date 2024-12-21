@@ -80,6 +80,8 @@ module.exports = {
           }
           
           let clientDetail = client;
+          let preferedTime = new Date(req.body.preferedTime);
+          let timeChanged = false;
           let ampm = preferedTime.getUTCHours()>12? 'PM': 'AM';
           let hours = preferedTime.getUTCHours()%12;
           if(hours === 0) {
