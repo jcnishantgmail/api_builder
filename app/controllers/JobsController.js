@@ -65,9 +65,43 @@ module.exports = {
               })
             )
           );
-          
         }
-
+        if(created.contractor){
+          let contractorDetail = await db.users.find({_id: {$in: created.contractor}, isDeleted: false});
+          for(let individualContractor of contractorDetail) {
+            jobEmails.jobAssignToContractor({
+              jobTitle:created.title,
+              description:created.description.slice(3, -4),
+              email:individualContractor.email,
+              fullName:individualContractor.fullName,
+              location:formattedLocation,
+              id:created._id
+            });
+          }
+          
+          let clientDetail = client;
+          let ampm = preferedTime.getUTCHours()>12? 'PM': 'AM';
+          let hours = preferedTime.getUTCHours()%12;
+          if(hours === 0) {
+            hours = '12';
+          } else if(hours < 10) {
+            hours = '0' + hours;
+          }
+          let minutes = preferedTime.getUTCMinutes();
+          minutes = minutes < 10? '0'+ minutes: minutes;
+          let preferredStartTime = hours + ":" + minutes + " " + ampm;
+          jobEmails.assignContractorClientEmail({
+            id: String(created._id),
+            jobTitle: created.title,
+            description: description.slice(3, -4),
+            email: clientDetail.email,
+            clientFullName: clientDetail.fullName,
+            contractorDetail: contractorDetail,
+            location: formattedLocation,
+            timeChanged,
+            preferredStartTime
+          });
+        }
         return res.status(200).json({
           success: true,
           message: constants.JOBS.CREATED
@@ -535,6 +569,7 @@ module.exports = {
         minutes = minutes < 10? '0'+ minutes: minutes;
         let preferredStartTime = hours + ":" + minutes + " " + ampm;
         jobEmails.assignContractorClientEmail({
+          id: id,
           jobTitle: job.title,
           description: description.slice(3, -4),
           email: clientDetail.email,
