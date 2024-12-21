@@ -95,7 +95,7 @@ module.exports = {
           jobEmails.assignContractorClientEmail({
             id: String(created._id),
             jobTitle: created.title,
-            description: description.slice(3, -4),
+            description: created.description.slice(3, -4),
             email: clientDetail.email,
             clientFullName: clientDetail.fullName,
             contractorDetail: contractorDetail,
